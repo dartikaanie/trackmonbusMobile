@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">TRANS PADANG</string>
+    <string name="email">Email</string>
+    <string name="sandi">Sandi</string>
+    <string name="masuk">Masuk</string>
+    <string name="belum_mempunyai_akun">Belum mempunyai akun?</string>
+    <string name="daftar">Daftar</string>
+    <string name="trans_padang">TRANS PADANG</string>
+    <string name="nama">Nama</string>
+    <string name="ulangi_sandi">Ulangi Sandi</string>
+    <string name="sudah_mempunyai_akun">Sudah mempunyai akun?</string>
+    <string name="title_activity_home">HomeActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_beranda">BerandaActivity</string>
+</resources>
