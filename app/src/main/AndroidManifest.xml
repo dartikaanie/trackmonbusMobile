@@ -5,15 +5,20 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
+        android:hardwareAccelerated="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/trans_icon_round"
         android:supportsRtl="true"
-        android:hardwareAccelerated="false"
         android:theme="@style/AppTheme">
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/map_key" />
+
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,10 +33,15 @@
             android:resource="@array/preloaded_fonts" />
 
         <activity android:name=".RegistrasiActivity" />
-
         <activity
             android:name=".BerandaActivity"
-            android:label="@string/title_activity_beranda"></activity>
+            android:label="@string/title_activity_beranda" />
+        <activity
+            android:name=".PesanActivity"
+            android:label="@string/title_activity_pesan"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".BusActivity" />
+        <activity android:name=".HalteActivity"></activity>
     </application>
 
 </manifest>

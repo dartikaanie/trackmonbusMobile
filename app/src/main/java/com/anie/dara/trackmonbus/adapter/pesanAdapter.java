@@ -3,6 +3,7 @@ package com.anie.dara.trackmonbus.adapter;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,14 +42,14 @@ public class pesanAdapter extends RecyclerView.Adapter<pesanAdapter.PesanHolder>
     @Override
     public void onBindViewHolder(@NonNull PesanHolder holder, int position) {
         Pesan pesan = dataPesan.get(position);
-        holder.perihal.setText(String.valueOf(pesan.getPerihal()));
-        if((String.valueOf(pesan.getIsi_keluhan())).length() <= 10){
-            holder.isi_pesan.setText(String.valueOf(pesan.getIsi_keluhan()));
-        }else{
-            holder.isi_pesan.setText((String.valueOf(pesan.getIsi_keluhan())).substring(0,10));
+            holder.perihal.setText(String.valueOf(pesan.getPerihal()));
+            if((String.valueOf(pesan.getIsi_keluhan())).length() <= 60){
+                holder.isi_pesan.setText(String.valueOf(pesan.getIsi_keluhan()));
+            }else{
+                holder.isi_pesan.setText((String.valueOf(pesan.getIsi_keluhan())).substring(0,60) + "...");
+            }
+            holder.tgl.setText(String.valueOf(pesan.getCreated_at()));
         }
-        holder.tgl.setText(String.valueOf(pesan.getCreated_at()));
-    }
 
 
     @Override

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_marginBottom="4dp"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
+    android:layout_marginTop="4dp"
+    card_view:cardBackgroundColor="@color/cardview_light_background"
+    card_view:cardCornerRadius="10dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="0dp"
+        android:layout_marginBottom="0dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="0dp"
+        android:layout_marginTop="0dp"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <android.support.constraint.ConstraintLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="70dp"
+                    android:layout_weight="1">
+
+                    <View
+                        android:id="@+id/view2"
+                        android:layout_width="62dp"
+                        android:layout_height="70dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/holo_orange_light"
+                        card_view:layout_constraintBottom_toBottomOf="parent"
+                        card_view:layout_constraintStart_toStartOf="parent"
+                        card_view:layout_constraintTop_toTopOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/foto"
+                        android:layout_width="154dp"
+                        android:layout_height="75dp"
+                        android:layout_weight="1"
+                        android:adjustViewBounds="true"
+                        android:padding="10dp"
+                        android:scaleType="fitXY"
+                        card_view:layout_constraintStart_toEndOf="@+id/view2"
+                        card_view:layout_constraintTop_toTopOf="parent"
+                        card_view:srcCompat="@drawable/trans"
+                        tools:ignore="VectorDrawableCompat" />
+
+                    <TextView
+                        android:id="@+id/noBus"
+                        style="@style/TextContent.Small.White"
+                        android:layout_width="60dp"
+                        android:layout_height="51dp"
+                        android:layout_marginEnd="288dp"
+                        android:layout_weight="1"
+                        android:foregroundGravity="center_vertical"
+                        android:gravity="center_vertical"
+                        android:paddingBottom="3dp"
+                        android:paddingLeft="10dp"
+                        android:text="00"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                        android:textColor="@android:color/background_light"
+                        android:textSize="40sp"
+                        android:textStyle="bold"
+                        card_view:fontFamily="@font/text_me_one"
+                        card_view:layout_constraintBottom_toBottomOf="parent"
+                        card_view:layout_constraintEnd_toEndOf="parent"
+                        card_view:layout_constraintHorizontal_bias="0.0"
+                        card_view:layout_constraintStart_toStartOf="@+id/view2"
+                        card_view:layout_constraintTop_toTopOf="parent"
+                        card_view:layout_constraintVertical_bias="0.571" />
+
+                    <TextView
+                        android:id="@+id/no_bus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginEnd="32dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="5dp"
+                        android:text="No Bus"
+                        android:textSize="8sp"
+                        android:textStyle="italic"
+                        card_view:layout_constraintBottom_toBottomOf="parent"
+                        card_view:layout_constraintEnd_toEndOf="@+id/noBus"
+                        card_view:layout_constraintStart_toStartOf="@+id/view2"
+                        card_view:layout_constraintTop_toTopOf="parent"
+                        card_view:layout_constraintVertical_bias="0.0" />
+
+                    <TextView
+                        android:id="@+id/kapasitas"
+                        style="@style/TextContent.Small.White"
+                        android:layout_width="113dp"
+                        android:layout_height="26dp"
+                        android:layout_gravity="bottom"
+                        android:layout_marginEnd="100dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:drawableLeft="@drawable/person_icon"
+                        android:drawablePadding="4dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="10dp"
+                        android:text="kapasitas"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                        android:textColor="@color/cardview_shadow_start_color"
+                        android:textSize="14sp"
+                        card_view:fontFamily="sans-serif"
+                        card_view:layout_constraintBottom_toBottomOf="parent"
+                        card_view:layout_constraintEnd_toEndOf="parent"
+                        card_view:layout_constraintHorizontal_bias="0.075"
+                        card_view:layout_constraintStart_toEndOf="@+id/foto"
+                        card_view:layout_constraintTop_toBottomOf="@+id/nama_halte"
+                        card_view:layout_constraintVertical_bias="0.0" />
+
+                    <TextView
+                        android:id="@+id/nama_halte"
+                        android:layout_width="113dp"
+                        android:layout_height="28dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical|center_horizontal|center"
+                        android:paddingLeft="10dp"
+                        android:text="BA 0000 XX"
+                        android:textAlignment="viewStart"
+                        android:textColor="@android:color/background_dark"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        card_view:layout_constraintEnd_toEndOf="parent"
+                        card_view:layout_constraintHorizontal_bias="0.089"
+                        card_view:layout_constraintStart_toEndOf="@+id/foto"
+                        card_view:layout_constraintTop_toTopOf="parent" />
+
+                </android.support.constraint.ConstraintLayout>
+
+            </LinearLayout>
+
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>

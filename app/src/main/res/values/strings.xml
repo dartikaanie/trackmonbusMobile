@@ -20,4 +20,5 @@
     <string name="perihal">Perihal</string>
     <string name="tunggu">Tunggu</string>
     <string name="isi_pesan">isi_pesan</string>
+    <string name="title_activity_pesan">PesanActivity</string>
 </resources>

@@ -16,16 +16,22 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.anie.dara.trackmonbus.BusActivity;
+import com.anie.dara.trackmonbus.HalteActivity;
 import com.anie.dara.trackmonbus.MainActivity;
+import com.anie.dara.trackmonbus.PesanActivity;
 import com.anie.dara.trackmonbus.R;
+import com.anie.dara.trackmonbus.RegistrasiActivity;
 import com.anie.dara.trackmonbus.adapter.pesanAdapter;
 import com.anie.dara.trackmonbus.dbClient;
 import com.anie.dara.trackmonbus.model.Pesan;
+import com.anie.dara.trackmonbus.rest.ApiClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,10 +49,12 @@ public class HomeFragment extends Fragment implements pesanAdapter.OnItemClicked
     static RecyclerView rvDaftarPesan;
     static pesanAdapter pesanAdapter;
     static ProgressBar waiting;
-    static TextView load, lihatAll;
+    static TextView load;
+    static Button BtnlihatAll, BtnBus, BtnHalte;
     static ImageView noData;
     static int status_data;
     static Pesan dataPesan;
+    private static dbClient client;
     ArrayList<Pesan> pesanList;
     static Activity activity;
 
@@ -62,7 +70,34 @@ public class HomeFragment extends Fragment implements pesanAdapter.OnItemClicked
         waiting=view.findViewById(R.id.progressBar);
         noData = view.findViewById(R.id.noData);
         load = view.findViewById(R.id.load);
-        lihatAll = view.findViewById(R.id.lihatAll);
+        //button bus
+        BtnBus = view.findViewById(R.id.btnBus);
+        BtnBus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), BusActivity.class));
+            }
+        });
+
+        //btn halte
+        BtnHalte = view.findViewById(R.id.BtnHalte);
+        BtnHalte.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), HalteActivity.class));
+            }
+        });
+
+        //button Pesan
+        BtnlihatAll = view.findViewById(R.id.BtnlihatAll);
+        BtnlihatAll.setOnClickListener( new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), PesanActivity.class);
+                startActivity(intent);
+            }
+        }   );
+
         pesanAdapter = new pesanAdapter();
         pesanAdapter.setClickHandler(this);
 
@@ -73,7 +108,8 @@ public class HomeFragment extends Fragment implements pesanAdapter.OnItemClicked
         rvDaftarPesan.setVisibility(view.INVISIBLE);
         waiting.setVisibility(view.VISIBLE);
         load.setVisibility(View.VISIBLE);
-        lihatAll.setVisibility(View.INVISIBLE);
+        BtnlihatAll.setVisibility(View.INVISIBLE);
+
         status_data=0;
 
         int orientasi = getResources().getConfiguration().orientation;
@@ -99,13 +135,7 @@ public class HomeFragment extends Fragment implements pesanAdapter.OnItemClicked
         noData.setVisibility(View.INVISIBLE);
 
         if(((MainActivity)activity).konekkah()){
-            dbClient client = (new Retrofit.Builder()
-
-                    .baseUrl("http://192.168.43.14/trackmonbus/public/")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build())
-                    .create(dbClient.class);
-
+            client = ApiClient.getClient().create(dbClient.class);
             Call<List<Pesan>> call = client.getAllPesan();
             call.enqueue(new Callback<List<Pesan>>() {
                 @Override
@@ -123,7 +153,7 @@ public class HomeFragment extends Fragment implements pesanAdapter.OnItemClicked
                     else{
                         Toast.makeText(activity, "Pesan berhasil diload", Toast.LENGTH_SHORT).show();
                         pesanAdapter.setDataPesan(new ArrayList<Pesan>(listPesanItem));
-                        lihatAll.setVisibility(View.VISIBLE);
+                        BtnlihatAll.setVisibility(View.VISIBLE);
                     }
 
                 }
@@ -144,4 +174,6 @@ public class HomeFragment extends Fragment implements pesanAdapter.OnItemClicked
     public void ItemClicked(Pesan pesan) {
         Toast.makeText(activity, "Item yang diklik adalah : " + pesan.getKeluhan_id(), Toast.LENGTH_SHORT).show();
     }
+
+
 }
