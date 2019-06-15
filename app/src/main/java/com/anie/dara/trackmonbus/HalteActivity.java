@@ -1,24 +1,21 @@
 package com.anie.dara.trackmonbus;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
 
 import com.anie.dara.trackmonbus.adapter.HalteAdapter;
-import com.anie.dara.trackmonbus.adapter.pesanAdapter;
 import com.anie.dara.trackmonbus.model.Halte;
-import com.anie.dara.trackmonbus.model.Pesan;
 import com.anie.dara.trackmonbus.rest.ApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -33,8 +30,6 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class HalteActivity extends AppCompatActivity  implements OnMapReadyCallback {
     GoogleMap map;
@@ -42,16 +37,11 @@ public class HalteActivity extends AppCompatActivity  implements OnMapReadyCallb
     HalteAdapter halteAdapter;
     private dbClient client;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_halte);
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-//
-//        getSupportActionBar().setTitle("Trans Padang");
-//        toolbar.setSubtitle("Halte");
-//        toolbar.setLogo(R.drawable.trans);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -73,10 +63,14 @@ public class HalteActivity extends AppCompatActivity  implements OnMapReadyCallb
         }
         rvListHalte.setLayoutManager(layoutManager);
         rvListHalte.setHasFixedSize(true);
-        getAllHalte();
+
     }
 
     private void getAllHalte() {
+        final ProgressDialog dialog = new ProgressDialog(this);
+        dialog.setMessage("Memuat Data . . .");
+        dialog.show();
+
         if(konekkah()){
             client = ApiClient.getClient().create(dbClient.class);
             Call<List<Halte>> call = client.getAllHalte();
@@ -86,25 +80,28 @@ public class HalteActivity extends AppCompatActivity  implements OnMapReadyCallb
 
                     rvListHalte.setVisibility(View.VISIBLE);
 
-
                     List<Halte> listHalteItem = response.body();
                     if(listHalteItem == null){
                         Toast.makeText(HalteActivity.this , "Maaf, Tidak ada data", Toast.LENGTH_SHORT).show();
                     }
                     else{
                         Toast.makeText(HalteActivity.this , "Pesan berhasil diload", Toast.LENGTH_SHORT).show();
+                        initMarker(listHalteItem);
                         halteAdapter.setDataHalte(new ArrayList<Halte>(listHalteItem));
-                    }
 
+                    }
+                    dialog.dismiss();
                 }
 
                 @Override
                 public void onFailure(Call<List<Halte>> call, Throwable t) {
                     Toast.makeText(HalteActivity.this , t.toString(), Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
                 }
             });
         }else{
             Toast.makeText(HalteActivity.this , "Hidupkan koneksi internet anda", Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
         }
     }
 
@@ -112,13 +109,23 @@ public class HalteActivity extends AppCompatActivity  implements OnMapReadyCallb
     public void onMapReady(GoogleMap googleMap) {
 
         map = googleMap;
-
-        LatLng posisi = new LatLng(-0.926256, 100.431219);
-        map.addMarker(new MarkerOptions().position(posisi).title("IRIGASI"));
-        map.moveCamera(CameraUpdateFactory.newLatLng(posisi));
-        map.animateCamera(CameraUpdateFactory.zoomTo(16));
+        getAllHalte();
+//        LatLng posisi = new LatLng(-0.926256, 100.431219);
+//        map.addMarker(new MarkerOptions().position(posisi).title("IRIGASI"));
+//        map.moveCamera(CameraUpdateFactory.newLatLng(posisi));
+//        map.animateCamera(CameraUpdateFactory.zoomTo(16));
 
     }
+
+    private void initMarker(List<Halte> listData){
+        for (int i=0; i<listData.size(); i++){
+            LatLng location = new LatLng(Double.parseDouble(listData.get(i).getLat()), Double.parseDouble(listData.get(i).getLng()));
+            map.addMarker(new MarkerOptions().position(location).title(listData.get(i).getNama()));
+        }
+        LatLng latLng = new LatLng(Double.parseDouble(listData.get(0).getLat()), Double.parseDouble(listData.get(0).getLng()));
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude,latLng.longitude), 14.0f));
+    }
+
     public Boolean konekkah(){
         ConnectivityManager cm =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
