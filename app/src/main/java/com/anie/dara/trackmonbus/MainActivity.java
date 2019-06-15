@@ -1,5 +1,9 @@
 package com.anie.dara.trackmonbus;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
@@ -19,7 +23,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        getSupportActionBar().hide();
 
         loadFragment(new HomeFragment());
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
@@ -72,5 +75,16 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 return true;
         }
         return true;
+    }
+
+    public Boolean konekkah(){
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        @SuppressLint("MissingPermission") NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean konek = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+
+        return konek;
     }
 }
