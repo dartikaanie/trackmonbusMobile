@@ -145,8 +145,8 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/daftar_pesan"
-        android:layout_width="361dp"
-        android:layout_height="159dp"
+        android:layout_width="363dp"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -181,7 +181,7 @@
         style="@style/Base.TextAppearance.AppCompat.Caption"
         android:layout_width="wrap_content"
         android:layout_height="17dp"
-        android:layout_marginBottom="12dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:background="@drawable/bg_rounded_white"
@@ -191,7 +191,7 @@
         android:typeface="sans"
         app:layout_constraintBottom_toTopOf="@+id/daftar_pesan"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.953"
+        app:layout_constraintHorizontal_bias="0.952"
         app:layout_constraintStart_toEndOf="@+id/textView" />
 
     <ImageView

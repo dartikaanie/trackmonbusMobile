@@ -41,7 +41,8 @@
             android:label="@string/title_activity_pesan"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".BusActivity" />
-        <activity android:name=".HalteActivity"></activity>
+        <activity android:name=".HalteActivity" />
+        <activity android:name=".DetailPesanActivity"></activity>
     </application>
 
 </manifest>

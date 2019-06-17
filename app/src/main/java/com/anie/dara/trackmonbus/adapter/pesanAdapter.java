@@ -49,6 +49,7 @@ public class pesanAdapter extends RecyclerView.Adapter<pesanAdapter.PesanHolder>
                 holder.isi_pesan.setText((String.valueOf(pesan.getIsi_keluhan())).substring(0,60) + "...");
             }
             holder.tgl.setText(String.valueOf(pesan.getCreated_at()));
+            holder.user.setText(String.valueOf(pesan.getName()));
         }
 
 
@@ -64,13 +65,14 @@ public class pesanAdapter extends RecyclerView.Adapter<pesanAdapter.PesanHolder>
 
     // Inner CLASS
     public class PesanHolder extends RecyclerView.ViewHolder{
-        TextView perihal, isi_pesan, tgl;
+        TextView perihal, isi_pesan, tgl, user;
 
         public PesanHolder(@NonNull View itemView){
             super(itemView);
             perihal = itemView.findViewById(R.id.perihal);
             isi_pesan = itemView.findViewById(R.id.isi_pesan);
             tgl = itemView.findViewById(R.id.tgl);
+            user = itemView.findViewById(R.id.user);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

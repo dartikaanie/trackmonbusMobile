@@ -49,8 +49,14 @@ public class PesanActivity extends AppCompatActivity implements com.anie.dara.tr
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pesan);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        //toolbar
+        Toolbar ToolBarAtas = (Toolbar)findViewById(R.id.toolbar);
+        setSupportActionBar(ToolBarAtas);
+        getSupportActionBar().setTitle("TRANS PADANG");
+//        ToolBarAtas.setSubtitle("https://badoystudio.com");
+//        ToolBarAtas.setLogo(R.drawable.trans);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {

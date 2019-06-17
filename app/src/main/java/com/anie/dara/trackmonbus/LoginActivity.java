@@ -16,8 +16,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-        getSupportActionBar().hide();
+        setContentView(R.layout.activity_login);;
 
         btn_daftar = findViewById(R.id.btn_daftar);
         btn_daftar.setOnClickListener( new View.OnClickListener(){

@@ -31,7 +31,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class HalteActivity extends AppCompatActivity  implements OnMapReadyCallback {
+public class HalteActivity extends AppCompatActivity  implements OnMapReadyCallback, com.anie.dara.trackmonbus.adapter.HalteAdapter.OnItemClicked {
     GoogleMap map;
     RecyclerView rvListHalte;
     HalteAdapter halteAdapter;
@@ -49,6 +49,7 @@ public class HalteActivity extends AppCompatActivity  implements OnMapReadyCallb
 
         rvListHalte = findViewById(R.id.rvListHalte);
         halteAdapter = new HalteAdapter();
+        halteAdapter.setClickHandler(this);
 
         rvListHalte.setAdapter(halteAdapter);
         RecyclerView.LayoutManager layoutManager;
@@ -110,20 +111,24 @@ public class HalteActivity extends AppCompatActivity  implements OnMapReadyCallb
 
         map = googleMap;
         getAllHalte();
-//        LatLng posisi = new LatLng(-0.926256, 100.431219);
-//        map.addMarker(new MarkerOptions().position(posisi).title("IRIGASI"));
-//        map.moveCamera(CameraUpdateFactory.newLatLng(posisi));
-//        map.animateCamera(CameraUpdateFactory.zoomTo(16));
 
     }
 
     private void initMarker(List<Halte> listData){
         for (int i=0; i<listData.size(); i++){
             LatLng location = new LatLng(Double.parseDouble(listData.get(i).getLat()), Double.parseDouble(listData.get(i).getLng()));
-            map.addMarker(new MarkerOptions().position(location).title(listData.get(i).getNama()));
+            map.addMarker(new MarkerOptions().position(location).title(listData.get(i).getNama())).showInfoWindow();
         }
         LatLng latLng = new LatLng(Double.parseDouble(listData.get(0).getLat()), Double.parseDouble(listData.get(0).getLng()));
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude,latLng.longitude), 14.0f));
+    }
+
+    @Override
+    public void ItemClicked(Halte halte) {
+        Toast.makeText(HalteActivity.this, "Item yang diklik adalah : " + halte.getNama(), Toast.LENGTH_SHORT).show();
+        LatLng latLng = new LatLng(Double.parseDouble(halte.getLat()), Double.parseDouble(halte.getLng()));
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude,latLng.longitude), 16.0f));
+
     }
 
     public Boolean konekkah(){

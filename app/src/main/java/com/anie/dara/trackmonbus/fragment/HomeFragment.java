@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anie.dara.trackmonbus.BusActivity;
+import com.anie.dara.trackmonbus.DetailPesanActivity;
 import com.anie.dara.trackmonbus.HalteActivity;
 import com.anie.dara.trackmonbus.MainActivity;
 import com.anie.dara.trackmonbus.PesanActivity;
@@ -114,7 +115,7 @@ public class HomeFragment extends Fragment implements pesanAdapter.OnItemClicked
 
         int orientasi = getResources().getConfiguration().orientation;
         if(orientasi == Configuration.ORIENTATION_PORTRAIT){
-            layoutManager = new LinearLayoutManager(getContext());
+            layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         }else{
             layoutManager = new GridLayoutManager(getContext(),2);
 
@@ -173,6 +174,9 @@ public class HomeFragment extends Fragment implements pesanAdapter.OnItemClicked
     @Override
     public void ItemClicked(Pesan pesan) {
         Toast.makeText(activity, "Item yang diklik adalah : " + pesan.getKeluhan_id(), Toast.LENGTH_SHORT).show();
+        Intent detailIntent = new Intent(activity, DetailPesanActivity.class);
+        detailIntent.putExtra("key_foto_parcelable", pesan);
+        startActivity(detailIntent);
     }
 
 
