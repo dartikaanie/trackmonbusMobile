@@ -110,14 +110,16 @@
                 android:gravity="center"
                 android:orientation="vertical">
 
-                <ImageView
+                <Button
+                    android:id="@+id/BtnLokasi"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:layout_marginBottom="8dp"
+                    android:background="@drawable/button_bg_rounded"
                     android:src="@drawable/button_bg_rounded" />
 
                 <TextView
-                    android:id="@+id/btnLokasi"
+                    android:id="@+id/btnTextView_lokasi"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Cek Lokasi"
@@ -135,7 +137,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="20dp"
         android:text="SARAN &amp; KRITIK"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.003"
@@ -150,7 +152,7 @@
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:scrollbars="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -181,9 +183,10 @@
         style="@style/Base.TextAppearance.AppCompat.Caption"
         android:layout_width="wrap_content"
         android:layout_height="17dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="16dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="20dp"
         android:background="@drawable/bg_rounded_white"
         android:fontFamily="sans-serif"
         android:text="Lihat Semua"
@@ -192,7 +195,8 @@
         app:layout_constraintBottom_toTopOf="@+id/daftar_pesan"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.952"
-        app:layout_constraintStart_toEndOf="@+id/textView" />
+        app:layout_constraintStart_toEndOf="@+id/textView"
+        app:layout_constraintTop_toBottomOf="@+id/cardView" />
 
     <ImageView
         android:id="@+id/imageView"

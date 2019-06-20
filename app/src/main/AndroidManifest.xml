@@ -42,7 +42,8 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".BusActivity" />
         <activity android:name=".HalteActivity" />
-        <activity android:name=".DetailPesanActivity"></activity>
+        <activity android:name=".DetailPesanActivity" />
+        <activity android:name=".LokasiActivity"></activity>
     </application>
 
 </manifest>

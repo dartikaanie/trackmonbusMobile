@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.anie.dara.trackmonbus.BusActivity;
 import com.anie.dara.trackmonbus.DetailPesanActivity;
 import com.anie.dara.trackmonbus.HalteActivity;
+import com.anie.dara.trackmonbus.LokasiActivity;
 import com.anie.dara.trackmonbus.MainActivity;
 import com.anie.dara.trackmonbus.PesanActivity;
 import com.anie.dara.trackmonbus.R;
@@ -45,13 +46,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.anie.dara.trackmonbus.MainActivity.*;
 
-public class HomeFragment extends Fragment implements pesanAdapter.OnItemClicked{
+public class HomeFragment extends Fragment implements pesanAdapter.OnItemClicked, View.OnClickListener {
 
     static RecyclerView rvDaftarPesan;
     static pesanAdapter pesanAdapter;
     static ProgressBar waiting;
     static TextView load;
-    static Button BtnlihatAll, BtnBus, BtnHalte;
+    static Button BtnlihatAll, BtnBus, BtnHalte, BtnLokasi;
     static ImageView noData;
     static int status_data;
     static Pesan dataPesan;
@@ -73,31 +74,18 @@ public class HomeFragment extends Fragment implements pesanAdapter.OnItemClicked
         load = view.findViewById(R.id.load);
         //button bus
         BtnBus = view.findViewById(R.id.btnBus);
-        BtnBus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getActivity(), BusActivity.class));
-            }
-        });
+        BtnBus.setOnClickListener(this);
 
         //btn halte
         BtnHalte = view.findViewById(R.id.BtnHalte);
-        BtnHalte.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getActivity(), HalteActivity.class));
-            }
-        });
+        BtnHalte.setOnClickListener(this);
 
         //button Pesan
         BtnlihatAll = view.findViewById(R.id.BtnlihatAll);
-        BtnlihatAll.setOnClickListener( new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), PesanActivity.class);
-                startActivity(intent);
-            }
-        }   );
+        BtnlihatAll.setOnClickListener(this);
+
+        BtnLokasi = view.findViewById(R.id.BtnLokasi);
+        BtnLokasi.setOnClickListener(this);
 
         pesanAdapter = new pesanAdapter();
         pesanAdapter.setClickHandler(this);
@@ -180,4 +168,26 @@ public class HomeFragment extends Fragment implements pesanAdapter.OnItemClicked
     }
 
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.btnBus:
+                startActivity(new Intent(getActivity(), BusActivity.class));
+                break;
+
+            case R.id.BtnHalte:
+                startActivity(new Intent(getActivity(), HalteActivity.class));
+                break;
+
+            case R.id.BtnLokasi:
+                startActivity(new Intent(getActivity(), LokasiActivity.class));
+                break;
+
+            case R.id.BtnlihatAll :
+                Intent intent = new Intent(getActivity(), PesanActivity.class);
+                startActivity(intent);
+            break;
+
+        }
+    }
 }
