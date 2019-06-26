@@ -128,7 +128,6 @@ public class HalteActivity extends AppCompatActivity  implements OnMapReadyCallb
         Toast.makeText(HalteActivity.this, "Item yang diklik adalah : " + halte.getNama(), Toast.LENGTH_SHORT).show();
         LatLng latLng = new LatLng(Double.parseDouble(halte.getLat()), Double.parseDouble(halte.getLng()));
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude,latLng.longitude), 16.0f));
-
     }
 
     public Boolean konekkah(){

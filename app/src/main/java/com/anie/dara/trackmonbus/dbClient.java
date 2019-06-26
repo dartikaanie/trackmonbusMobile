@@ -12,17 +12,19 @@ import retrofit2.http.GET;
 
 public interface dbClient {
     //mengambil data yang sdg tayang
-    @GET("pesan")
+    @GET("api/pesan")
     Call<List<Pesan>> getAllPesan();
 
-    @GET("viewBuses")
+    @GET("api/viewBuses")
     Call<List<Bus>> getAllBus();
 
-    @GET("viewHaltes")
+    @GET("api/viewHaltes")
     Call<List<Halte>> getAllHalte();
 
-    @GET("viewHaltes")
+    @GET("api/viewHaltes")
     Call<ListHalte> getAllLocation();
+
+
 
 
 

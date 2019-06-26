@@ -1,23 +1,35 @@
 package com.anie.dara.trackmonbus;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anie.dara.trackmonbus.model.Halte;
 import com.anie.dara.trackmonbus.rest.ApiClient;
+import com.bumptech.glide.load.engine.Resource;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -48,13 +60,36 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("2019-05-27");
     private dbClient client;
     TextView textView4;
+    Button btnCurrentLok;
     HashMap hashMapMarker = new HashMap<>();
     Marker marker;
+
+    private static  final  int REQUEST_LOCATION =1;
+    LocationManager locationManager;
+    String latitude, longtitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lokasi);
+        textView4 = findViewById(R.id.textView4);
+        btnCurrentLok = findViewById(R.id.btnCurrentLok);
+        //klik button_location
+        btnCurrentLok.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                locationManager = (LocationManager) LokasiActivity.this.getSystemService(Context.LOCATION_SERVICE);
+                if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+                    buildAlertMessageNoGPS();
+                }
+                else
+                {
+                    getLocation();
+                }
+
+            }
+        });
+
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map_lokasi);
@@ -69,11 +104,12 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 LatLng posisi = null;
-                int height = 60;
-                int width = 100;
+//                int height = 60;
+//                int width = 120;
                 BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.trans);
-                Bitmap b=bitmapdraw.getBitmap();
-                Bitmap BusMarker = Bitmap.createScaledBitmap(b, width, height, false);
+
+//                Bitmap b=bitmapdraw.getBitmap();
+//                Bitmap BusMarker = Bitmap.createScaledBitmap(b, width, height, false);
 
 
                     String lat = dataSnapshot.child("lat").getValue().toString();
@@ -90,9 +126,8 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
                 marker = map.addMarker(new MarkerOptions()
                         .position(posisi)
                         .title(nomorBus)
-                        .icon(BitmapDescriptorFactory.fromBitmap(BusMarker)));
+                        .icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 60,120))));
                 hashMapMarker.put(nomorBus,marker);
-                  map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(posisi.latitude,posisi.longitude), 15.0f));
                 }
 
             @Override
@@ -113,11 +148,6 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
 
     }
 
-    private Query getQuery(DatabaseReference mDatabase) {
-        Query query = mDatabase.child("2019-05-27");
-        return query;
-    }
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
@@ -126,11 +156,12 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 LatLng posisi = null;
-                int height = 70;
-                int width = 100;
+//                int height = 60;
+//                int width = 120;
                 BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.trans);
-                Bitmap b=bitmapdraw.getBitmap();
-                Bitmap BusMarker = Bitmap.createScaledBitmap(b, width, height, false);
+
+//                Bitmap b=bitmapdraw.getBitmap();
+//                Bitmap BusMarker = Bitmap.createScaledBitmap(b, width, height, false);
 
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
 
@@ -152,10 +183,10 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
                     marker = map.addMarker(new MarkerOptions()
                             .position(posisi)
                             .title(nomorBus)
-                            .icon(BitmapDescriptorFactory.fromBitmap(BusMarker)));
+                            .icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 60,120))));
                     hashMapMarker.put(nomorBus,marker);
                 }
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(posisi.latitude,posisi.longitude), 15.0f));
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(posisi.latitude,posisi.longitude), 16.0f));
             }
 
             @Override
@@ -205,12 +236,71 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
     private void initMarker(List<Halte> listData){
+//        int height = 100;
+//        int width = 80;
+        BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.halte);
+//        Bitmap b=bitmapdraw.getBitmap();
+//        Bitmap HalteMarker = Bitmap.createScaledBitmap(b, width, height, false);
         for (int i=0; i<listData.size(); i++){
             LatLng location = new LatLng(Double.parseDouble(listData.get(i).getLat()), Double.parseDouble(listData.get(i).getLng()));
-            map.addMarker(new MarkerOptions().position(location).title(listData.get(i).getNama())).showInfoWindow();
+            map.addMarker(new MarkerOptions().position(location).title(listData.get(i).getNama()).icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 100,80)))).showInfoWindow();
         }
         LatLng latLng = new LatLng(Double.parseDouble(listData.get(0).getLat()), Double.parseDouble(listData.get(0).getLng()));
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude,latLng.longitude), 14.0f));
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude,latLng.longitude), 15.0f));
+    }
+
+    public Bitmap getIcon (BitmapDrawable bitmapdraw, int tinggi, int lebar){
+        int height = tinggi;
+        int width = lebar;
+//        BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(drawable);
+        Bitmap b=bitmapdraw.getBitmap();
+        Bitmap Icon = Bitmap.createScaledBitmap(b, width, height, false);
+        return Icon;
+    }
+
+
+    public void getLocation(){
+        if((ActivityCompat.checkSelfPermission(LokasiActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED )
+                &&
+                (ActivityCompat.checkSelfPermission(LokasiActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED)){
+            ActivityCompat.requestPermissions(LokasiActivity.this, new String [] {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
+        }
+        else{
+            Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            if(location!=null){
+
+                double lat = location.getLatitude();
+                double lng = location.getLongitude();
+                LatLng currentPosisi = new LatLng(lat, lng);
+                map.addMarker(new MarkerOptions()
+                        .position(currentPosisi)
+                        .title("Anda"));
+                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentPosisi.latitude,currentPosisi.longitude), 16.0f));
+            }
+            else{
+                Toast.makeText(LokasiActivity.this,"TIDAK TAMPIL LOKASINYA YA", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    protected void buildAlertMessageNoGPS(){
+        final AlertDialog.Builder builder = new AlertDialog.Builder(LokasiActivity.this);
+        builder.setMessage("Hidupkan GPS mu")
+                .setCancelable(false)
+                .setPositiveButton("YA", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
+                })
+                .setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
     }
 
     public Boolean konekkah(){
