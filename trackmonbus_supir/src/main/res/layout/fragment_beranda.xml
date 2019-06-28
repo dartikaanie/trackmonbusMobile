@@ -44,7 +44,6 @@
 
             <TextView
                 android:id="@+id/namaHalte"
-                style="@style/TextContent.Small.White"
                 android:layout_height="30dp"
                 android:layout_gravity="bottom"
                 android:layout_marginBottom="8dp"
@@ -64,11 +63,11 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/view2"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_width="wrap_content" />
 
             <TextView
                 android:id="@+id/namaTrayek2"
-                style="@style/TextContent.Small.White"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
@@ -94,8 +93,6 @@
 
             <TextView
                 android:id="@+id/namaSupir2"
-                style="@style/TextContent.Small.White"
-
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"

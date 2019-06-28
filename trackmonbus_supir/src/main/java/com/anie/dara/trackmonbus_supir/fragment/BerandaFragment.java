@@ -71,7 +71,7 @@ import static com.anie.dara.trackmonbus_supir.R.id.*;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class BerandaFragment extends Fragment  implements OnMapReadyCallback {
+public class BerandaFragment extends Fragment  implements OnMapReadyCallback, View.OnClickListener {
     GoogleMap map;
     MapView mMapView;
     CardView cvChechkin, cvTidakJadwal;
@@ -105,6 +105,7 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback {
         namaHalte = mView.findViewById(R.id.namaHalte);
         namaTrayek = mView.findViewById(R.id.namaTrayek2);
         btnCheckin = mView.findViewById(R.id.btnCheckin);
+        btnCheckin.setOnClickListener(this);
 
         cvTidakJadwal = mView.findViewById(R.id.cvTidakJadwal);
         cvTidakJadwal.setVisibility(View.INVISIBLE);
@@ -299,5 +300,14 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback {
         Bitmap b=bitmapdraw.getBitmap();
         Bitmap Icon = Bitmap.createScaledBitmap(b, width, height, false);
         return Icon;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.btnCheckin:
+                Toast.makeText(getContext() , "cek in", Toast.LENGTH_SHORT).show();
+                break;
+        }
     }
 }

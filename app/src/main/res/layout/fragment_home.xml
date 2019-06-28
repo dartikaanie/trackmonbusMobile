@@ -9,8 +9,8 @@
 
     <View
         android:id="@+id/view"
-        android:layout_width="403dp"
-        android:layout_height="187dp"
+        android:layout_width="392dp"
+        android:layout_height="237dp"
         android:background="@drawable/bg_home"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"

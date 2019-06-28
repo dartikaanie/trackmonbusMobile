@@ -22,7 +22,7 @@ public interface dbClient {
     );
 
     @GET("api/cekJadwal")
-    Call<Jadwal> cekJadwal(@Path("user_id") int user_id);
+    Call<Jadwal> cekJadwal();
 
     @GET("api/viewHaltes")
     Call<List<Halte>> getAllHalte();
