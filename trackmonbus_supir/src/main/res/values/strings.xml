@@ -22,4 +22,5 @@
     <string name="isi_pesan">isi_pesan</string>
     <string name="title_activity_pesan">PesanActivity</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="msg_cannot_allow_empty_field">Tidak boleh kosong</string>
 </resources>

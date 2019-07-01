@@ -1,6 +1,9 @@
 package com.anie.dara.trackmonbus_supir.model;
 
-public class Jadwal {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Jadwal implements Parcelable {
 
     String tgl, no_bus, km_awal, km_akhir, keterangan, trayek, nama, no_tnkb, kapasitas;
     String nama_halte;
@@ -84,4 +87,52 @@ public class Jadwal {
     public void setNama(String nama) {
         this.nama = nama;
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.tgl);
+        dest.writeString(this.no_bus);
+        dest.writeString(this.km_awal);
+        dest.writeString(this.km_akhir);
+        dest.writeString(this.keterangan);
+        dest.writeString(this.trayek);
+        dest.writeString(this.nama);
+        dest.writeString(this.no_tnkb);
+        dest.writeString(this.kapasitas);
+        dest.writeString(this.nama_halte);
+    }
+
+    public Jadwal() {
+    }
+
+    protected Jadwal(Parcel in) {
+        this.tgl = in.readString();
+        this.no_bus = in.readString();
+        this.km_awal = in.readString();
+        this.km_akhir = in.readString();
+        this.keterangan = in.readString();
+        this.trayek = in.readString();
+        this.nama = in.readString();
+        this.no_tnkb = in.readString();
+        this.kapasitas = in.readString();
+        this.nama_halte = in.readString();
+    }
+
+    public static final Parcelable.Creator<Jadwal> CREATOR = new Parcelable.Creator<Jadwal>() {
+        @Override
+        public Jadwal createFromParcel(Parcel source) {
+            return new Jadwal(source);
+        }
+
+        @Override
+        public Jadwal[] newArray(int size) {
+            return new Jadwal[size];
+        }
+    };
 }
