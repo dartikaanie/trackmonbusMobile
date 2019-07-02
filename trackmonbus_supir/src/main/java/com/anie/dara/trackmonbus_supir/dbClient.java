@@ -13,6 +13,7 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public interface dbClient {
@@ -30,11 +31,11 @@ public interface dbClient {
     Call<List<Halte>> getAllHalte();
 
     @FormUrlEncoded
-    @PATCH("api/updateKmAwal")
+    @PUT("api/updateKmAwal")
     Call<ResponseBody> updateKmAwal(
             @Field("no_bus") String no_bus,
             @Field("tgl") String tgl,
-            @Field("km") Double awal
+            @Field("km_awal") Double km_awal
     );
 
 }

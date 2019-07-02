@@ -38,8 +38,12 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -52,11 +56,12 @@ import static android.text.TextUtils.substring;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallback, ValueEventListener {
+public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallback, View.OnClickListener {
 
 
     Jadwal jadwal;
     TextView NoBus, no_tnkb, kapasitas, namaHalte, namaSupir, namaTrayek, hari_tgl;
+    Button btnCheck, btnDetail, btnUbah;
     View mView;
     GoogleMap map;
     MapView mMapView;
@@ -87,7 +92,15 @@ public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallbac
         hari_tgl = mView.findViewById(R.id.hari_tgl);
         namaTrayek = mView.findViewById(R.id.namaTrayek2);
 
+        btnCheck = mView.findViewById(R.id.btnCheckpoint);
+        btnCheck.setOnClickListener(this);
+        btnDetail = mView.findViewById(R.id.btnDetail);
+        btnDetail.setOnClickListener(this);
+        btnUbah = mView.findViewById(R.id.btnUbah);
+        btnUbah.setOnClickListener(this);
+
         etKmAwal = mView.findViewById(R.id.etKmAwal);
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("2019-05-27");
 
         return mView;
     }
@@ -170,7 +183,38 @@ public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallbac
         MapsInitializer.initialize(getContext());
         map = googleMap;
         getAllHalte();
-        mDatabase.addListenerForSingleValueEvent(this);
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                LatLng posisi = null;
+                BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.trans);
+
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+
+                    String lat = child.child("lat").getValue().toString();
+                    String lng = child.child("lng").getValue().toString();
+                    String nomorBus = child.getKey().toString();
+                    Log.e("datasnapsot", lat);
+
+                    double location_lat = Double.parseDouble(lat);
+                    double location_lng = Double.parseDouble(lng);
+                    posisi = new LatLng(location_lat, location_lng);
+
+                    marker = map.addMarker(new MarkerOptions()
+                            .position(posisi)
+                            .title(nomorBus)
+                            .icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 60,120))));
+                    hashMapMarker.put(nomorBus,marker);
+                }
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(posisi.latitude,posisi.longitude), 16.0f));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("error", databaseError.toString());
+
+            }
+        });
 
     }
 
@@ -230,32 +274,32 @@ public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallbac
         return Icon;
     }
 
-    @Override
-    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-        LatLng posisi = null;
-        BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.trans);
+    public void moveFragment(Fragment fragment){
+        fragment = new MonitorPosisiFragment();
+        getFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fl_container, fragment)
+                .commit();
+    }
 
-        for (DataSnapshot child : dataSnapshot.getChildren()) {
-            if(no_bus == child.getKey().toString()){
+    public void checkpoint(String no_bus, String tgl){
 
-                String lat = child.child("lat").getValue().toString();
-                String lng = child.child("lng").getValue().toString();
-                double location_lat = Double.parseDouble(lat);
-                double location_lng = Double.parseDouble(lng);
-                posisi = new LatLng(location_lat, location_lng);
 
-                marker = map.addMarker(new MarkerOptions()
-                        .position(posisi)
-                        .title(no_bus)
-                        .icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 60,120))));
-                hashMapMarker.put(no_bus,marker);
-            }
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(posisi.latitude,posisi.longitude), 16.0f));
-            }
+        Toast.makeText(getContext() , "Checkpoint", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onCancelled(@NonNull DatabaseError databaseError) {
-        Log.e("error", databaseError.toString());
+    public void onClick(View v) {
+        switch(v.getId()){
+            case R.id.btnCheckpoint:
+                checkpoint(no_bus, tgl);
+                break;
+            case R.id.btnUbah:
+               moveFragment(new DetailFragment());
+                break;
+            case R.id.btnDetail:
+                moveFragment(new UbahDataJadwalFragment());
+                break;
+        }
     }
 }
