@@ -14,6 +14,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anie.dara.trackmonbus.adapter.HalteAdapter;
@@ -44,6 +45,7 @@ public class HalteActivity extends AppCompatActivity  implements OnMapReadyCallb
     Trayek trayek;
     HashMap HalteMarkers = new HashMap<>();
     Marker marker;
+    TextView tvdaftarHalte;
 
 
     @Override
@@ -55,6 +57,7 @@ public class HalteActivity extends AppCompatActivity  implements OnMapReadyCallb
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        tvdaftarHalte = findViewById(R.id.daftarHalte);
         rvListHalte = findViewById(R.id.rvListHalte);
         halteAdapter = new HalteAdapter();
         halteAdapter.setClickHandler(this);
@@ -78,6 +81,8 @@ public class HalteActivity extends AppCompatActivity  implements OnMapReadyCallb
             trayek = HalteIntent.getParcelableExtra("trayek");
         }
 
+
+
     }
 
     private void getAllHalte(String trayek_id) {
@@ -98,6 +103,7 @@ public class HalteActivity extends AppCompatActivity  implements OnMapReadyCallb
                     List<Halte> listHalteItem = response.body();
                     Log.e("trayek_list", String.valueOf(response.body()));
                     if(listHalteItem == null){
+                        tvdaftarHalte.setText("Belum Ada halte pada trayek ini");
                         Toast.makeText(HalteActivity.this , "Maaf, Tidak ada data", Toast.LENGTH_SHORT).show();
                     }
                     else{
@@ -131,14 +137,19 @@ public class HalteActivity extends AppCompatActivity  implements OnMapReadyCallb
     }
 
     private void initMarker(List<Halte> listData){
-        for (int i=0; i<listData.size(); i++){
-            LatLng location = new LatLng(Double.parseDouble(listData.get(i).getLat()), Double.parseDouble(listData.get(i).getLng()));
+        if(listData.size() > 0 ){
+            for (int i=0; i<listData.size(); i++){
+                LatLng location = new LatLng(Double.parseDouble(listData.get(i).getLat()), Double.parseDouble(listData.get(i).getLng()));
 
-            marker =  map.addMarker(new MarkerOptions().position(location).title(listData.get(i).getNama()));
-            HalteMarkers.put(listData.get(i).getHalte_id(),marker);
+                marker =  map.addMarker(new MarkerOptions().position(location).title(listData.get(i).getNama()));
+                HalteMarkers.put(listData.get(i).getHalte_id(),marker);
+            }
+            LatLng latLng = new LatLng(Double.parseDouble(listData.get(0).getLat()), Double.parseDouble(listData.get(0).getLng()));
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude,latLng.longitude), 14.0f));
+        }else{
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-0.924654, 100.361908), 15.0f));
         }
-        LatLng latLng = new LatLng(Double.parseDouble(listData.get(0).getLat()), Double.parseDouble(listData.get(0).getLng()));
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude,latLng.longitude), 14.0f));
+
     }
 
     @Override

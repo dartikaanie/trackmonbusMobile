@@ -86,7 +86,14 @@ public class pesanAdapter extends RecyclerView.Adapter<pesanAdapter.PesanHolder>
         }
     }
 
-    public interface OnItemClicked{
+    class PesanHolder2 extends RecyclerView.ViewHolder {
+        public PesanHolder2(View itemView) {
+            super(itemView);
+        }
+    }
+
+
+        public interface OnItemClicked{
         void ItemClicked(Pesan pesan);
 
     }

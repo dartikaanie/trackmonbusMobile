@@ -32,6 +32,9 @@ public interface dbClient {
     @GET("api/perihals")
     Call<List<Perihal>> getAllPerihals();
 
+    @GET("api/MyPesan/{user_id}")
+    Call<List<Pesan>> getMyPesan(@Path("user_id") String user_id);
+
     @GET("api/viewKomentar/{keluhan_id}")
     Call<List<Komentar>> getPesanKomentar(@Path("keluhan_id") String keluhan_id);
 
@@ -43,6 +46,15 @@ public interface dbClient {
             @Field("isi_keluhan") String isi_keluhan,
             @Field("no_bus") String no_bus,
             @Field("created_at") String created_at
+    );
+
+
+    @FormUrlEncoded
+    @POST("api/TambahKomentar")
+    Call<Komentar> AddKomentarPesan(
+            @Field("keluhan_id") String keluhan_id,
+            @Field("user_id") String user_id,
+            @Field("isi_komentar") String isi_komentar
     );
 
     @GET("api/viewBuses")

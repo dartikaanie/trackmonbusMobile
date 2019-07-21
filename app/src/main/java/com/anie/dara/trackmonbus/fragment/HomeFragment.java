@@ -27,6 +27,7 @@ import com.anie.dara.trackmonbus.DetailPesanActivity;
 import com.anie.dara.trackmonbus.HalteActivity;
 import com.anie.dara.trackmonbus.LokasiActivity;
 import com.anie.dara.trackmonbus.MainActivity;
+import com.anie.dara.trackmonbus.MypesanActivity;
 import com.anie.dara.trackmonbus.PesanActivity;
 import com.anie.dara.trackmonbus.R;
 import com.anie.dara.trackmonbus.RegistrasiActivity;
@@ -176,7 +177,7 @@ public class HomeFragment extends Fragment implements pesanAdapter.OnItemClicked
                 break;
 
             case R.id.BtnPesan:
-                startActivity(new Intent(getActivity(), PesanActivity.class));
+                startActivity(new Intent(getActivity(), MypesanActivity.class));
                 break;
 
             case R.id.BtnLokasi:

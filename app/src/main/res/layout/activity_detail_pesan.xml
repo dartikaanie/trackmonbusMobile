@@ -194,7 +194,7 @@
                             android:textSize="18sp" />
 
                         <EditText
-                            android:id="@+id/editText"
+                            android:id="@+id/etIsiKomentar"
                             android:layout_width="match_parent"
                             android:layout_height="57dp"
                             android:layout_weight="1"

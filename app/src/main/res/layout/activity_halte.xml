@@ -14,7 +14,7 @@
         android:layout_height="420dp" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/daftarHalte"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"

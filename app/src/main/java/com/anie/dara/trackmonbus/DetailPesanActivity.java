@@ -17,6 +17,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,14 +29,17 @@ import com.anie.dara.trackmonbus.model.Pesan;
 import com.anie.dara.trackmonbus.rest.ApiClient;
 import com.bumptech.glide.Glide;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class DetailPesanActivity extends AppCompatActivity {
+public class DetailPesanActivity extends AppCompatActivity implements View.OnClickListener {
 
     TextView user,tgl, perihal,isi, jumKomentar, userKomentar;
     Pesan pesan;
@@ -43,6 +48,9 @@ public class DetailPesanActivity extends AppCompatActivity {
     KomentarAdapter komentarAdapter;
     dbClient client;
     SwipeRefreshLayout swLayout;
+    Button btnAddKomentar;
+    EditText etIsiKomentar;
+    String isi_komentar, user_id, keluhan_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,9 +71,13 @@ public class DetailPesanActivity extends AppCompatActivity {
         jumKomentar = findViewById(R.id.komentar);
         userKomentar = findViewById(R.id.user_komentar);
         swLayout = (SwipeRefreshLayout) findViewById(R.id.swlayout);
+        btnAddKomentar = findViewById(R.id.btn_add_komenar);
+        btnAddKomentar.setOnClickListener(this);
+        etIsiKomentar = findViewById(R.id.etIsiKomentar);
 
         SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
         String username = sharedPreferences.getString("name", DEFAULT);
+       user_id = sharedPreferences.getString("user_id", DEFAULT);
         userKomentar.setText(username);
 
         Intent detailIntent = getIntent();
@@ -80,6 +92,7 @@ public class DetailPesanActivity extends AppCompatActivity {
                 perihal.setText(pesan.getPerihal());
                 isi.setText(pesan.getIsi_keluhan());
                 jumKomentar.setText(String.valueOf(pesan.getJumlah_komentar()));
+                keluhan_id = pesan.getKeluhan_id();
             }else{
                 Toast.makeText(this, "no Data", Toast.LENGTH_SHORT).show();
             }
@@ -129,6 +142,7 @@ public class DetailPesanActivity extends AppCompatActivity {
                 public void onResponse(Call<List<Komentar>> call,  Response<List<Komentar>> response) {
 
                     List<Komentar> listItem = response.body();
+                    jumKomentar.setText(String.valueOf(listItem.size()));
                     if(listItem == null){
                         Toast.makeText(DetailPesanActivity.this , "Maaf, Tidak ada data", Toast.LENGTH_SHORT).show();
                     }
@@ -172,5 +186,49 @@ public class DetailPesanActivity extends AppCompatActivity {
                 activeNetwork.isConnectedOrConnecting();
 
         return konek;
+    }
+
+    private boolean validateForm(String isiKomentar) {
+        if(isiKomentar == null || isiKomentar.trim().length() == 0  ){
+            Toast.makeText(this, "Isi Komentar harus diisi", Toast.LENGTH_SHORT).show();
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+
+    private void addKomentarPesan(String isi_komentar) {
+        final ProgressDialog dialog123 = new ProgressDialog(this);
+        dialog123.setMessage("Menyimpan Data Komentar. . .");
+        dialog123.show();
+        Call<Komentar>  call = client.AddKomentarPesan(keluhan_id, user_id, isi_komentar);
+        call.enqueue(new Callback<Komentar>() {
+            @Override
+            public void onResponse(Call<Komentar> call, Response<Komentar> response) {
+                Komentar komentar = response.body();
+                Toast.makeText(DetailPesanActivity.this,"Data disimpan", Toast.LENGTH_SHORT).show();
+                dialog123.dismiss();
+                getPesanKomentar();
+            }
+            @Override
+            public void onFailure(Call<Komentar> call, Throwable t) {
+                dialog123.dismiss();
+                Toast.makeText(DetailPesanActivity.this,"Error. Ulangi lagi" + t.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.btn_add_komenar:
+                String isi_komentar = etIsiKomentar.getText().toString();
+                if(validateForm(isi_komentar)){
+                    addKomentarPesan(isi_komentar);
+                }
+                etIsiKomentar.getText().clear();
+                break;
+        }
     }
 }

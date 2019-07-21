@@ -45,7 +45,8 @@
         <activity android:name=".DetailPesanActivity" />
         <activity android:name=".LokasiActivity" />
         <activity android:name=".TrayekActivity" />
-        <activity android:name=".PesanFormActivity"></activity>
+        <activity android:name=".PesanFormActivity" />
+        <activity android:name=".MypesanActivity"></activity>
     </application>
 
 </manifest>
