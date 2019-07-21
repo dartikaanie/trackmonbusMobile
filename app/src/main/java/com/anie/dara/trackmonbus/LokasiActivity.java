@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
@@ -29,7 +28,6 @@ import android.widget.Toast;
 
 import com.anie.dara.trackmonbus.model.Halte;
 import com.anie.dara.trackmonbus.rest.ApiClient;
-import com.bumptech.glide.load.engine.Resource;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -46,7 +44,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -107,11 +104,6 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
 //                int height = 60;
 //                int width = 120;
                 BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.trans);
-
-//                Bitmap b=bitmapdraw.getBitmap();
-//                Bitmap BusMarker = Bitmap.createScaledBitmap(b, width, height, false);
-
-
                     String lat = dataSnapshot.child("lat").getValue().toString();
                     String lng = dataSnapshot.child("lng").getValue().toString();
                     String nomorBus = dataSnapshot.getKey().toString();

@@ -61,7 +61,7 @@ public class BusAdapter extends  RecyclerView.Adapter<BusAdapter.BusHolder> {
         public BusHolder(@NonNull View itemView){
             super(itemView);
             noBus = itemView.findViewById(R.id.noBus);
-            no_tnkb = itemView.findViewById(R.id.nama_halte);
+            no_tnkb = itemView.findViewById(R.id.nama_trayek);
             kapasitas = itemView.findViewById(R.id.kapasitas);
         }
     }

@@ -1,14 +1,24 @@
 package com.anie.dara.trackmonbus.model;
 
 public class Halte {
+    String halte_id;
     String nama;
     String lat;
     String lng;
 
-    public Halte(String nama, String lat, String lng) {
+    public Halte(String nama, String lat, String lng,  String halte_id) {
         this.nama = nama;
         this.lat = lat;
         this.lng = lng;
+        this.halte_id = halte_id;
+    }
+
+    public String getHalte_id() {
+        return halte_id;
+    }
+
+    public void setHalte_id(String halte_id) {
+        this.halte_id = halte_id;
     }
 
     public String getNama() {

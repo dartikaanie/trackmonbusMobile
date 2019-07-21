@@ -52,7 +52,7 @@ public class HomeFragment extends Fragment implements pesanAdapter.OnItemClicked
     static pesanAdapter pesanAdapter;
     static ProgressBar waiting;
     static TextView load;
-    static Button BtnlihatAll, BtnBus, BtnHalte, BtnLokasi;
+    static Button BtnlihatAll, BtnBus, BtnPesan, BtnLokasi;
     static ImageView noData;
     static int status_data;
     static Pesan dataPesan;
@@ -77,8 +77,8 @@ public class HomeFragment extends Fragment implements pesanAdapter.OnItemClicked
         BtnBus.setOnClickListener(this);
 
         //btn halte
-        BtnHalte = view.findViewById(R.id.BtnHalte);
-        BtnHalte.setOnClickListener(this);
+        BtnPesan = view.findViewById(R.id.BtnPesan);
+        BtnPesan.setOnClickListener(this);
 
         //button Pesan
         BtnlihatAll = view.findViewById(R.id.BtnlihatAll);
@@ -163,7 +163,7 @@ public class HomeFragment extends Fragment implements pesanAdapter.OnItemClicked
     public void ItemClicked(Pesan pesan) {
         Toast.makeText(activity, "Item yang diklik adalah : " + pesan.getKeluhan_id(), Toast.LENGTH_SHORT).show();
         Intent detailIntent = new Intent(activity, DetailPesanActivity.class);
-        detailIntent.putExtra("key_foto_parcelable", pesan);
+        detailIntent.putExtra("key_pesan_parcelable", pesan);
         startActivity(detailIntent);
     }
 
@@ -175,8 +175,8 @@ public class HomeFragment extends Fragment implements pesanAdapter.OnItemClicked
                 startActivity(new Intent(getActivity(), BusActivity.class));
                 break;
 
-            case R.id.BtnHalte:
-                startActivity(new Intent(getActivity(), HalteActivity.class));
+            case R.id.BtnPesan:
+                startActivity(new Intent(getActivity(), PesanActivity.class));
                 break;
 
             case R.id.BtnLokasi:

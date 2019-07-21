@@ -7,20 +7,19 @@ import java.util.Date;
 
 public class Pesan implements Parcelable {
 
-    int keluhan_id;
-    int user_id;
-    int perihal_id;
+    String keluhan_id;
+    String user_id;
+    String perihal_id;
     String isi_keluhan;
     String created_at;
     String perihal;
     String name;
-
+    Integer jumlah_komentar;
 
     public Pesan() {
-
     }
 
-    public Pesan(int keluhan_id, int user_id, int perihal_id, String isi_keluhan, String created_at, String perihal, String name) {
+    public Pesan(String keluhan_id, String user_id, String perihal_id, String isi_keluhan, String created_at, String perihal, String name, Integer jumlah_komentar) {
         this.keluhan_id = keluhan_id;
         this.user_id = user_id;
         this.perihal_id = perihal_id;
@@ -28,37 +27,30 @@ public class Pesan implements Parcelable {
         this.created_at = created_at;
         this.perihal = perihal;
         this.name = name;
+        this.jumlah_komentar = jumlah_komentar;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getKeluhan_id() {
+    public String getKeluhan_id() {
         return keluhan_id;
     }
 
-    public void setKeluhan_id(int keluhan_id) {
+    public void setKeluhan_id(String keluhan_id) {
         this.keluhan_id = keluhan_id;
     }
 
-    public int getUser_id() {
+    public String getUser_id() {
         return user_id;
     }
 
-    public void setUser_id(int user_id) {
+    public void setUser_id(String user_id) {
         this.user_id = user_id;
     }
 
-    public int getPerihal_id() {
+    public String getPerihal_id() {
         return perihal_id;
     }
 
-    public void setPerihal_id(int perihal_id) {
+    public void setPerihal_id(String perihal_id) {
         this.perihal_id = perihal_id;
     }
 
@@ -86,6 +78,22 @@ public class Pesan implements Parcelable {
         this.perihal = perihal;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Integer getJumlah_komentar() {
+        return jumlah_komentar;
+    }
+
+    public void setJumlah_komentar(Integer jumlah_komentar) {
+        this.jumlah_komentar = jumlah_komentar;
+    }
+
 
     @Override
     public int describeContents() {
@@ -94,26 +102,28 @@ public class Pesan implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.keluhan_id);
-        dest.writeInt(this.user_id);
-        dest.writeInt(this.perihal_id);
+        dest.writeString(this.user_id);
+        dest.writeString(this.perihal_id);
         dest.writeString(this.isi_keluhan);
         dest.writeString(this.created_at);
+        dest.writeString(this.keluhan_id);
         dest.writeString(this.perihal);
         dest.writeString(this.name);
+        dest.writeValue(this.jumlah_komentar);
     }
 
     protected Pesan(Parcel in) {
-        this.keluhan_id = in.readInt();
-        this.user_id = in.readInt();
-        this.perihal_id = in.readInt();
+        this.user_id = in.readString();
+        this.perihal_id = in.readString();
         this.isi_keluhan = in.readString();
         this.created_at = in.readString();
+        this.keluhan_id = in.readString();
         this.perihal = in.readString();
         this.name = in.readString();
+        this.jumlah_komentar = (Integer) in.readValue(Integer.class.getClassLoader());
     }
 
-    public static final Parcelable.Creator<Pesan> CREATOR = new Parcelable.Creator<Pesan>() {
+    public static final Creator<Pesan> CREATOR = new Creator<Pesan>() {
         @Override
         public Pesan createFromParcel(Parcel source) {
             return new Pesan(source);

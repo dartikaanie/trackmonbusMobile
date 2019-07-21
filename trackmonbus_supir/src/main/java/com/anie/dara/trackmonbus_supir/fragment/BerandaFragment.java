@@ -64,6 +64,7 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
     Button btnCheckin;
     static Activity activity;
     Jadwal jadwal;
+    Double km_awal = null;
     private dbClient client = ApiClient.getClient().create(dbClient.class);
 
 
@@ -115,6 +116,8 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
                     kapasitas.setText(jadwal.getKapasitas());
                     namaHalte.setText(jadwal.getNama());
                     namaTrayek.setText(jadwal.getTrayek());
+                    km_awal = Double.valueOf(jadwal.getKm_awal());
+                    Log.e("jadwal", String.valueOf(km_awal));
                     cvTidakJadwal.setVisibility(View.INVISIBLE);
                     Toast.makeText(getContext(),"Ada jadwal", Toast.LENGTH_SHORT).show();
             }
@@ -292,13 +295,17 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
 
                 Bundle bundle = new Bundle();
                 bundle.putParcelable("jadwal",jadwal); // Put anything what you want
-
-                Fragment CheckInfragment = new CheckInAwalFragment();
-                CheckInfragment.setArguments(bundle);
+                Fragment moveFragment;
+                if(km_awal != null){
+                    moveFragment = new MonitorPosisiFragment();
+                }else{
+                    moveFragment  = new CheckInAwalFragment();
+                }
+                moveFragment.setArguments(bundle);
 
                 getFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.fl_container, CheckInfragment)
+                        .replace(R.id.fl_container, moveFragment)
                         .commit();
 
                 Toast.makeText(getContext() , "Checkin", Toast.LENGTH_SHORT).show();

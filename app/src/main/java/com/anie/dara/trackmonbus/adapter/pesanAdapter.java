@@ -50,6 +50,7 @@ public class pesanAdapter extends RecyclerView.Adapter<pesanAdapter.PesanHolder>
             }
             holder.tgl.setText(String.valueOf(pesan.getCreated_at()));
             holder.user.setText(String.valueOf(pesan.getName()));
+            holder.komentar.setText(String.valueOf(pesan.getJumlah_komentar()));
         }
 
 
@@ -65,7 +66,7 @@ public class pesanAdapter extends RecyclerView.Adapter<pesanAdapter.PesanHolder>
 
     // Inner CLASS
     public class PesanHolder extends RecyclerView.ViewHolder{
-        TextView perihal, isi_pesan, tgl, user;
+        TextView perihal, isi_pesan, tgl, user, komentar;
 
         public PesanHolder(@NonNull View itemView){
             super(itemView);
@@ -73,6 +74,7 @@ public class pesanAdapter extends RecyclerView.Adapter<pesanAdapter.PesanHolder>
             isi_pesan = itemView.findViewById(R.id.isi_pesan);
             tgl = itemView.findViewById(R.id.tgl);
             user = itemView.findViewById(R.id.user);
+            komentar = itemView.findViewById(R.id.komentar);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

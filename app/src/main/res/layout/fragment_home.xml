@@ -82,7 +82,7 @@
                 android:orientation="vertical">
 
                 <Button
-                    android:id="@+id/BtnHalte"
+                    android:id="@+id/BtnPesan"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:layout_marginBottom="8dp"
@@ -90,12 +90,11 @@
                     android:src="@drawable/button_bg_rounded" />
 
 
-
                 <TextView
-                    android:id="@+id/TextView_halte"
+                    android:id="@+id/TextView_pesan"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Halte"
+                    android:text="Pesan"
                     android:textColor="#172646"
                     android:textSize="14sp" />
 

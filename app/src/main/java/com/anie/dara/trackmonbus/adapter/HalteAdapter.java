@@ -10,7 +10,6 @@ import android.widget.TextView;
 
 import com.anie.dara.trackmonbus.R;
 import com.anie.dara.trackmonbus.model.Halte;
-import com.anie.dara.trackmonbus.model.Pesan;
 
 import java.util.ArrayList;
 
@@ -61,7 +60,7 @@ public class HalteAdapter extends  RecyclerView.Adapter<HalteAdapter.HalteHolder
 
         public HalteHolder(@NonNull View itemView){
             super(itemView);
-            namaHalte = itemView.findViewById(R.id.nama_halte);
+            namaHalte = itemView.findViewById(R.id.nama_trayek);
             lat_lng = itemView.findViewById(R.id.lat_lng);
 
             itemView.setOnClickListener(new View.OnClickListener() {

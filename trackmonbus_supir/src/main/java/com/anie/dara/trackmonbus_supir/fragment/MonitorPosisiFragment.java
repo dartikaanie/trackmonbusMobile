@@ -109,8 +109,8 @@ public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallbac
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Bundle bundle = this.getArguments();
-
         jadwal =  bundle.getParcelable("jadwal");
+
         if(bundle != null){
             NoBus.setText(jadwal.getNo_bus());
             no_tnkb.setText(jadwal.getNo_tnkb());
@@ -275,7 +275,9 @@ public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallbac
     }
 
     public void moveFragment(Fragment fragment){
-        fragment = new MonitorPosisiFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("jadwal", this.jadwal);
+        fragment.setArguments(bundle);
         getFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fl_container, fragment)
@@ -294,10 +296,11 @@ public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallbac
             case R.id.btnCheckpoint:
                 checkpoint(no_bus, tgl);
                 break;
-            case R.id.btnUbah:
+            case R.id.btnDetail:
+
                moveFragment(new DetailFragment());
                 break;
-            case R.id.btnDetail:
+            case R.id.btnUbah:
                 moveFragment(new UbahDataJadwalFragment());
                 break;
         }

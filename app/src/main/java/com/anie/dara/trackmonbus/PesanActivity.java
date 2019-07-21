@@ -3,18 +3,25 @@ package com.anie.dara.trackmonbus;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,8 +36,6 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class PesanActivity extends AppCompatActivity implements com.anie.dara.trackmonbus.adapter.pesanAdapter.OnItemClicked {
 
@@ -43,6 +48,9 @@ public class PesanActivity extends AppCompatActivity implements com.anie.dara.tr
     static Pesan dataPesan = new Pesan();
     ArrayList<Pesan> pesanList;
     static Activity activity;
+    SwipeRefreshLayout swLayout;
+    LinearLayout llayout;
+
 
 
     @Override
@@ -53,10 +61,10 @@ public class PesanActivity extends AppCompatActivity implements com.anie.dara.tr
         Toolbar ToolBarAtas = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(ToolBarAtas);
         getSupportActionBar().setTitle("TRANS PADANG");
-//        ToolBarAtas.setSubtitle("https://badoystudio.com");
-//        ToolBarAtas.setLogo(R.drawable.trans);
+
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -64,10 +72,14 @@ public class PesanActivity extends AppCompatActivity implements com.anie.dara.tr
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+
+                startActivity(new Intent(PesanActivity.this, PesanFormActivity.class));
             }
         });
 
-        waiting= findViewById(R.id.loadDataBus);
+
+
+        waiting= findViewById(R.id.loadDataTrayek);
         load = findViewById(R.id.memuat_data);
 
         pesanAdapter = new pesanAdapter();
@@ -81,14 +93,35 @@ public class PesanActivity extends AppCompatActivity implements com.anie.dara.tr
         waiting.setVisibility(View.VISIBLE);
         load.setVisibility(View.VISIBLE);
 
-        int orientasi = getResources().getConfiguration().orientation;
-        if(orientasi == Configuration.ORIENTATION_PORTRAIT){
-            layoutManager = new LinearLayoutManager(this);
-        }else{
-            layoutManager = new GridLayoutManager(this,2);
-        }
+        layoutManager = new LinearLayoutManager(this);
+
         rvDaftarPesan.setLayoutManager(layoutManager);
         rvDaftarPesan.setHasFixedSize(true);
+
+
+        swLayout = (SwipeRefreshLayout) findViewById(R.id.swlayout);
+        llayout = (LinearLayout) findViewById(R.id.ll_swiperefresh);
+
+        swLayout.setColorSchemeResources(R.color.colorAccent,R.color.colorPrimary);
+
+        swLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                // Handler untuk menjalankan jeda selama 5 detik
+                new Handler().postDelayed(new Runnable() {
+                    @Override public void run() {
+
+                        // Berhenti berputar/refreshing
+                        swLayout.setRefreshing(false);
+
+                        // fungsi-fungsi lain yang dijalankan saat refresh berhenti
+                        getAllPesan();
+                    }
+                }, 5000);
+            }
+        });
+
 
         getAllPesan();
 
@@ -135,10 +168,15 @@ public class PesanActivity extends AppCompatActivity implements com.anie.dara.tr
         }
     }
 
+
     @Override
     public void ItemClicked(Pesan pesan) {
-
+        Toast.makeText(PesanActivity.this, "Item yang diklik adalah : " + pesan.getKeluhan_id(), Toast.LENGTH_SHORT).show();
+        Intent detailIntent = new Intent(PesanActivity.this, DetailPesanActivity.class);
+        detailIntent.putExtra("key_pesan_parcelable", pesan);
+        startActivity(detailIntent);
     }
+
 
     public Boolean konekkah(){
         ConnectivityManager cm =
