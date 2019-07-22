@@ -1,7 +1,9 @@
 package com.anie.dara.trackmonbus_supir.fragment;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -102,6 +104,10 @@ public class CheckInAwalFragment extends Fragment implements View.OnClickListene
         if (TextUtils.isEmpty(etKmAwal.getText().toString())) {
             etKmAwal.setError(getResources().getString(R.string.msg_cannot_allow_empty_field));
         } else {
+            final ProgressDialog prog= new ProgressDialog(getActivity());//Assuming that you are using fragments.
+            prog.setMessage("Menyimpan Data");
+            prog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            prog.show();
             if (((MainActivity) activity).konekkah()) {
                 Double km = Double.valueOf(etKmAwal.getText().toString());
                 Log.e("km", km.toString());
@@ -112,12 +118,19 @@ public class CheckInAwalFragment extends Fragment implements View.OnClickListene
                         ResponseBody s = response.body();
                         Toast.makeText(activity, "berhasil disimpan", Toast.LENGTH_LONG).show();
 
+                        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("status_track", "aktif");
+                        editor.commit();
+
+
                         Bundle bundle = new Bundle();
                         bundle.putParcelable("jadwal",jadwal); // Put anything what you want
 
                         Fragment monitorPosisiFragment = new MonitorPosisiFragment();
                         monitorPosisiFragment.setArguments(bundle);
 
+                        prog.dismiss();
                         getFragmentManager()
                                 .beginTransaction()
                                 .replace(R.id.fl_container, monitorPosisiFragment)
@@ -126,10 +139,12 @@ public class CheckInAwalFragment extends Fragment implements View.OnClickListene
 
                     @Override
                     public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        prog.dismiss();
                         Toast.makeText(activity, "gagal disimpan", Toast.LENGTH_LONG).show();
                     }
                 });
             }else{
+                prog.dismiss();
                 Toast.makeText(activity, "Koneksi internet anda tidak aktif", Toast.LENGTH_LONG).show();
             }
         }

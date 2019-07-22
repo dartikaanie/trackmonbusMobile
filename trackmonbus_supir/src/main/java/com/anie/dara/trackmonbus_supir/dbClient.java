@@ -2,7 +2,7 @@ package com.anie.dara.trackmonbus_supir;
 
 import com.anie.dara.trackmonbus_supir.model.Halte;
 import com.anie.dara.trackmonbus_supir.model.Jadwal;
-import com.anie.dara.trackmonbus_supir.model.Login;
+import com.anie.dara.trackmonbus_supir.model.User;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ import retrofit2.http.Path;
 public interface dbClient {
     @FormUrlEncoded
     @POST("api/login_supir")
-    Call<Login> Loginv2(
+    Call<User> Loginv2(
             @Field("email") String email,
             @Field("password") String password
     );

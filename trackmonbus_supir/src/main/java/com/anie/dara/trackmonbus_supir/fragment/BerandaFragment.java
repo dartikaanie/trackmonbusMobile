@@ -41,6 +41,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -96,8 +99,10 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
         cvTidakJadwal.setVisibility(View.INVISIBLE);
         cvChechkin = mView.findViewById(R.id.cardView);
         cvChechkin.setVisibility(View.INVISIBLE);
-
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("2019-05-27");
+        Date date = new Date();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String tgl_skrg = dateFormat.format(date);
+        mDatabase = FirebaseDatabase.getInstance().getReference().child(tgl_skrg);
 //        setHasOptionsMenu(true);
         return mView;
     }
@@ -157,7 +162,7 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 LatLng posisi = null;
-                BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.trans);
+                BitmapDrawable bitmapdraw= (BitmapDrawable) mView.getResources().getDrawable(R.drawable.trans);
 
                 String lat = dataSnapshot.child("lat").getValue().toString();
                 String lng = dataSnapshot.child("lng").getValue().toString();
@@ -174,6 +179,7 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
                         .title(nomorBus)
                         .icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 60,120))));
                 hashMapMarker.put(nomorBus,marker);
+
             }
 
             @Override
@@ -220,7 +226,7 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
                             .icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 60,120))));
                     hashMapMarker.put(nomorBus,marker);
                 }
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(posisi.latitude,posisi.longitude), 16.0f));
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-0.923931, 100.362664), 16.0f));
             }
 
             @Override

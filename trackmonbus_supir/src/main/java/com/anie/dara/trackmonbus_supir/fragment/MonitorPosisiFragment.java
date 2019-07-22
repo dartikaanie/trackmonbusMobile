@@ -1,14 +1,25 @@
 package com.anie.dara.trackmonbus_supir.fragment;
 
 
+import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,6 +35,7 @@ import com.anie.dara.trackmonbus_supir.R;
 import com.anie.dara.trackmonbus_supir.dbClient;
 import com.anie.dara.trackmonbus_supir.model.Halte;
 import com.anie.dara.trackmonbus_supir.model.Jadwal;
+import com.anie.dara.trackmonbus_supir.model.Posisi;
 import com.anie.dara.trackmonbus_supir.rest.ApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -69,9 +81,15 @@ public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallbac
     Marker marker;
     DatabaseReference mDatabase;
     EditText etKmAwal;
-    String no_bus, tgl;
+    String no_bus, tgl, tgl_skrg;
     private Activity activity;
     private dbClient client = ApiClient.getClient().create(dbClient.class);
+    LocationManager locationManager;
+    private static  final  int REQUEST_LOCATION =1;
+
+    private Handler handler = new Handler();
+    volatile boolean track;
+    public static  final String DEFAULT ="N/A";
 
     @Override
     public void onAttach(Context context) {
@@ -100,7 +118,12 @@ public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallbac
         btnUbah.setOnClickListener(this);
 
         etKmAwal = mView.findViewById(R.id.etKmAwal);
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("2019-05-27");
+
+
+        Date date = new Date();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String tgl_skrg = dateFormat.format(date);
+        mDatabase = FirebaseDatabase.getInstance().getReference().child(tgl_skrg);
 
         return mView;
     }
@@ -110,6 +133,7 @@ public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallbac
         super.onViewCreated(view, savedInstanceState);
         Bundle bundle = this.getArguments();
         jadwal =  bundle.getParcelable("jadwal");
+        dataMarker();
 
         if(bundle != null){
             NoBus.setText(jadwal.getNo_bus());
@@ -131,7 +155,19 @@ public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallbac
             mMapView.onResume();
             mMapView.getMapAsync(this);
         }
+
+        SharedPreferences sharedPreferences = activity.getSharedPreferences("MyData", Context.MODE_PRIVATE);
+        String status_track = sharedPreferences.getString("status_track", DEFAULT);
+        if(status_track.equals(DEFAULT)){
+            track = false;
+        }else{
+            track = true;
+        }
+        handler.postDelayed(runTrack, 5000);
+        Log.e("track", String.valueOf(track));
+
     }
+
 
     public void dataMarker(){
         mDatabase.addChildEventListener(new ChildEventListener() {
@@ -143,7 +179,7 @@ public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallbac
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 LatLng posisi = null;
-                BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.trans);
+                BitmapDrawable bitmapdraw= (BitmapDrawable) mView.getResources().getDrawable(R.drawable.trans);
 
                 String lat = dataSnapshot.child("lat").getValue().toString();
                 String lng = dataSnapshot.child("lng").getValue().toString();
@@ -160,6 +196,7 @@ public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallbac
                         .title(nomorBus)
                         .icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 60,120))));
                 hashMapMarker.put(nomorBus,marker);
+
             }
 
             @Override
@@ -194,7 +231,6 @@ public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallbac
                     String lat = child.child("lat").getValue().toString();
                     String lng = child.child("lng").getValue().toString();
                     String nomorBus = child.getKey().toString();
-                    Log.e("datasnapsot", lat);
 
                     double location_lat = Double.parseDouble(lat);
                     double location_lng = Double.parseDouble(lng);
@@ -206,7 +242,7 @@ public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallbac
                             .icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 60,120))));
                     hashMapMarker.put(nomorBus,marker);
                 }
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(posisi.latitude,posisi.longitude), 16.0f));
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-0.923931, 100.362664), 16.0f));
             }
 
             @Override
@@ -285,10 +321,75 @@ public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallbac
     }
 
     public void checkpoint(String no_bus, String tgl){
-
-
         Toast.makeText(getContext() , "Checkpoint", Toast.LENGTH_SHORT).show();
     }
+
+    private Runnable runTrack = new Runnable() {
+        @Override
+        public void run() {
+            if(track){
+                locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+                if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+                    buildAlertMessageNoGPS();
+                }
+                else
+                {
+                    getLocation();
+
+                }
+            }
+            handler.postDelayed(this, 5000);
+        }
+    };
+
+    protected void buildAlertMessageNoGPS(){
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage("Hidupkan GPS mu")
+                .setCancelable(false)
+                .setPositiveButton("YA", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
+                })
+                .setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+    }
+    public void getLocation(){
+        if((ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED )
+                &&
+                (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED)){
+            ActivityCompat.requestPermissions((Activity) getContext(), new String [] {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
+            Toast.makeText(getContext(),"Aktifkan GPS anda", Toast.LENGTH_SHORT).show();
+        }
+        else{
+//            try{
+                Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                if(location!=null){
+                    Double lat  = location.getLatitude();
+                    Double lng = location.getLongitude();
+                    Posisi posisi = new Posisi(lat,lng);
+                    mDatabase.child(no_bus).setValue(posisi);
+                    Toast.makeText(getContext(), "Update Posisi", Toast.LENGTH_LONG).show();
+                }
+                else{
+                    Toast.makeText(getContext(),"LOKASINYA TIDAK TAMPIL", Toast.LENGTH_SHORT).show();
+                }
+//            }catch (Exception ex){
+//                Log.e("error", ex.toString());
+//            }
+
+
+        }
+
+    }
+
 
     @Override
     public void onClick(View v) {
