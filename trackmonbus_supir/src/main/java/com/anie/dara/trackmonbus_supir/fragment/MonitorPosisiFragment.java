@@ -14,6 +14,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.location.LocationManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
@@ -73,7 +74,7 @@ public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallbac
 
     Jadwal jadwal;
     TextView NoBus, no_tnkb, kapasitas, namaHalte, namaSupir, namaTrayek, hari_tgl;
-    Button btnCheck, btnDetail, btnUbah;
+    Button btnCheck, btnDetail, btnUbah, btnSelesai;
     View mView;
     GoogleMap map;
     MapView mMapView;
@@ -85,11 +86,12 @@ public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallbac
     private Activity activity;
     private dbClient client = ApiClient.getClient().create(dbClient.class);
     LocationManager locationManager;
+    AlertDialog alertDialog;
     private static  final  int REQUEST_LOCATION =1;
 
     private Handler handler = new Handler();
-    volatile boolean track;
-    public static  final String DEFAULT ="N/A";
+    boolean running = true;
+
 
     @Override
     public void onAttach(Context context) {
@@ -116,6 +118,8 @@ public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallbac
         btnDetail.setOnClickListener(this);
         btnUbah = mView.findViewById(R.id.btnUbah);
         btnUbah.setOnClickListener(this);
+        btnSelesai = mView.findViewById(R.id.btn_selesai);
+        btnSelesai.setOnClickListener(this);
 
         etKmAwal = mView.findViewById(R.id.etKmAwal);
 
@@ -156,15 +160,8 @@ public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallbac
             mMapView.getMapAsync(this);
         }
 
-        SharedPreferences sharedPreferences = activity.getSharedPreferences("MyData", Context.MODE_PRIVATE);
-        String status_track = sharedPreferences.getString("status_track", DEFAULT);
-        if(status_track.equals(DEFAULT)){
-            track = false;
-        }else{
-            track = true;
-        }
         handler.postDelayed(runTrack, 5000);
-        Log.e("track", String.valueOf(track));
+
 
     }
 
@@ -327,7 +324,7 @@ public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallbac
     private Runnable runTrack = new Runnable() {
         @Override
         public void run() {
-            if(track){
+            if(running){
                 locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
                 if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
                     buildAlertMessageNoGPS();
@@ -335,12 +332,76 @@ public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallbac
                 else
                 {
                     getLocation();
-
                 }
+
+                handler.postDelayed(this, 10000);
             }
-            handler.postDelayed(this, 5000);
         }
     };
+
+    public void cekJarak(final Location lokasiBus, final String no_bus){
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                    if(child.getKey().equals(no_bus)) {
+                    //no action
+                        Log.e("no_bus", String.valueOf(child.getKey().equals(no_bus)));
+                    }else{
+
+                        double location_lat = Double.parseDouble(child.child("lat").getValue().toString());
+                        double location_lng = Double.parseDouble(child.child("lng").getValue().toString());
+
+                        Location lokasi2 = new Location("posisi 2");
+                        lokasi2.setLatitude(location_lat);
+                        lokasi2.setLongitude(location_lng);
+
+                        double distanceMeters = lokasiBus.distanceTo(lokasi2);
+                        double distanceKm = distanceMeters / 1000f;
+                        Log.e("jarak", String.valueOf(distanceKm));
+
+                        if(distanceKm < 0.5){
+                            showDialog();
+                            Toast.makeText(getContext(),"jaraknya terlalu dekat " + String.format("%.2f Km", distanceKm), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                }
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lokasiBus.getLatitude(), lokasiBus.getLongitude()), 16.0f));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("error", databaseError.toString());
+
+            }
+        });
+    }
+
+    private void showDialog(){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
+        final MediaPlayer mediaPlayer = MediaPlayer.create(getContext(),R.raw.alert_tone);
+        mediaPlayer.start();
+
+        // set pesan dari dialog
+        alertDialogBuilder
+                .setMessage("Jarak Anda terlalu dekat")
+                .setIcon(R.mipmap.ic_launcher)
+                .setCancelable(false)
+                .setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        mediaPlayer.stop();
+                    }
+                });
+
+        // membuat alert dialog dari builder
+        alertDialog = alertDialogBuilder.create();
+
+        // menampilkan alert dialog
+        alertDialog.show();
+    }
+
 
     protected void buildAlertMessageNoGPS(){
         final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -376,7 +437,13 @@ public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallbac
                     Double lng = location.getLongitude();
                     Posisi posisi = new Posisi(lat,lng);
                     mDatabase.child(no_bus).setValue(posisi);
+                    Log.e("posisi_update", posisi.toString());
                     Toast.makeText(getContext(), "Update Posisi", Toast.LENGTH_LONG).show();
+                    if(alertDialog != null){
+                        alertDialog.dismiss();
+                    }
+                    cekJarak(location, no_bus);
+
                 }
                 else{
                     Toast.makeText(getContext(),"LOKASINYA TIDAK TAMPIL", Toast.LENGTH_SHORT).show();
@@ -403,6 +470,11 @@ public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallbac
                 break;
             case R.id.btnUbah:
                 moveFragment(new UbahDataJadwalFragment());
+                break;
+            case R.id.btn_selesai:
+                Toast.makeText(getContext(),"runTrack mati", Toast.LENGTH_SHORT).show();
+                running = false;
+                handler.removeCallbacks(runTrack);
                 break;
         }
     }

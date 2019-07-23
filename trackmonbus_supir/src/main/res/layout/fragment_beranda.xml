@@ -21,9 +21,37 @@
         app:layout_constraintVertical_bias="0.0" />
 
     <android.support.v7.widget.CardView
+        android:id="@+id/cvTidakJadwal"
+        android:layout_width="369dp"
+        android:layout_height="123dp"
+        android:layout_marginBottom="24dp"
+        android:layout_marginTop="100dp"
+        app:cardCornerRadius="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/map_supir"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center_horizontal|center"
+            android:fontFamily="sans-serif"
+            android:foregroundGravity="center_vertical|center_horizontal|center"
+            android:gravity="center_vertical|center_horizontal|center"
+            android:text="TIdak Ada Jadwal SHift/Hari ini"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="14sp" />
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
         android:id="@+id/cardView"
-        android:layout_width="358dp"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="122dp"
         android:layout_marginBottom="-10dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -31,10 +59,10 @@
         app:cardCornerRadius="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.6"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.96">
+        app:layout_constraintVertical_bias="0.943">
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/linearLayout"
@@ -44,6 +72,7 @@
 
             <TextView
                 android:id="@+id/namaHalte"
+                android:layout_width="wrap_content"
                 android:layout_height="30dp"
                 android:layout_gravity="bottom"
                 android:layout_marginBottom="8dp"
@@ -63,8 +92,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/view2"
-                app:layout_constraintTop_toTopOf="parent"
-                android:layout_width="wrap_content" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/namaTrayek2"
@@ -120,7 +148,7 @@
                 android:layout_width="79dp"
                 android:layout_height="135dp"
                 android:layout_marginEnd="24dp"
-                android:background="@android:color/holo_orange_light"
+                android:background="@color/cardview_shadow_start_color"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -251,33 +279,6 @@
 
         </android.support.constraint.ConstraintLayout>
 
-    </android.support.v7.widget.CardView>
-
-    <android.support.v7.widget.CardView
-        android:id="@+id/cvTidakJadwal"
-        android:layout_width="260dp"
-        android:layout_height="43dp"
-        android:layout_marginBottom="24dp"
-        android:layout_marginTop="100dp"
-        app:cardCornerRadius="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/map_supir"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0">
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|center_horizontal|center"
-            android:fontFamily="sans-serif"
-            android:foregroundGravity="center_vertical|center_horizontal|center"
-            android:gravity="center_vertical|center_horizontal|center"
-            android:text="TIdak Ada Jadwal SHift/Hari ini"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="14sp" />
     </android.support.v7.widget.CardView>
 
 
