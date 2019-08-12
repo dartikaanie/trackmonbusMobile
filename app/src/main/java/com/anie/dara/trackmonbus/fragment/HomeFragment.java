@@ -100,15 +100,7 @@ public class HomeFragment extends Fragment implements pesanAdapter.OnItemClicked
         load.setVisibility(View.VISIBLE);
         BtnlihatAll.setVisibility(View.INVISIBLE);
 
-        status_data=0;
-
-        int orientasi = getResources().getConfiguration().orientation;
-        if(orientasi == Configuration.ORIENTATION_PORTRAIT){
-            layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-        }else{
-            layoutManager = new GridLayoutManager(getContext(),2);
-
-        }
+        layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         rvDaftarPesan.setLayoutManager(layoutManager);
         rvDaftarPesan.setHasFixedSize(true);
 
