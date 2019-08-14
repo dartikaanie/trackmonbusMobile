@@ -6,15 +6,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anie.dara.trackmonbus.model.User;
 import com.anie.dara.trackmonbus.rest.ApiClient;
+import com.anie.dara.trackmonbus.rest.dbClient;
 
 import retrofit2.Call;
 import retrofit2.Callback;

@@ -16,13 +16,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.anie.dara.trackmonbus.adapter.BusAdapter;
 import com.anie.dara.trackmonbus.adapter.TrayekAdapter;
-import com.anie.dara.trackmonbus.model.Bus;
-import com.anie.dara.trackmonbus.model.Halte;
 import com.anie.dara.trackmonbus.model.Trayek;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.LatLng;
+import com.anie.dara.trackmonbus.rest.dbClient;
 
 import java.util.ArrayList;
 import java.util.List;

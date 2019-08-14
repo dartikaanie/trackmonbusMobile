@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -18,6 +17,7 @@ import android.widget.Toast;
 
 import com.anie.dara.trackmonbus.adapter.BusAdapter;
 import com.anie.dara.trackmonbus.model.Bus;
+import com.anie.dara.trackmonbus.rest.dbClient;
 
 import java.util.ArrayList;
 import java.util.List;

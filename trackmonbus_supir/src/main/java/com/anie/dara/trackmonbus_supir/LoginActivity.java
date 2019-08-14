@@ -4,8 +4,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.anie.dara.trackmonbus_supir.model.User;
 import com.anie.dara.trackmonbus_supir.rest.ApiClient;
+import com.anie.dara.trackmonbus_supir.rest.dbClient;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -69,12 +70,12 @@ public class LoginActivity extends AppCompatActivity {
 
                     SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("user_id", user.getId());
+                    editor.putString("user_id", user.getUser_id());
                     editor.putString("name", user.getName());
                     editor.commit();
 
                     Intent intent =  new Intent(LoginActivity.this, MainActivity.class);
-                    intent.putExtra("user_id", user.getId());
+                    intent.putExtra("user_id", user.getUser_id());
                     startActivity(intent);
                     dialog.dismiss();
                 }else{

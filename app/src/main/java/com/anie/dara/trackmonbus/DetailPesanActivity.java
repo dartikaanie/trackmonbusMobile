@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -23,16 +22,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anie.dara.trackmonbus.adapter.KomentarAdapter;
-import com.anie.dara.trackmonbus.adapter.pesanAdapter;
 import com.anie.dara.trackmonbus.model.Komentar;
 import com.anie.dara.trackmonbus.model.Pesan;
 import com.anie.dara.trackmonbus.rest.ApiClient;
-import com.bumptech.glide.Glide;
+import com.anie.dara.trackmonbus.rest.dbClient;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;

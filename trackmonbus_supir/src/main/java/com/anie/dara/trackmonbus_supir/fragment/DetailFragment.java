@@ -1,7 +1,6 @@
 package com.anie.dara.trackmonbus_supir.fragment;
 
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -44,7 +43,7 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
         kapasitas = mView.findViewById(R.id.kapasitas);
         namaHalte = mView.findViewById(R.id.namaHalte);
         namaSupir = mView.findViewById(R.id.namaSupir);
-        hari_tgl = mView.findViewById(R.id.hari_tgl);
+        hari_tgl = mView.findViewById(R.id.tgl);
         namaTrayek = mView.findViewById(R.id.namaTrayek2);
         km_awal = mView.findViewById(R.id.TVkm_awal);
         km_akhir = mView.findViewById(R.id.TVKM_akhir);
@@ -72,7 +71,7 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
             no_tnkb.setText(jadwal.getNo_tnkb());
             kapasitas.setText(jadwal.getKapasitas());
             namaHalte.setText(jadwal.getNama_halte());
-            namaSupir.setText(jadwal.getNama());
+            namaSupir.setText(jadwal.getNama_supir());
             namaTrayek.setText(jadwal.getTrayek());
             hari_tgl.setText(substring(jadwal.getTgl(),0,10));
             km_akhir.setText(jadwal.getKm_akhir());

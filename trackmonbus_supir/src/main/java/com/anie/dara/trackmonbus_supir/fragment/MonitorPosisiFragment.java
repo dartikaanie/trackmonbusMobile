@@ -8,7 +8,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -33,11 +32,11 @@ import android.widget.Toast;
 
 import com.anie.dara.trackmonbus_supir.MainActivity;
 import com.anie.dara.trackmonbus_supir.R;
-import com.anie.dara.trackmonbus_supir.dbClient;
 import com.anie.dara.trackmonbus_supir.model.Halte;
 import com.anie.dara.trackmonbus_supir.model.Jadwal;
 import com.anie.dara.trackmonbus_supir.model.Posisi;
 import com.anie.dara.trackmonbus_supir.rest.ApiClient;
+import com.anie.dara.trackmonbus_supir.rest.dbClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -86,7 +85,9 @@ public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallbac
     private Activity activity;
     private dbClient client = ApiClient.getClient().create(dbClient.class);
     LocationManager locationManager;
-    AlertDialog alertDialog;
+    Location currentLocation;
+    Posisi currentPosisi;
+    AlertDialog alertDialog = null;
     private static  final  int REQUEST_LOCATION =1;
 
     private Handler handler = new Handler();
@@ -109,7 +110,7 @@ public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallbac
         kapasitas = mView.findViewById(R.id.kapasitas);
         namaHalte = mView.findViewById(R.id.namaHalte);
         namaSupir = mView.findViewById(R.id.namaSupir);
-        hari_tgl = mView.findViewById(R.id.hari_tgl);
+        hari_tgl = mView.findViewById(R.id.tgl);
         namaTrayek = mView.findViewById(R.id.namaTrayek2);
 
         btnCheck = mView.findViewById(R.id.btnCheckpoint);
@@ -137,14 +138,13 @@ public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallbac
         super.onViewCreated(view, savedInstanceState);
         Bundle bundle = this.getArguments();
         jadwal =  bundle.getParcelable("jadwal");
-        dataMarker();
 
         if(bundle != null){
             NoBus.setText(jadwal.getNo_bus());
             no_tnkb.setText(jadwal.getNo_tnkb());
             kapasitas.setText(jadwal.getKapasitas());
             namaHalte.setText(jadwal.getNama_halte());
-            namaSupir.setText(jadwal.getNama());
+            namaSupir.setText(jadwal.getNama_supir());
             namaTrayek.setText(jadwal.getTrayek());
             no_bus = jadwal.getNo_bus();
             tgl = jadwal.getTgl();
@@ -165,35 +165,101 @@ public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallbac
 
     }
 
+    public void getDataPosisiBus(DataSnapshot dataSnapshot){
+
+        LatLng posisi = null;
+        BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.trans);
+
+        for (DataSnapshot child : dataSnapshot.getChildren()) {
+
+            String lat = child.child("lat").getValue().toString();
+            String lng = child.child("lng").getValue().toString();
+            String nomorBus = child.getKey().toString();
+
+            double location_lat = Double.parseDouble(lat);
+            double location_lng = Double.parseDouble(lng);
+            posisi = new LatLng(location_lat, location_lng);
+
+            marker = map.addMarker(new MarkerOptions()
+                    .position(posisi)
+                    .title(nomorBus)
+                    .icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 60,120))));
+            hashMapMarker.put(nomorBus,marker);
+        }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        MapsInitializer.initialize(getContext());
+        map = googleMap;
+        getAllHalte();
+
+        //map ke lokasi terkini
+        locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+        if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+            buildAlertMessageNoGPS();
+        }
+        else
+        {
+            getCurrentPosisi();
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentPosisi.getLat(), currentPosisi.getLng()), 16.0f));
+
+        }
+
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                getDataPosisiBus(dataSnapshot);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("error", databaseError.toString());
+
+            }
+        });
+
+        dataMarker();
+
+
+    }
+
+
+    public void getDataAksi(DataSnapshot dataSnapshot){
+        LatLng point = null;
+        BitmapDrawable bitmapdraw= (BitmapDrawable) mView.getResources().getDrawable(R.drawable.trans);
+
+        String lat = dataSnapshot.child("lat").getValue().toString();
+        String lng = dataSnapshot.child("lng").getValue().toString();
+        String nomorBus = dataSnapshot.getKey().toString();
+
+        double location_lat = Double.parseDouble(lat);
+        double location_lng = Double.parseDouble(lng);
+        point = new LatLng(location_lat, location_lng);
+        marker = (Marker) hashMapMarker.get(nomorBus);
+        if(marker != null){
+            marker.remove();
+            hashMapMarker.remove(nomorBus);
+        }
+
+        marker = map.addMarker(new MarkerOptions()
+                .position(point)
+                .title(nomorBus)
+                .icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 60,120))));
+        hashMapMarker.put(nomorBus,marker);
+    }
 
     public void dataMarker(){
         mDatabase.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
+                Toast.makeText(getContext() , "ada bus yang baru berkendara", Toast.LENGTH_SHORT).show();
+                getDataAksi(dataSnapshot);
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                LatLng posisi = null;
-                BitmapDrawable bitmapdraw= (BitmapDrawable) mView.getResources().getDrawable(R.drawable.trans);
-
-                String lat = dataSnapshot.child("lat").getValue().toString();
-                String lng = dataSnapshot.child("lng").getValue().toString();
-                String nomorBus = dataSnapshot.getKey().toString();
-
-                double location_lat = Double.parseDouble(lat);
-                double location_lng = Double.parseDouble(lng);
-                posisi = new LatLng(location_lat, location_lng);
-                marker = (Marker) hashMapMarker.get(nomorBus);
-                marker.remove();
-                hashMapMarker.remove(nomorBus);
-                marker = map.addMarker(new MarkerOptions()
-                        .position(posisi)
-                        .title(nomorBus)
-                        .icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 60,120))));
-                hashMapMarker.put(nomorBus,marker);
-
+                getDataAksi(dataSnapshot);
             }
 
             @Override
@@ -212,44 +278,7 @@ public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallbac
             }
         });
     }
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        MapsInitializer.initialize(getContext());
-        map = googleMap;
-        getAllHalte();
-        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                LatLng posisi = null;
-                BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.trans);
 
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
-
-                    String lat = child.child("lat").getValue().toString();
-                    String lng = child.child("lng").getValue().toString();
-                    String nomorBus = child.getKey().toString();
-
-                    double location_lat = Double.parseDouble(lat);
-                    double location_lng = Double.parseDouble(lng);
-                    posisi = new LatLng(location_lat, location_lng);
-
-                    marker = map.addMarker(new MarkerOptions()
-                            .position(posisi)
-                            .title(nomorBus)
-                            .icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 60,120))));
-                    hashMapMarker.put(nomorBus,marker);
-                }
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-0.923931, 100.362664), 16.0f));
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e("error", databaseError.toString());
-
-            }
-        });
-
-    }
 
     private void getAllHalte() {
 
@@ -331,13 +360,16 @@ public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallbac
                 }
                 else
                 {
-                    getLocation();
+                    getCurrentPosisi();
+                    getJarak(currentPosisi, currentLocation);
                 }
 
                 handler.postDelayed(this, 10000);
             }
         }
     };
+
+
 
     public void cekJarak(final Location lokasiBus, final String no_bus){
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -352,17 +384,28 @@ public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallbac
                         double location_lat = Double.parseDouble(child.child("lat").getValue().toString());
                         double location_lng = Double.parseDouble(child.child("lng").getValue().toString());
 
+                        String no_bus2 = child.getKey().toString();
+
                         Location lokasi2 = new Location("posisi 2");
                         lokasi2.setLatitude(location_lat);
                         lokasi2.setLongitude(location_lng);
 
                         double distanceMeters = lokasiBus.distanceTo(lokasi2);
-                        double distanceKm = distanceMeters / 1000f;
+                        double distanceKm = distanceMeters / 1000f * 1000;
                         Log.e("jarak", String.valueOf(distanceKm));
 
-                        if(distanceKm < 0.5){
-                            showDialog();
-                            Toast.makeText(getContext(),"jaraknya terlalu dekat " + String.format("%.2f Km", distanceKm), Toast.LENGTH_SHORT).show();
+                        String posisi1 = child.child("lat").getValue().toString() + "," + child.child("lng").getValue().toString();
+                        String posisi2 = lokasi2.getLatitude() + "," + lokasi2.getLongitude();
+
+//                        actionRoute(posisi1, posisi2);
+
+
+                        if(distanceKm < 500){
+                            if(alertDialog != null){
+                                alertDialog.dismiss();
+                            }
+                            showDialog(no_bus2);
+                            Toast.makeText(getContext(),"jaraknya terlalu dekat " + String.format("%.1f m", distanceKm), Toast.LENGTH_SHORT).show();
                         }
                     }
 
@@ -378,14 +421,14 @@ public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallbac
         });
     }
 
-    private void showDialog(){
+    private void showDialog(String noBus){
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
         final MediaPlayer mediaPlayer = MediaPlayer.create(getContext(),R.raw.alert_tone);
         mediaPlayer.start();
 
         // set pesan dari dialog
         alertDialogBuilder
-                .setMessage("Jarak Anda terlalu dekat")
+                .setMessage("Jarak Anda terlalu dekat dengan Bus " + noBus)
                 .setIcon(R.mipmap.ic_launcher)
                 .setCancelable(false)
                 .setNeutralButton("Ok", new DialogInterface.OnClickListener() {
@@ -420,7 +463,8 @@ public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallbac
                     }
                 });
     }
-    public void getLocation(){
+    public void getCurrentPosisi(){
+
         if((ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED )
                 &&
@@ -429,34 +473,60 @@ public class MonitorPosisiFragment extends Fragment implements OnMapReadyCallbac
             ActivityCompat.requestPermissions((Activity) getContext(), new String [] {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
             Toast.makeText(getContext(),"Aktifkan GPS anda", Toast.LENGTH_SHORT).show();
         }
-        else{
-//            try{
-                Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                if(location!=null){
-                    Double lat  = location.getLatitude();
-                    Double lng = location.getLongitude();
-                    Posisi posisi = new Posisi(lat,lng);
-                    mDatabase.child(no_bus).setValue(posisi);
-                    Log.e("posisi_update", posisi.toString());
-                    Toast.makeText(getContext(), "Update Posisi", Toast.LENGTH_LONG).show();
-                    if(alertDialog != null){
-                        alertDialog.dismiss();
-                    }
-                    cekJarak(location, no_bus);
-
-                }
-                else{
-                    Toast.makeText(getContext(),"LOKASINYA TIDAK TAMPIL", Toast.LENGTH_SHORT).show();
-                }
-//            }catch (Exception ex){
-//                Log.e("error", ex.toString());
-//            }
-
-
+        else {
+            Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            if (location != null) {
+                Double lat = location.getLatitude();
+                Double lng = location.getLongitude();
+                currentPosisi = new Posisi(lat, lng, no_bus);
+                currentLocation = location;
+            }
         }
 
     }
 
+    public void getJarak(Posisi posisi, Location location){
+        if(posisi == null){
+            Toast.makeText(getContext(),"Ada KESALAHAN. LOKASINYA TIDAK TAMPIL", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            mDatabase.child(no_bus).setValue(posisi);
+            Log.e("posisi_update", posisi.toString());
+            Toast.makeText(getContext(), "Update Posisi", Toast.LENGTH_LONG).show();
+            if(alertDialog != null){
+                alertDialog.dismiss();
+            }
+            cekJarak(location, no_bus);
+        }
+
+    }
+
+
+//    private void actionRoute(String posisi1 , String posisi2) {
+//
+//        // Panggil Retrofit
+//        apiDirectionServices api = initLibrary.getInstance();
+//        // request
+//        Call<mapDirection> routeRequest = api.request_route(posisi1, posisi2, String.valueOf(R.string.map_key));
+//        // kirim
+//        routeRequest.enqueue(new Callback<mapDirection>() {
+//            @Override
+//            public void onResponse(Call<mapDirection> call, Response<mapDirection> response) {
+//
+//                   // tampung response ke variable
+//                    mapDirection dataDirection = response.body();
+//                    LegsItem dataLegs = dataDirection.getRoutes().get(0).getLegs().get(0);
+//                  // Dapatkan jarak dan waktu
+//                    Distance dataDistance = dataLegs.getDistance();
+//                 Log.e("jarak direction", String.valueOf(dataDistance));
+//            }
+//
+//            @Override
+//            public void onFailure(Call<mapDirection> call, Throwable t) {
+//                t.printStackTrace();
+//            }
+//        });
+//    }
 
     @Override
     public void onClick(View v) {

@@ -1,8 +1,10 @@
-package com.anie.dara.trackmonbus_supir;
+package com.anie.dara.trackmonbus_supir.rest;
 
 import com.anie.dara.trackmonbus_supir.model.Halte;
 import com.anie.dara.trackmonbus_supir.model.Jadwal;
 import com.anie.dara.trackmonbus_supir.model.User;
+import com.anie.dara.trackmonbus_supir.model.noBus;
+import com.anie.dara.trackmonbus_supir.model.rit;
 
 import java.util.List;
 
@@ -11,10 +13,9 @@ import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
-import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
-import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface dbClient {
     @FormUrlEncoded
@@ -24,8 +25,12 @@ public interface dbClient {
             @Field("password") String password
     );
 
-    @GET("api/cekJadwal")
-    Call<Jadwal> cekJadwal();
+    @FormUrlEncoded
+    @POST("api/cekJadwal")
+    Call<Jadwal> cekJadwal(
+            @Field("user_id") String user_id
+    );
+
 
     @GET("api/viewHaltes")
     Call<List<Halte>> getAllHalte();
@@ -37,5 +42,24 @@ public interface dbClient {
             @Field("tgl") String tgl,
             @Field("km_awal") Double km_awal
     );
+
+    @FormUrlEncoded
+    @POST("api/updateRit")
+    Call<ResponseBody> updateRit(
+            @Field("no_bus") String no_bus,
+            @Field("tgl") String tgl
+    );
+
+    @FormUrlEncoded
+    @POST("api/getRit")
+    Call<List<rit>> getRit(
+            @Field("no_bus") String no_bus,
+            @Field("tgl") String tgl
+    );
+
+
+    @GET("api/getBusSearah")
+    Call<List<noBus>> getBusSearah(@Query("halte_tujuan_id") String halte_tujuan_id);
+
 
 }

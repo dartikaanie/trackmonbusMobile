@@ -35,6 +35,7 @@ import com.anie.dara.trackmonbus_supir.distanceMatrix.ElementsItem;
 import com.anie.dara.trackmonbus_supir.model.Halte;
 import com.anie.dara.trackmonbus_supir.model.Jadwal;
 import com.anie.dara.trackmonbus_supir.model.Posisi;
+import com.anie.dara.trackmonbus_supir.model.noBus;
 import com.anie.dara.trackmonbus_supir.rest.ApiClient;
 import com.anie.dara.trackmonbus_supir.rest.DistanceApiServices;
 import com.anie.dara.trackmonbus_supir.rest.dbClient;
@@ -82,6 +83,7 @@ public class MonitoringPosisi extends AppCompatActivity implements View.OnClickL
     DatabaseReference mDatabase;
     EditText etKmAwal;
     String no_bus, tgl, tgl_skrg;
+    private List<noBus> listBusSearah;
     private Activity activity;
     private dbClient client = ApiClient.getClient().create(dbClient.class);
     private DistanceApiServices distanceApi = initLibrary.getClient().create(DistanceApiServices.class);
@@ -90,6 +92,8 @@ public class MonitoringPosisi extends AppCompatActivity implements View.OnClickL
     Posisi currentPosisi;
     AlertDialog alertDialog = null;
     private static  final  int REQUEST_LOCATION =1;
+    private SQLiteDatabaseHandler db;
+    private List<Halte> listHalte = new ArrayList<>();
 
     private Handler handler = new Handler();
     boolean running = true;
@@ -118,7 +122,7 @@ public class MonitoringPosisi extends AppCompatActivity implements View.OnClickL
         btnSelesai.setOnClickListener(this);
 
         etKmAwal = findViewById(R.id.etKmAwal);
-
+        db = new SQLiteDatabaseHandler(this);
 
         Date date = new Date();
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -176,7 +180,15 @@ public class MonitoringPosisi extends AppCompatActivity implements View.OnClickL
     public void onMapReady(GoogleMap googleMap) {
         MapsInitializer.initialize(this);
         map = googleMap;
-        getAllHalte();
+        List<Halte> listHalte = db.allHaltes();
+
+        if (listHalte != null) {
+            Log.e("data db halte", listHalte.toString());
+                initMarker(listHalte);
+        }else{
+            getAllHalte();
+        }
+
 
         //map ke lokasi terkini
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
@@ -309,7 +321,7 @@ public class MonitoringPosisi extends AppCompatActivity implements View.OnClickL
             LatLng location = new LatLng(Double.parseDouble(listData.get(i).getLat()), Double.parseDouble(listData.get(i).getLng()));
             map.addMarker(new MarkerOptions().position(location).title(listData.get(i).getNama()).icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 100,80)))).showInfoWindow();
         }
-        LatLng latLng = new LatLng(Double.parseDouble(listData.get(0).getLat()), Double.parseDouble(listData.get(0).getLng()));
+//        LatLng latLng = new LatLng(Double.parseDouble(listData.get(0).getLat()), Double.parseDouble(listData.get(0).getLng()));
 //        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude,latLng.longitude), 15.0f));
     }
 
@@ -364,63 +376,158 @@ public class MonitoringPosisi extends AppCompatActivity implements View.OnClickL
         }
     };
 
-    public void cekJarak(final Location lokasiBus, final String no_bus){
-        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+    public List<noBus> getBusSearah(){
+        String halte_tujuan_id = "2";
+        final List<noBus> listItems = new ArrayList<>();
+        Call<List<noBus>> call = client.getBusSearah(halte_tujuan_id);
+        call.enqueue(new Callback<List<noBus>>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                ArrayList<String> posisiDestination = new ArrayList<>();
-                ArrayList<Posisi> posisiBus = new ArrayList<>();
-                String posisi1 = lokasiBus.getLatitude() + "," + lokasiBus.getLongitude();
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    if(child.getKey().equals(no_bus)) {
-                        //no action
-                        Log.e("no_bus", String.valueOf(child.getKey().equals(no_bus)));
-                    }else{
-
-                        double location_lat = Double.parseDouble(child.child("lat").getValue().toString());
-                        double location_lng = Double.parseDouble(child.child("lng").getValue().toString());
-
-                        String no_bus2 = child.getKey().toString();
-                        Posisi dataBus = new Posisi(location_lat,location_lng,no_bus2);
-                        posisiBus.add(dataBus);
-
-                        Location lokasi2 = new Location("posisi 2");
-                        lokasi2.setLatitude(location_lat);
-                        lokasi2.setLongitude(location_lng);
-
-//                        double distanceMeters = lokasiBus.distanceTo(lokasi2);
-//                        double distanceKm = distanceMeters / 1000 ;
-//                        Log.e("jarak", no_bus2 + " --- " +String.valueOf(distanceKm));
-//
-
-                        String posisi2 = lokasi2.getLatitude() + "," + lokasi2.getLongitude();
-
-                        posisiDestination.add(posisi2);
-//                        if(distanceKm < 500){
-//                            if(alertDialog != null){
-//                                alertDialog.dismiss();
-//                            }
-//                            showDialog(no_bus2);
-//                            Toast.makeText(MonitoringPosisi.this,"jaraknya terlalu dekat " + String.format("%.1f m", distanceKm), Toast.LENGTH_SHORT).show();
-//                        }
-                    }
-
+            public void onResponse(Call<List<noBus>> call, Response<List<noBus>> response) {
+                List<noBus> listBusSearah = response.body();
+                if(listBusSearah.size() > 0){
+                    for(noBus item : listBusSearah){
+                        noBus bus = new noBus(item.getNo_bus());
+                        listItems.add(bus);
+                      }
+                }else{
+                    Log.e("listBus", "DAta tidak ada");
                 }
 
-                Log.e("posisiDestination",posisiDestination.toString());
-                if(posisiDestination.size()>1){
-                    Log.e("posisiString",convertToString(posisiDestination));
-                }
-                actionRoute(posisi1, convertToString(posisiDestination),posisiBus );
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lokasiBus.getLatitude(), lokasiBus.getLongitude()), 16.0f));
             }
-
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e("error", databaseError.toString());
-
+            public void onFailure(Call<List<noBus>> call, Throwable t) {
+                Log.e("error listBus", t.toString());
             }
         });
+
+
+        return listItems;
+    }
+
+    public void cekJarak(final Location lokasiBus, final String no_bus){
+        String halte_tujuan_id = "2";
+        listBusSearah = new ArrayList<>();
+        Call<List<noBus>> call = client.getBusSearah(halte_tujuan_id);
+        call.enqueue(new Callback<List<noBus>>() {
+            @Override
+            public void onResponse(Call<List<noBus>> call, Response<List<noBus>> response) {
+                List<noBus> result = response.body();
+                if(result.size() > 0){
+                    for(noBus item : result){
+                        listBusSearah.add(new noBus(item.getNo_bus()));
+                        Log.e("listBus cek item", listBusSearah.toString());
+                        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                ArrayList<String> posisiDestination = new ArrayList<>();
+                                ArrayList<Posisi> posisiBus = new ArrayList<>();
+
+                                String posisi1 = lokasiBus.getLatitude() + "," + lokasiBus.getLongitude();
+                                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                                    for(noBus busSearah : listBusSearah){
+                                           if(child.getKey().equals(busSearah.getNo_bus()) && (!child.getKey().equals(no_bus))){
+                                            double location_lat = Double.parseDouble(child.child("lat").getValue().toString());
+                                            double location_lng = Double.parseDouble(child.child("lng").getValue().toString());
+
+                                            String no_bus2 = child.getKey().toString();
+                                            Posisi dataBus = new Posisi(location_lat,location_lng,no_bus2);
+                                            posisiBus.add(dataBus);
+
+                                            Location lokasi2 = new Location("posisi 2");
+                                            lokasi2.setLatitude(location_lat);
+                                            lokasi2.setLongitude(location_lng);
+                                            String posisi2 = lokasi2.getLatitude() + "," + lokasi2.getLongitude();
+                                            posisiDestination.add(posisi2);
+                                        }
+                                    }
+                                }
+                                Log.e("posisiDestination",posisiDestination.toString());
+                                if(posisiDestination.size()>0){
+                                    Log.e("posisiString",convertToString(posisiDestination));
+                                    if(alertDialog != null){
+                                        alertDialog.dismiss();
+                                    }
+                                    actionRoute(posisi1, convertToString(posisiDestination),posisiBus );
+                                }
+
+                                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lokasiBus.getLatitude(), lokasiBus.getLongitude()), 16.0f));
+                           }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                }else{
+                    Log.e("listBus", "DAta tidak ada");
+                }
+            }
+            @Override
+            public void onFailure(Call<List<noBus>> call, Throwable t) {
+                Log.e("error listBus", t.toString());
+            }
+        });
+
+
+
+//        Log.e("listBus", listBusSearah.toString());
+//        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                ArrayList<String> posisiDestination = new ArrayList<>();
+//                ArrayList<Posisi> posisiBus = new ArrayList<>();
+//
+//                String posisi1 = lokasiBus.getLatitude() + "," + lokasiBus.getLongitude();
+//                for (DataSnapshot child : dataSnapshot.getChildren()) {
+//                        for(noBus busSearah : listBusSearah){
+//                            Log.e("cek bus", String.valueOf(child.getKey().equals(busSearah.getNo_bus())));
+//                            if(child.getKey().equals(busSearah.getNo_bus()) && (!child.getKey().equals(no_bus))){
+//                                double location_lat = Double.parseDouble(child.child("lat").getValue().toString());
+//                                double location_lng = Double.parseDouble(child.child("lng").getValue().toString());
+//
+//                                String no_bus2 = child.getKey().toString();
+//                                Posisi dataBus = new Posisi(location_lat,location_lng,no_bus2);
+//                                posisiBus.add(dataBus);
+//
+//                                Location lokasi2 = new Location("posisi 2");
+//                                lokasi2.setLatitude(location_lat);
+//                                lokasi2.setLongitude(location_lng);
+//                                String posisi2 = lokasi2.getLatitude() + "," + lokasi2.getLongitude();
+//                                posisiDestination.add(posisi2);
+//                            }
+//                        }
+//
+//
+////                        double distanceMeters = lokasiBus.distanceTo(lokasi2);
+////                        double distanceKm = distanceMeters / 1000 ;
+////                        Log.e("jarak", no_bus2 + " --- " +String.valueOf(distanceKm));
+////
+//
+////                        if(distanceKm < 500){
+////                            if(alertDialog != null){
+////                                alertDialog.dismiss();
+////                            }
+////                            showDialog(no_bus2);
+////                            Toast.makeText(MonitoringPosisi.this,"jaraknya terlalu dekat " + String.format("%.1f m", distanceKm), Toast.LENGTH_SHORT).show();
+////                        }
+//
+//                }
+//
+//                Log.e("posisiDestination",posisiDestination.toString());
+//                if(posisiDestination.size()>1){
+//                    Log.e("posisiString",convertToString(posisiDestination));
+//                    actionRoute(posisi1, convertToString(posisiDestination),posisiBus );
+//                }
+//
+//                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lokasiBus.getLatitude(), lokasiBus.getLongitude()), 16.0f));
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//                Log.e("error", databaseError.toString());
+//
+//            }
+//        });
     }
 
     static String convertToString(ArrayList<String> strings) {
@@ -505,9 +612,7 @@ public class MonitoringPosisi extends AppCompatActivity implements View.OnClickL
             mDatabase.child(no_bus).setValue(posisi);
             Log.e("posisi_update", posisi.toString());
             Toast.makeText(MonitoringPosisi.this, "Update Posisi", Toast.LENGTH_LONG).show();
-            if(alertDialog != null){
-                alertDialog.dismiss();
-            }
+
             cekJarak(location, no_bus);
         }
 
@@ -520,22 +625,21 @@ public class MonitoringPosisi extends AppCompatActivity implements View.OnClickL
             @Override
             public void onResponse(Call<DistanceMatrix> call, Response<DistanceMatrix> response) {
                 DistanceMatrix data = response.body();
-                Log.e("data",data.toString());
-                if(data.getRows().size() != 0){
+               if(data.getRows().size() != 0){
                     List<ElementsItem> row = data.getRows().get(0).getElements();
-                    Log.e("dataRow",row.toString());
                     double jarak=0;
                     for(ElementsItem item : row){
                         jarak = Double.parseDouble(String.valueOf(item.getDistance().getValue()));
                         Log.e("jarak direction", String.valueOf(jarak));
                         if(jarak  < 500){
                             String nBus = "";
+                            if(alertDialog != null){
+                                alertDialog.dismiss();
+                            }
                             showDialog(nBus);
                         }
                     }
-
                 }
-
             }
 
             @Override

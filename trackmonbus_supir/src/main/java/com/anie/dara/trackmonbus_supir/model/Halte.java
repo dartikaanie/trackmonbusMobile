@@ -5,6 +5,9 @@ public class Halte {
     String lat;
     String lng;
 
+    public Halte() {
+    }
+
     public Halte(String nama, String lat, String lng) {
         this.nama = nama;
         this.lat = lat;

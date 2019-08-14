@@ -3,10 +3,20 @@ package com.anie.dara.trackmonbus_supir.model;
 public class Posisi {
 
     Double lat,lng;
+    String no_bus;
 
-    public Posisi(Double lat, Double lng) {
+    public Posisi(Double lat, Double lng, String no_bus) {
+        this.no_bus = no_bus;
         this.lat = lat;
         this.lng = lng;
+    }
+
+    public String getNo_bus() {
+        return no_bus;
+    }
+
+    public void setNo_bus(String no_bus) {
+        this.no_bus = no_bus;
     }
 
     public Double getLat() {

@@ -5,32 +5,35 @@ import android.os.Parcelable;
 
 public class Jadwal implements Parcelable {
 
-    String tgl, no_bus, km_awal, km_akhir, keterangan, trayek, nama, no_tnkb, kapasitas;
-    String nama_halte;
+    String tgl, no_bus, km_awal, km_akhir, keterangan, trayek, nama_halte, no_tnkb, kapasitas;
+    String nama_supir, jam_awal, jam_akhir;
 
-    public String getNo_tnkb() {
-        return no_tnkb;
+    protected Jadwal(Parcel in) {
+        tgl = in.readString();
+        no_bus = in.readString();
+        km_awal = in.readString();
+        km_akhir = in.readString();
+        keterangan = in.readString();
+        trayek = in.readString();
+        nama_halte = in.readString();
+        no_tnkb = in.readString();
+        kapasitas = in.readString();
+        nama_supir = in.readString();
+        jam_awal = in.readString();
+        jam_akhir = in.readString();
     }
 
-    public void setNo_tnkb(String no_tnkb) {
-        this.no_tnkb = no_tnkb;
-    }
+    public static final Creator<Jadwal> CREATOR = new Creator<Jadwal>() {
+        @Override
+        public Jadwal createFromParcel(Parcel in) {
+            return new Jadwal(in);
+        }
 
-    public String getKapasitas() {
-        return kapasitas;
-    }
-
-    public void setKapasitas(String kapasitas) {
-        this.kapasitas = kapasitas;
-    }
-
-    public String getNama_halte() {
-        return nama_halte;
-    }
-
-    public void setNama_halte(String nama) {
-        this.nama_halte = nama;
-    }
+        @Override
+        public Jadwal[] newArray(int size) {
+            return new Jadwal[size];
+        }
+    };
 
     public String getTgl() {
         return tgl;
@@ -80,14 +83,53 @@ public class Jadwal implements Parcelable {
         this.trayek = trayek;
     }
 
-    public String getNama() {
-        return nama;
+    public String getNama_halte() {
+        return nama_halte;
     }
 
-    public void setNama(String nama) {
-        this.nama = nama;
+    public void setNama_halte(String nama_halte) {
+        this.nama_halte = nama_halte;
     }
 
+    public String getNo_tnkb() {
+        return no_tnkb;
+    }
+
+    public void setNo_tnkb(String no_tnkb) {
+        this.no_tnkb = no_tnkb;
+    }
+
+    public String getKapasitas() {
+        return kapasitas;
+    }
+
+    public void setKapasitas(String kapasitas) {
+        this.kapasitas = kapasitas;
+    }
+
+    public String getNama_supir() {
+        return nama_supir;
+    }
+
+    public void setNama_supir(String nama_supir) {
+        this.nama_supir = nama_supir;
+    }
+
+    public String getJam_awal() {
+        return jam_awal;
+    }
+
+    public void setJam_awal(String jam_awal) {
+        this.jam_awal = jam_awal;
+    }
+
+    public String getJam_akhir() {
+        return jam_akhir;
+    }
+
+    public void setJam_akhir(String jam_akhir) {
+        this.jam_akhir = jam_akhir;
+    }
 
     @Override
     public int describeContents() {
@@ -95,44 +137,18 @@ public class Jadwal implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.tgl);
-        dest.writeString(this.no_bus);
-        dest.writeString(this.km_awal);
-        dest.writeString(this.km_akhir);
-        dest.writeString(this.keterangan);
-        dest.writeString(this.trayek);
-        dest.writeString(this.nama);
-        dest.writeString(this.no_tnkb);
-        dest.writeString(this.kapasitas);
-        dest.writeString(this.nama_halte);
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(tgl);
+        parcel.writeString(no_bus);
+        parcel.writeString(km_awal);
+        parcel.writeString(km_akhir);
+        parcel.writeString(keterangan);
+        parcel.writeString(trayek);
+        parcel.writeString(nama_halte);
+        parcel.writeString(no_tnkb);
+        parcel.writeString(kapasitas);
+        parcel.writeString(nama_supir);
+        parcel.writeString(jam_awal);
+        parcel.writeString(jam_akhir);
     }
-
-    public Jadwal() {
-    }
-
-    protected Jadwal(Parcel in) {
-        this.tgl = in.readString();
-        this.no_bus = in.readString();
-        this.km_awal = in.readString();
-        this.km_akhir = in.readString();
-        this.keterangan = in.readString();
-        this.trayek = in.readString();
-        this.nama = in.readString();
-        this.no_tnkb = in.readString();
-        this.kapasitas = in.readString();
-        this.nama_halte = in.readString();
-    }
-
-    public static final Parcelable.Creator<Jadwal> CREATOR = new Parcelable.Creator<Jadwal>() {
-        @Override
-        public Jadwal createFromParcel(Parcel source) {
-            return new Jadwal(source);
-        }
-
-        @Override
-        public Jadwal[] newArray(int size) {
-            return new Jadwal[size];
-        }
-    };
 }

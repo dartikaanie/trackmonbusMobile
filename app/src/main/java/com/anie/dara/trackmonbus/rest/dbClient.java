@@ -1,4 +1,4 @@
-package com.anie.dara.trackmonbus;
+package com.anie.dara.trackmonbus.rest;
 
 import com.anie.dara.trackmonbus.model.Bus;
 import com.anie.dara.trackmonbus.model.Halte;

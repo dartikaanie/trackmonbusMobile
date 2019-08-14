@@ -3,16 +3,12 @@ package com.anie.dara.trackmonbus.fragment;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,15 +20,13 @@ import android.widget.Toast;
 
 import com.anie.dara.trackmonbus.BusActivity;
 import com.anie.dara.trackmonbus.DetailPesanActivity;
-import com.anie.dara.trackmonbus.HalteActivity;
 import com.anie.dara.trackmonbus.LokasiActivity;
 import com.anie.dara.trackmonbus.MainActivity;
 import com.anie.dara.trackmonbus.MypesanActivity;
 import com.anie.dara.trackmonbus.PesanActivity;
 import com.anie.dara.trackmonbus.R;
-import com.anie.dara.trackmonbus.RegistrasiActivity;
 import com.anie.dara.trackmonbus.adapter.pesanAdapter;
-import com.anie.dara.trackmonbus.dbClient;
+import com.anie.dara.trackmonbus.rest.dbClient;
 import com.anie.dara.trackmonbus.model.Pesan;
 import com.anie.dara.trackmonbus.rest.ApiClient;
 
@@ -42,10 +36,6 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-
-import static com.anie.dara.trackmonbus.MainActivity.*;
 
 public class HomeFragment extends Fragment implements pesanAdapter.OnItemClicked, View.OnClickListener {
 

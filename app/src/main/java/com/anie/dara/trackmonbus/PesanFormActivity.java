@@ -19,8 +19,8 @@ import android.widget.Toast;
 import com.anie.dara.trackmonbus.model.Bus;
 import com.anie.dara.trackmonbus.model.Perihal;
 import com.anie.dara.trackmonbus.model.Pesan;
-import com.anie.dara.trackmonbus.model.User;
 import com.anie.dara.trackmonbus.rest.ApiClient;
+import com.anie.dara.trackmonbus.rest.dbClient;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

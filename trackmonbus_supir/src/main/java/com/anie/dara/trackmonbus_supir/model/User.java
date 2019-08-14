@@ -2,7 +2,7 @@ package com.anie.dara.trackmonbus_supir.model;
 
 public class User {
 
-    private String message, id, name;
+    private String message, user_id, name;
 
     public String getName() {
         return name;
@@ -12,12 +12,12 @@ public class User {
         this.name = name;
     }
 
-    public String getId() {
-        return id;
+    public String getUser_id() {
+        return user_id;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
     }
 
     public String getMessage() {

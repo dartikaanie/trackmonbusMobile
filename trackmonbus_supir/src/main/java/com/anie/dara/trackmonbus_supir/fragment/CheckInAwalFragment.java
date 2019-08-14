@@ -3,8 +3,7 @@ package com.anie.dara.trackmonbus_supir.fragment;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.net.Uri;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,27 +15,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anie.dara.trackmonbus_supir.MainActivity;
+import com.anie.dara.trackmonbus_supir.MonitoringPosisi;
 import com.anie.dara.trackmonbus_supir.R;
-import com.anie.dara.trackmonbus_supir.dbClient;
+import com.anie.dara.trackmonbus_supir.rest.dbClient;
 import com.anie.dara.trackmonbus_supir.model.Jadwal;
 import com.anie.dara.trackmonbus_supir.rest.ApiClient;
-
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 import static android.text.TextUtils.substring;
 
@@ -70,7 +62,7 @@ public class CheckInAwalFragment extends Fragment implements View.OnClickListene
         kapasitas = mView.findViewById(R.id.kapasitas);
         namaHalte = mView.findViewById(R.id.namaHalte);
         namaSupir = mView.findViewById(R.id.namaSupir);
-        hari_tgl = mView.findViewById(R.id.hari_tgl);
+        hari_tgl = mView.findViewById(R.id.tgl);
         namaTrayek = mView.findViewById(R.id.namaTrayek2);
         btnMulai = mView.findViewById(R.id.mulai);
         btnMulai.setOnClickListener(this);
@@ -91,7 +83,7 @@ public class CheckInAwalFragment extends Fragment implements View.OnClickListene
             no_tnkb.setText(jadwal.getNo_tnkb());
             kapasitas.setText(jadwal.getKapasitas());
             namaHalte.setText(jadwal.getNama_halte());
-            namaSupir.setText(jadwal.getNama());
+            namaSupir.setText(jadwal.getNama_supir());
             namaTrayek.setText(jadwal.getTrayek());
             no_bus = jadwal.getNo_bus();
             tgl = jadwal.getTgl();
@@ -118,23 +110,21 @@ public class CheckInAwalFragment extends Fragment implements View.OnClickListene
                         ResponseBody s = response.body();
                         Toast.makeText(activity, "berhasil disimpan", Toast.LENGTH_LONG).show();
 
-                        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putString("status_track", "aktif");
-                        editor.commit();
-
-
-                        Bundle bundle = new Bundle();
-                        bundle.putParcelable("jadwal",jadwal); // Put anything what you want
-
-                        Fragment monitorPosisiFragment = new MonitorPosisiFragment();
-                        monitorPosisiFragment.setArguments(bundle);
-
+//                        Bundle bundle = new Bundle();
+//                        bundle.putParcelable("jadwal",jadwal); // Put anything what you want
+//
+//                        Fragment monitorPosisiFragment = new MonitorPosisiFragment();
+//                        monitorPosisiFragment.setArguments(bundle);
+//
                         prog.dismiss();
-                        getFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.fl_container, monitorPosisiFragment)
-                                .commit();
+//                        getFragmentManager()
+//                                .beginTransaction()
+//                                .replace(R.id.fl_container, monitorPosisiFragment)
+//                                .commit();
+
+                        Intent intent=  new Intent(getActivity(), MonitoringPosisi.class);
+                        intent.putExtra("jadwal", jadwal);
+                        startActivity(intent);
                     }
 
                     @Override
