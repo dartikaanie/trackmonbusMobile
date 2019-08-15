@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +46,8 @@ public class CheckInAwalFragment extends Fragment implements View.OnClickListene
     String no_bus, tgl;
     private Activity activity;
     private dbClient client = ApiClient.getClient().create(dbClient.class);
+    private Toolbar toolbar;
+    private ImageView toolbarTitle;
 
     @Override
     public void onAttach(Context context) {
@@ -54,7 +59,13 @@ public class CheckInAwalFragment extends Fragment implements View.OnClickListene
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
+        //set toolbar
+        toolbar = mView.findViewById(R.id.toolbar);
+        toolbarTitle = (ImageView) mView.findViewById(R.id.toolbar_title);
+         ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+        if (toolbar != null) {
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
 
         mView =  inflater.inflate(R.layout.fragment_check_in_awal, container, false);
         NoBus = mView.findViewById(R.id.NoBus);

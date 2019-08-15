@@ -20,12 +20,15 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -92,6 +95,11 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
     private String DEFAULT = "tidak aktif";
     private SQLiteDatabaseHandler db;
 
+    ProgressDialog dialog;
+
+    private Toolbar toolbar;
+    private ImageView toolbarTitle;
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -102,6 +110,19 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mView =  inflater.inflate(R.layout.fragment_beranda, container, false);
+
+        //bind view
+        toolbar = mView.findViewById(R.id.toolbar);
+        toolbarTitle = (ImageView) mView.findViewById(R.id.toolbar_title);
+        //set toolbar
+        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+
+         //menghilangkan titlebar bawaan
+        if (toolbar != null) {
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+
+
         noBus = mView.findViewById(R.id.NoBus);
         no_tnkb = mView.findViewById(R.id.no_tnkb);
         kapasitas = mView.findViewById(R.id.kapasitas);
@@ -130,6 +151,9 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
         user_id = sharedPreferences.getString("user_id", DEFAULT);
         String status_track = sharedPreferences.getString("status_track", DEFAULT);
         Log.e("jadwal", String.valueOf(user_id));
+        dialog = new ProgressDialog(getContext());
+        dialog.setMessage("Memuat Data . . .");
+        dialog.show();
         cekJadwalKerja();
         return mView;
     }
@@ -137,7 +161,6 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
 
 
     private void cekJadwalKerja() {
-        final ProgressDialog dialog = new ProgressDialog(getContext());
         dialog.setMessage("Memuat Data . . .");
         dialog.show();
         Call<Jadwal> call = client.cekJadwal(user_id);
@@ -193,6 +216,7 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
             mMapView.onResume();
             mMapView.getMapAsync(this);
         }
+        dialog.dismiss();
     }
 
 

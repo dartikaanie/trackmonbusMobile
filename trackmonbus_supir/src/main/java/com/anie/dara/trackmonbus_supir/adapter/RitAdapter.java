@@ -40,11 +40,9 @@ public class RitAdapter extends  RecyclerView.Adapter<RitAdapter.RitHolder> {
     @Override
     public void onBindViewHolder(@NonNull RitAdapter.RitHolder holder, int position) {
         rit rit = dataRit.get(position);
-        holder.no_rit.setText(String.valueOf(rit.getNo_rit()));
-        holder.start_awal.setText(String.valueOf(rit.getStrat_awal()));
-        holder.end_akhir.setText(String.valueOf(rit.getEnd_akhir()));
-        holder.end_awal.setText(String.valueOf(rit.getEnd_awal()));
-        holder.start_akhir.setText(String.valueOf(rit.getStart_akhir()));
+        holder.waktu_berangkat.setText(String.valueOf(rit.getWaktu_berangkat()));
+        holder.waktu_datang.setText(String.valueOf(rit.getWaktu_datang()));
+        holder.halte_tujuan.setText(String.valueOf(rit.getNama_halte_tujuan()));
     }
 
 
@@ -60,15 +58,13 @@ public class RitAdapter extends  RecyclerView.Adapter<RitAdapter.RitHolder> {
 
     // Inner CLASS
     public class RitHolder extends RecyclerView.ViewHolder{
-        TextView no_rit, start_awal, end_akhir, start_akhir, end_awal;
+        TextView waktu_berangkat, waktu_datang, halte_tujuan;
 
         public RitHolder(@NonNull View itemView){
             super(itemView);
-            no_rit = itemView.findViewById(R.id.no_rit);
-            start_awal = itemView.findViewById(R.id.start_awal);
-            end_akhir = itemView.findViewById(R.id.end_akhir);
-            start_akhir = itemView.findViewById(R.id.end_awal);
-            end_awal = itemView.findViewById(R.id.start_akhir);
+            waktu_berangkat = itemView.findViewById(R.id.waktu_berangkat);
+            waktu_datang = itemView.findViewById(R.id.waktu_datang);
+            halte_tujuan = itemView.findViewById(R.id.halte_tujuan);
         }
     }
 

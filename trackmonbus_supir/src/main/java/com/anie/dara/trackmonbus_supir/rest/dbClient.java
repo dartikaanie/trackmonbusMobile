@@ -31,6 +31,9 @@ public interface dbClient {
             @Field("user_id") String user_id
     );
 
+    @GET("api/cekJadwalSupir")
+    Call<List<Jadwal>> getJadwalUser(@Query("user_id") String user_id);
+
 
     @GET("api/viewHaltes")
     Call<List<Halte>> getAllHalte();

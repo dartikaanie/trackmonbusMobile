@@ -10,9 +10,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,12 +43,24 @@ public class DetailTransActivity extends AppCompatActivity implements View.OnCli
 
     static RecyclerView rvDaftarRit;
     static RitAdapter ritAdapter;
+    Toolbar toolbar;
+    ImageView toolbarTitle;
     private dbClient client = ApiClient.getClient().create(dbClient.class);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_trans);
+
+        //set toolbar
+        toolbar = findViewById(R.id.toolbar);
+        toolbarTitle = findViewById(R.id.toolbar_title);
+        setSupportActionBar(toolbar);
+        if (toolbar != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         NoBus = findViewById(R.id.NoBus);
         no_tnkb = findViewById(R.id.no_tnkb);
