@@ -29,7 +29,7 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATION_TABLE = "CREATE TABLE haltes ( "
-                + "halte_id INTEGER  PRIMARY KEY AUTOINCREMENT, " + "nama string, "
+                + "halte_id string PRIMARY KEY, " + "nama string, "
                 + "lat string, " + "lng string )";
 
         db.execSQL(CREATION_TABLE);
@@ -53,6 +53,7 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 halte = new Halte();
+                halte.setHalte_id(cursor.getString(0));
                 halte.setNama(cursor.getString(1));
                 halte.setLat(cursor.getString(2));
                 halte.setLng(cursor.getString(3));
@@ -66,11 +67,16 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
     public void addHalte(Halte halte) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(KEY_NAMA, halte.getNama());
-        values.put(KEY_LAT, halte.getLat());
-        values.put(KEY_LNG, halte.getLng());
-        // insert
-        db.replace(TABLE_NAME, null, values);
-        db.close();
+            values.put(KEY_ID, halte.getHalte_id());
+            values.put(KEY_NAMA, halte.getNama());
+            values.put(KEY_LAT, halte.getLat());
+            values.put(KEY_LNG, halte.getLng());
+            // insert
+            db.replace(TABLE_NAME, null, values);
+            db.close();
     }
+
+
+
+
 }

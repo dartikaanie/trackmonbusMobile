@@ -24,7 +24,7 @@ public class LoginActivity extends AppCompatActivity {
     EditText etEmail, etPassword;
     Button btnLogin;
     private dbClient client = ApiClient.getClient().create(dbClient.class);
-    public static  final String DEFAULT ="N/A";
+    public static  final String DEFAULT ="tidak aktif";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -175,7 +175,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/NoBus"
                     app:layout_constraintVertical_bias="0.0" />
 
-              
+
 
                 <TextView
                     android:id="@+id/tvNoBus2"

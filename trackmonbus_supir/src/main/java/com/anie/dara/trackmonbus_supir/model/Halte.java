@@ -1,6 +1,7 @@
 package com.anie.dara.trackmonbus_supir.model;
 
 public class Halte {
+    String halte_id;
     String nama;
     String lat;
     String lng;
@@ -8,10 +9,19 @@ public class Halte {
     public Halte() {
     }
 
-    public Halte(String nama, String lat, String lng) {
+    public Halte(String halte_id,String nama, String lat, String lng) {
         this.nama = nama;
         this.lat = lat;
         this.lng = lng;
+        this.halte_id = halte_id;
+    }
+
+    public String getHalte_id() {
+        return halte_id;
+    }
+
+    public void setHalte_id(String halte_id) {
+        this.halte_id = halte_id;
     }
 
     public String getNama() {
