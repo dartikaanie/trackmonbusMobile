@@ -14,15 +14,17 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -65,10 +67,23 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
     LocationManager locationManager;
     String latitude, longtitude;
 
+    Toolbar toolbar;
+    ImageView toolbarTitle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lokasi);
+
+        toolbar = findViewById(R.id.toolbar);
+        toolbarTitle = (ImageView) findViewById(R.id.toolbar_title);
+        setSupportActionBar(toolbar);
+        if (toolbar != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
         textView4 = findViewById(R.id.textView4);
         btnCurrentLok = findViewById(R.id.btnCurrentLok);
         //klik button_location

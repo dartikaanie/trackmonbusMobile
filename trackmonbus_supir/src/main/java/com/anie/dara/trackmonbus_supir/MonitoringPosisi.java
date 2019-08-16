@@ -625,12 +625,9 @@ public class MonitoringPosisi extends AppCompatActivity implements View.OnClickL
             mDatabase.child(no_bus).setValue(posisi);
             Log.e("posisi_update", posisi.toString());
             Toast.makeText(MonitoringPosisi.this, "Update Posisi", Toast.LENGTH_LONG).show();
-
             cekJarak(location, no_bus);
         }
-
     }
-
 
     private void actionRoute(String posisi1 , String posisi2, final ArrayList<Posisi> busPosisi) {
             Call<DistanceMatrix> call = distanceApi.getDistanceInfo(posisi1,posisi2,"AIzaSyDZ-N9it_JFpboG3R3LfxakMiAkUdF12bU");

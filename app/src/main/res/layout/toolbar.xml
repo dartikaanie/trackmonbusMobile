@@ -1,7 +1,17 @@
 <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/toolbar"
-    android:background="@color/colorPrimary"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:drawableLeft="@drawable/bus_icon"
-    />
+    android:background="@color/cardview_light_background"
+    android:minHeight="?attr/actionBarSize"
+    app:theme="@style/AppTheme">
+
+    <ImageView
+        android:id="@+id/toolbar_title"
+        style="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
+        android:layout_width="150dp"
+        android:layout_height="40dp"
+        android:src="@drawable/transpadang" />
+</android.support.v7.widget.Toolbar>
+

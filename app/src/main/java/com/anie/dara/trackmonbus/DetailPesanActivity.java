@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,16 +48,20 @@ public class DetailPesanActivity extends AppCompatActivity implements View.OnCli
     EditText etIsiKomentar;
     String isi_komentar, user_id, keluhan_id;
 
+    Toolbar toolbar;
+    ImageView toolbarTitle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_pesan);
 
-        Toolbar ToolBarAtas = (Toolbar)findViewById(R.id.toolbar);
-        setSupportActionBar(ToolBarAtas);
-        getSupportActionBar().setTitle("TRANS PADANG");
-
-
+        toolbar = findViewById(R.id.toolbar);
+        toolbarTitle = (ImageView) findViewById(R.id.toolbar_title);
+        setSupportActionBar(toolbar);
+        if (toolbar != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         user = findViewById(R.id.user);

@@ -16,6 +16,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -46,6 +47,8 @@ public class PesanActivity extends AppCompatActivity implements com.anie.dara.tr
     static Activity activity;
     SwipeRefreshLayout swLayout;
     LinearLayout llayout;
+    Toolbar toolbar;
+    ImageView toolbarTitle;
 
 
 
@@ -54,11 +57,12 @@ public class PesanActivity extends AppCompatActivity implements com.anie.dara.tr
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pesan);
         //toolbar
-        Toolbar ToolBarAtas = (Toolbar)findViewById(R.id.toolbar);
-        setSupportActionBar(ToolBarAtas);
-        getSupportActionBar().setTitle("TRANS PADANG");
-
-
+        toolbar = findViewById(R.id.toolbar);
+        toolbarTitle = (ImageView) findViewById(R.id.toolbar_title);
+        setSupportActionBar(toolbar);
+        if (toolbar != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 

@@ -7,16 +7,18 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -46,19 +48,23 @@ public class MypesanActivity extends AppCompatActivity implements com.anie.dara.
     static Activity activity;
     SwipeRefreshLayout swLayout;
     LinearLayout llayout;
+    String user_id;
     public static  final String DEFAULT ="N/A";
+    private Toolbar toolbar;
+    private ImageView toolbarTitle;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pesan);
-        //toolbar
-        Toolbar ToolBarAtas = (Toolbar)findViewById(R.id.toolbar);
-        setSupportActionBar(ToolBarAtas);
-        getSupportActionBar().setTitle("TRANS PADANG");
 
-
+        toolbar = findViewById(R.id.toolbar);
+        toolbarTitle = (ImageView) findViewById(R.id.toolbar_title);
+        setSupportActionBar(toolbar);
+        if (toolbar != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
@@ -72,6 +78,10 @@ public class MypesanActivity extends AppCompatActivity implements com.anie.dara.
                 startActivity(new Intent(MypesanActivity.this, PesanFormActivity.class));
             }
         });
+
+        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+        user_id = sharedPreferences.getString("user_id", DEFAULT);
+
 
 
 
@@ -128,9 +138,8 @@ public class MypesanActivity extends AppCompatActivity implements com.anie.dara.
         load.setText("Memuat Data");
         waiting.setVisibility(View.VISIBLE);
         load.setVisibility(View.VISIBLE);
+        Log.e("user", user_id);
         rvDaftarPesan.setVisibility(View.INVISIBLE);
-        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-        String user_id = sharedPreferences.getString("user_id", DEFAULT);
 
         if(konekkah()){
             client = ApiClient.getClient().create(dbClient.class);
@@ -141,7 +150,6 @@ public class MypesanActivity extends AppCompatActivity implements com.anie.dara.
                     waiting.setVisibility(View.INVISIBLE);
                     load.setVisibility(View.INVISIBLE);
                     rvDaftarPesan.setVisibility(View.VISIBLE);
-
 
                     List<Pesan> listPesanItem = response.body();
                     if(listPesanItem == null){

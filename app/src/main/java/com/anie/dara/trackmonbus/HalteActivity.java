@@ -54,6 +54,8 @@ public class HalteActivity extends AppCompatActivity  implements OnMapReadyCallb
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_halte);
 
+
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);

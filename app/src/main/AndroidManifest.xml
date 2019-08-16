@@ -32,21 +32,52 @@
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
 
-        <activity android:name=".RegistrasiActivity" />
+        <activity android:name=".RegisterActivity" />
         <activity
             android:name=".BerandaActivity"
             android:label="@string/title_activity_beranda" />
         <activity
             android:name=".PesanActivity"
             android:label="@string/title_activity_pesan"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".BusActivity" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+
+        <activity android:name=".BusActivity"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+
         <activity android:name=".HalteActivity" />
         <activity android:name=".DetailPesanActivity" />
-        <activity android:name=".LokasiActivity" />
-        <activity android:name=".TrayekActivity" />
-        <activity android:name=".PesanFormActivity" />
-        <activity android:name=".MypesanActivity"></activity>
+
+        <activity android:name=".LokasiActivity"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+        <activity android:name=".PesanFormActivity"
+            android:parentActivityName=".MypesanActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MypesanActivity" />
+        </activity>
+
+
+        <activity
+            android:name=".MypesanActivity"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+
     </application>
 
 </manifest>

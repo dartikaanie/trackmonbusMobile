@@ -5,12 +5,14 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,10 +40,21 @@ public class BusActivity extends AppCompatActivity {
 //    ArrayList<Pesan> pesanList;
 //    static Activity activity;
 
+    Toolbar toolbar;
+    ImageView toolbarTitle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bus);
+
+        toolbar = findViewById(R.id.toolbar);
+        toolbarTitle = (ImageView) findViewById(R.id.toolbar_title);
+        setSupportActionBar(toolbar);
+        if (toolbar != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
         waiting= findViewById(R.id.loadDataTrayek);

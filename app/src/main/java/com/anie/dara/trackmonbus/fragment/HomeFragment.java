@@ -3,12 +3,16 @@ package com.anie.dara.trackmonbus.fragment;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,9 +30,9 @@ import com.anie.dara.trackmonbus.MypesanActivity;
 import com.anie.dara.trackmonbus.PesanActivity;
 import com.anie.dara.trackmonbus.R;
 import com.anie.dara.trackmonbus.adapter.pesanAdapter;
-import com.anie.dara.trackmonbus.rest.dbClient;
 import com.anie.dara.trackmonbus.model.Pesan;
 import com.anie.dara.trackmonbus.rest.ApiClient;
+import com.anie.dara.trackmonbus.rest.dbClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +43,7 @@ import retrofit2.Response;
 
 public class HomeFragment extends Fragment implements pesanAdapter.OnItemClicked, View.OnClickListener {
 
+    private static final String DEFAULT = "N/A";
     static RecyclerView rvDaftarPesan;
     static pesanAdapter pesanAdapter;
     static ProgressBar waiting;
@@ -51,6 +56,10 @@ public class HomeFragment extends Fragment implements pesanAdapter.OnItemClicked
     ArrayList<Pesan> pesanList;
     static Activity activity;
 
+    private Toolbar toolbar;
+    private ImageView toolbarTitle;
+
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -60,6 +69,14 @@ public class HomeFragment extends Fragment implements pesanAdapter.OnItemClicked
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+
+        toolbar = view.findViewById(R.id.toolbar);
+        toolbarTitle = (ImageView) view.findViewById(R.id.toolbar_title);
+        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+        if (toolbar != null) {
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+
         waiting=view.findViewById(R.id.progressBar);
         noData = view.findViewById(R.id.noData);
         load = view.findViewById(R.id.load);
@@ -93,6 +110,11 @@ public class HomeFragment extends Fragment implements pesanAdapter.OnItemClicked
         layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         rvDaftarPesan.setLayoutManager(layoutManager);
         rvDaftarPesan.setHasFixedSize(true);
+
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences("MyData", Context.MODE_PRIVATE);
+        String user_id = sharedPreferences.getString("user_id", DEFAULT);
+        Log.e("user_id", user_id);
+
 
         getPesan();
         return view;

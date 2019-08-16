@@ -6,12 +6,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:layout_marginBottom="4dp"
-    android:layout_marginLeft="8dp"
-    android:layout_marginRight="8dp"
-    android:layout_marginTop="4dp"
+    android:layout_marginBottom="10dp"
+    android:layout_marginTop="10dp"
+    android:paddingBottom="10dp"
+    android:paddingTop="10dp"
     card_view:cardBackgroundColor="@color/cardview_light_background"
-    card_view:cardCornerRadius="10dp">
+    card_view:cardCornerRadius="2dp"
+    card_view:contentPadding="@dimen/cardview_default_radius">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,87 +24,63 @@
         android:layout_marginTop="0dp"
         android:orientation="vertical">
 
-        <FrameLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal">
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-                <ImageView
-                    android:id="@+id/foto"
-                    android:layout_width="182dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:adjustViewBounds="true"
-                    android:padding="10dp"
-                    android:scaleType="fitXY"
-                    card_view:layout_constraintBottom_toTopOf="@+id/judul"
-                    card_view:layout_constraintRight_toRightOf="parent"
-                    card_view:layout_constraintStart_toStartOf="parent"
-                    card_view:layout_constraintTop_toTopOf="parent"
-                    card_view:srcCompat="@drawable/ic_local_post_office_black_24dp"
-                    tools:ignore="VectorDrawableCompat" />
-
-                <LinearLayout
+                <TextView
+                    android:id="@+id/user"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="36dp"
                     android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:drawableLeft="@drawable/person_icon"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="8dp"
+                    android:text="USER"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold" />
 
-                    <TextView
-                        android:id="@+id/user"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:layout_weight="1"
-                        android:drawableLeft="@drawable/person_icon"
-                        android:gravity="center_vertical"
-                        android:paddingLeft="8dp"
-                        android:text="USER" />
+                <TextView
+                    android:id="@+id/tgl"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingLeft="10dp"
+                    android:text="00-00-000"
+                    android:textAlignment="viewStart"
+                    android:textSize="12sp" />
 
-                    <TextView
-                        android:id="@+id/perihal"
-                        style="@style/TextContent.Small.White"
-                        android:layout_width="match_parent"
-                        android:layout_gravity="bottom"
-                        android:layout_marginLeft="0dp"
-                        android:layout_marginRight="0dp"
-                        android:layout_marginTop="-10dp"
-                        android:layout_weight="1"
-                        android:gravity="center_vertical"
-                        android:padding="8dp"
-                        android:text="@string/perihal"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                        android:textColor="@android:color/black"
-                        android:textSize="18sp"
-                        card_view:fontFamily="sans-serif" />
-
-                    <TextView
-                        android:id="@+id/tgl"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="-10dp"
-                        android:layout_weight="1"
-                        android:paddingLeft="10dp"
-                        android:paddingRight="10dp"
-                        android:text="00-00-000"
-                        android:textAlignment="viewStart"
-                        android:textSize="12sp" />
-                </LinearLayout>
+                <TextView
+                    android:id="@+id/perihal"
+                    style="@style/TextContent.Small.White"
+                    android:layout_width="match_parent"
+                    android:layout_gravity="bottom"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginRight="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:text="@string/perihal"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="12sp"
+                    card_view:fontFamily="sans-serif" />
 
             </LinearLayout>
 
-
-        </FrameLayout>
+        </LinearLayout>
 
         <TextView
             android:id="@+id/isi_pesan"
             style="@style/TextContent.Small.White"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
             android:layout_gravity="bottom"
             android:layout_marginLeft="0dp"
             android:layout_marginRight="0dp"
@@ -114,7 +91,7 @@
             android:textAlignment="viewStart"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
             android:textColor="@android:color/background_dark"
-            android:textSize="14sp"
+            android:textSize="12sp"
             card_view:fontFamily="serif"
             tools:ignore="RtlCompat" />
 
@@ -122,14 +99,14 @@
             android:id="@+id/komentar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:layout_weight="1"
             android:drawableLeft="@drawable/komen"
-            android:drawablePadding="5dp"
+            android:drawablePadding="8dp"
             android:gravity="center_vertical"
-            android:padding="5dp"
+            android:paddingBottom="2dp"
             android:paddingLeft="8dp"
-            android:text="00 " />
+            android:text="00 "
+            android:textSize="12sp" />
 
     </LinearLayout>
 

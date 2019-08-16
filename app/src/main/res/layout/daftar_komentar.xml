@@ -69,7 +69,6 @@
             android:id="@+id/isi_komentar"
             style="@style/TextContent.Small.White"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
             android:layout_gravity="bottom"
             android:layout_marginLeft="0dp"
             android:layout_marginRight="0dp"

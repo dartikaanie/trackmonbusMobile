@@ -6,12 +6,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,12 +45,22 @@ public class PesanFormActivity extends AppCompatActivity implements View.OnClick
     EditText etIsi;
     ProgressDialog loading;
     String user_id,et_perihal, et_isi_keluhan, et_nobus = null;
-
+    Toolbar toolbar;
+    ImageView toolbarTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pesan_form);
+
+
+        toolbar = findViewById(R.id.toolbar);
+        toolbarTitle = (ImageView) findViewById(R.id.toolbar_title);
+        setSupportActionBar(toolbar);
+        if (toolbar != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         etIsi = findViewById(R.id.etIsi);
         nama = findViewById(R.id.tvNama);

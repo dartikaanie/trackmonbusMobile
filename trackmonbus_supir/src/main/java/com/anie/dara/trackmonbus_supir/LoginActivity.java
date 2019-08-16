@@ -19,10 +19,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     EditText etEmail, etPassword;
-    Button btnLogin;
+    Button btnLogin, btnDaftar;
     private dbClient client = ApiClient.getClient().create(dbClient.class);
     public static  final String DEFAULT ="tidak aktif";
 
@@ -35,16 +35,7 @@ public class LoginActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.ETpassword);
 
         btnLogin = findViewById(R.id.btn_login);
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String email = etEmail.getText().toString();
-                String password = etPassword.getText().toString();
-                if(validateLogin(email,password)){
-                    doLogin(email,password);
-                }
-            }
-        });
+        btnLogin.setOnClickListener(this);
 
         SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
         String user_id = sharedPreferences.getString("user_id", DEFAULT);
@@ -104,5 +95,18 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         return true;
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch(view.getId()) {
+            case R.id.btn_login:
+                String email = etEmail.getText().toString();
+                String password = etPassword.getText().toString();
+                if(validateLogin(email,password)){
+                    doLogin(email,password);
+                }
+                break;
+        }
     }
 }

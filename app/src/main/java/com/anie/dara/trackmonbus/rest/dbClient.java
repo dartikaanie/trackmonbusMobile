@@ -11,6 +11,7 @@ import com.anie.dara.trackmonbus.model.User;
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.Response;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -25,6 +26,16 @@ public interface dbClient {
             @Field("email") String email,
             @Field("password") String password
     );
+
+    @FormUrlEncoded
+    @POST("api/register")
+    Call<Response> register(
+            @Field("nama") String nama,
+            @Field("email") String email,
+            @Field("password") String password
+    );
+
+
 
     @GET("api/pesan")
     Call<List<Pesan>> getAllPesan();

@@ -38,17 +38,16 @@
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity"/>
+                android:value=".MainActivity" />
         </activity>
-
-        <activity android:name=".DetailTransActivity"
+        <activity
+            android:name=".DetailTransActivity"
             android:parentActivityName=".MonitoringPosisi">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity"/>
+                android:value=".MainActivity" />
         </activity>
-
-         <activity android:name=".UbahTransActivity"></activity>
+        <activity android:name=".UbahTransActivity" />
     </application>
 
 </manifest>
