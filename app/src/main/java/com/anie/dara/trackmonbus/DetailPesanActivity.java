@@ -1,19 +1,22 @@
 package com.anie.dara.trackmonbus;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -31,11 +34,12 @@ import com.anie.dara.trackmonbus.rest.dbClient;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class DetailPesanActivity extends AppCompatActivity implements View.OnClickListener {
+public class DetailPesanActivity extends AppCompatActivity implements View.OnClickListener, KomentarAdapter.OnItemClicked {
 
     TextView user,tgl, perihal,isi, jumKomentar, userKomentar;
     Pesan pesan;
@@ -97,7 +101,7 @@ public class DetailPesanActivity extends AppCompatActivity implements View.OnCli
                 Toast.makeText(this, "no Data", Toast.LENGTH_SHORT).show();
             }
 
-        komentarAdapter = new KomentarAdapter();
+        komentarAdapter = new KomentarAdapter(this);
 
 
         rvDaftarKomentar = findViewById(R.id.rvKomentarPesan);
@@ -107,6 +111,7 @@ public class DetailPesanActivity extends AppCompatActivity implements View.OnCli
 
         rvDaftarKomentar.setLayoutManager(layoutManager);
         rvDaftarKomentar.setHasFixedSize(true);
+        komentarAdapter.setClickHandler(this);
 
 
         swLayout.setColorSchemeResources(R.color.colorAccent,R.color.colorPrimary);
@@ -199,6 +204,8 @@ public class DetailPesanActivity extends AppCompatActivity implements View.OnCli
 
 
     private void addKomentarPesan(String isi_komentar) {
+
+        Log.e("user add pesan", user_id);
         final ProgressDialog dialog123 = new ProgressDialog(this);
         dialog123.setMessage("Menyimpan Data Komentar. . .");
         dialog123.show();
@@ -207,9 +214,12 @@ public class DetailPesanActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onResponse(Call<Komentar> call, Response<Komentar> response) {
                 Komentar komentar = response.body();
-                Toast.makeText(DetailPesanActivity.this,"Data disimpan", Toast.LENGTH_SHORT).show();
+                if(komentar != null){
+                    Toast.makeText(DetailPesanActivity.this,"Data disimpan", Toast.LENGTH_SHORT).show();
+
+                    getPesanKomentar();
+                }
                 dialog123.dismiss();
-                getPesanKomentar();
             }
             @Override
             public void onFailure(Call<Komentar> call, Throwable t) {
@@ -230,5 +240,45 @@ public class DetailPesanActivity extends AppCompatActivity implements View.OnCli
                 etIsiKomentar.getText().clear();
                 break;
         }
+    }
+
+    @Override
+    public void ItemClicked(final Komentar komentar) {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(DetailPesanActivity.this);
+        alertDialogBuilder
+                .setMessage("Apakah Anda yakin untuk Menghapus komentar ini ?")
+                .setIcon(R.drawable.trans)
+                .setCancelable(false)
+                .setPositiveButton("Iya", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+
+                        final ProgressDialog dialog123 = new ProgressDialog(DetailPesanActivity.this);
+                        dialog123.setMessage("Menghapus Komentar. . .");
+                        dialog123.show();
+                        Call<ResponseBody>  call = client.hapusKomentar(komentar.getKeluhan_komentar_id());
+                        call.enqueue(new Callback<ResponseBody>() {
+                            @Override
+                            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                ResponseBody result = response.body();
+                                if(result != null){
+                                    Toast.makeText(DetailPesanActivity.this, "Komentar dihapus", Toast.LENGTH_SHORT).show();
+                                    dialog123.dismiss();
+                                    getPesanKomentar();
+                                }
+                            }
+                            @Override
+                            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                dialog123.dismiss();
+                                Toast.makeText(DetailPesanActivity.this,"Error. Ulangi lagi" + t.toString(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                }).setNegativeButton("Batal", null);
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+
     }
 }

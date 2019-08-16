@@ -1,7 +1,9 @@
 package com.anie.dara.trackmonbus;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -10,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.anie.dara.trackmonbus.model.User;
 import com.anie.dara.trackmonbus.rest.ApiClient;
 import com.anie.dara.trackmonbus.rest.dbClient;
 
@@ -69,16 +72,31 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         dialog.setMessage("Menyimpan Data . . .");
         dialog.show();
 
-        Call<Response> call = client.register(nama,email,password);
-        call.enqueue(new Callback<Response>() {
+        Call<User> call = client.register(nama,email,password,"1");
+        call.enqueue(new Callback<User>() {
             @Override
-            public void onResponse(Call<Response> call, Response<Response> response) {
-                Log.e("register" , String.valueOf(response.body()));
+            public void onResponse(Call<User> call, Response<User> response) {
+                User user = response.body();
+                if(user!= null){
+                    SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("user_id", user.getUser_id());
+                    editor.putString("name", user.getName());
+                    editor.commit();
+
+                    Log.e("user registrasi", String.valueOf(user));
+                    Log.e("user", user.getUser_id());
+                    Intent intent =  new Intent(RegisterActivity.this, MainActivity.class);
+                    startActivity(intent);
+                }else{
+                    Toast.makeText(RegisterActivity.this,"Error", Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                }
 
             }
 
             @Override
-            public void onFailure(Call<Response> call, Throwable t) {
+            public void onFailure(Call<User> call, Throwable t) {
                 Toast.makeText(RegisterActivity.this,"Error. Ulangi lagi", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
             }

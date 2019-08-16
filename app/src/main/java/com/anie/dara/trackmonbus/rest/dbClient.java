@@ -10,8 +10,8 @@ import com.anie.dara.trackmonbus.model.User;
 
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
-import retrofit2.Response;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -29,10 +29,11 @@ public interface dbClient {
 
     @FormUrlEncoded
     @POST("api/register")
-    Call<Response> register(
-            @Field("nama") String nama,
+    Call<User> register(
+            @Field("name") String name,
             @Field("email") String email,
-            @Field("password") String password
+            @Field("password") String password,
+            @Field("role_id") String role_id
     );
 
 
@@ -67,6 +68,19 @@ public interface dbClient {
             @Field("user_id") String user_id,
             @Field("isi_komentar") String isi_komentar
     );
+
+    @FormUrlEncoded
+    @POST("api/hapusKomentar")
+    Call<ResponseBody> hapusKomentar(
+            @Field("keluhan_komentar_id") String keluhan_komentar_id
+    );
+
+    @FormUrlEncoded
+    @POST("api/hapusPesan")
+    Call<ResponseBody> hapusPesan(
+            @Field("keluhan_id") String keluhan_id
+    );
+
 
     @GET("api/viewBuses")
     Call<List<Bus>> getAllBus();

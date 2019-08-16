@@ -2,7 +2,10 @@ package com.anie.dara.trackmonbus;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
@@ -32,6 +35,7 @@ import com.anie.dara.trackmonbus.rest.dbClient;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -88,7 +92,7 @@ public class MypesanActivity extends AppCompatActivity implements com.anie.dara.
         waiting= findViewById(R.id.loadDataTrayek);
         load = findViewById(R.id.memuat_data);
 
-        pesanAdapter = new pesanAdapter();
+        pesanAdapter = new pesanAdapter(this);
         pesanAdapter.setClickHandler(this);
 
         rvDaftarPesan = findViewById(R.id.rvListPesan);
@@ -181,6 +185,46 @@ public class MypesanActivity extends AppCompatActivity implements com.anie.dara.
         detailIntent.putExtra("key_pesan_parcelable", pesan);
         startActivity(detailIntent);
     }
+
+    @Override
+    public void deletePesan(final Pesan pesan) {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MypesanActivity.this);
+        alertDialogBuilder
+                .setMessage("Apakah Anda yakin untuk Menghapus pesan ini ?")
+                .setIcon(R.drawable.trans)
+                .setCancelable(false)
+                .setPositiveButton("Iya", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+
+                        final ProgressDialog dialog123 = new ProgressDialog(MypesanActivity.this);
+                        dialog123.setMessage("Menghapus Komentar. . .");
+                        dialog123.show();
+                        Call<ResponseBody>  call = client.hapusPesan(pesan.getKeluhan_id());
+                        call.enqueue(new Callback<ResponseBody>() {
+                            @Override
+                            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                ResponseBody result = response.body();
+                                if(result != null){
+                                    Toast.makeText(MypesanActivity.this, "Pesan dihapus", Toast.LENGTH_SHORT).show();
+                                    dialog123.dismiss();
+                                    getAllPesan();
+                                }
+                            }
+                            @Override
+                            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                dialog123.dismiss();
+                                Toast.makeText(MypesanActivity.this,"Error. Ulangi lagi" + t.toString(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                }).setNegativeButton("Batal", null);
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
 
 
     public Boolean konekkah(){
