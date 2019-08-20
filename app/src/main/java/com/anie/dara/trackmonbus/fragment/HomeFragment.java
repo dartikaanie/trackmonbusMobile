@@ -27,10 +27,10 @@ import android.widget.Toast;
 
 import com.anie.dara.trackmonbus.BusActivity;
 import com.anie.dara.trackmonbus.DetailPesanActivity;
-import com.anie.dara.trackmonbus.LokasiActivity;
 import com.anie.dara.trackmonbus.MainActivity;
 import com.anie.dara.trackmonbus.MypesanActivity;
 import com.anie.dara.trackmonbus.PesanActivity;
+import com.anie.dara.trackmonbus.PilihJalurActivity;
 import com.anie.dara.trackmonbus.R;
 import com.anie.dara.trackmonbus.adapter.pesanAdapter;
 import com.anie.dara.trackmonbus.model.Pesan;
@@ -228,7 +228,7 @@ public class HomeFragment extends Fragment implements pesanAdapter.OnItemClicked
                 break;
 
             case R.id.BtnLokasi:
-                startActivity(new Intent(getActivity(), LokasiActivity.class));
+                startActivity(new Intent(getActivity(), PilihJalurActivity.class));
                 break;
 
             case R.id.BtnlihatAll :

@@ -2,12 +2,10 @@ package com.anie.dara.trackmonbus;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -19,6 +17,7 @@ import android.widget.Toast;
 
 import com.anie.dara.trackmonbus.adapter.BusAdapter;
 import com.anie.dara.trackmonbus.model.Bus;
+import com.anie.dara.trackmonbus.rest.ApiClient;
 import com.anie.dara.trackmonbus.rest.dbClient;
 
 import java.util.ArrayList;
@@ -27,8 +26,6 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class BusActivity extends AppCompatActivity {
 
@@ -39,7 +36,7 @@ public class BusActivity extends AppCompatActivity {
 //    static Pesan dataBus = new Pesan();
 //    ArrayList<Pesan> pesanList;
 //    static Activity activity;
-
+    private dbClient client = ApiClient.getClient().create(dbClient.class);
     Toolbar toolbar;
     ImageView toolbarTitle;
 
@@ -57,7 +54,7 @@ public class BusActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
-        waiting= findViewById(R.id.loadDataTrayek);
+        waiting= findViewById(R.id.loadData);
         load = findViewById(R.id.memuat_bus);
 
         busAdapter = new BusAdapter();
@@ -70,12 +67,8 @@ public class BusActivity extends AppCompatActivity {
         waiting.setVisibility(View.VISIBLE);
         load.setVisibility(View.VISIBLE);
 
-        int orientasi = getResources().getConfiguration().orientation;
-        if(orientasi == Configuration.ORIENTATION_PORTRAIT){
             layoutManager = new LinearLayoutManager(this);
-        }else{
-            layoutManager = new GridLayoutManager(this,2);
-        }
+
         rvDaftarBus.setLayoutManager(layoutManager);
         rvDaftarBus.setHasFixedSize(true);
 
@@ -88,14 +81,7 @@ public class BusActivity extends AppCompatActivity {
         load.setVisibility(View.VISIBLE);
         rvDaftarBus.setVisibility(View.INVISIBLE);
 
-
         if(konekkah()){
-            dbClient client = (new Retrofit.Builder()
-                    .baseUrl("http://192.168.43.14/trackmonbus/public/")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build())
-                    .create(dbClient.class);
-
             Call<List<Bus>> call = client.getAllBus();
             call.enqueue(new Callback<List<Bus>>() {
                 @Override

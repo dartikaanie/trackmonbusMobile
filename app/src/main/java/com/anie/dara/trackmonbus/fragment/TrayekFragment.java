@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +23,7 @@ import com.anie.dara.trackmonbus.HalteActivity;
 import com.anie.dara.trackmonbus.MainActivity;
 import com.anie.dara.trackmonbus.R;
 import com.anie.dara.trackmonbus.adapter.TrayekAdapter;
-import com.anie.dara.trackmonbus.model.Trayek;
+import com.anie.dara.trackmonbus.model.Trayeks.Trayeks;
 import com.anie.dara.trackmonbus.rest.ApiClient;
 import com.anie.dara.trackmonbus.rest.dbClient;
 
@@ -75,7 +76,7 @@ public class TrayekFragment extends Fragment implements TrayekAdapter.OnItemClic
         }
 
 
-        waiting= view.findViewById(R.id.loadDataTrayek);
+        waiting= view.findViewById(R.id.loadData);
         load = view.findViewById(R.id.memuat_trayek);
 
         trayekAdapter = new TrayekAdapter();
@@ -107,29 +108,29 @@ public class TrayekFragment extends Fragment implements TrayekAdapter.OnItemClic
 
         if(((MainActivity)activity).konekkah()){
             client = ApiClient.getClient().create(dbClient.class);
-            Call<List<Trayek>> call = client.getAllTrayek();
-            call.enqueue(new Callback<List<Trayek>>() {
+            Call<List<Trayeks>> call = client.getAllTrayek();
+            call.enqueue(new Callback<List<Trayeks>>() {
                 @Override
-                public void onResponse(Call<List<Trayek>> call,  Response<List<Trayek>> response) {
+                public void onResponse(Call<List<Trayeks>> call,  Response<List<Trayeks>> response) {
                     waiting.setVisibility(View.INVISIBLE);
                     load.setVisibility(View.INVISIBLE);
                     rvDaftarTrayek.setVisibility(View.VISIBLE);
 
-                    List<Trayek> listTrayekItem = response.body();
+                    List<Trayeks> listTrayekItem = response.body();
                     if(listTrayekItem == null){
                         Toast.makeText(getContext() , "Maaf, Tidak ada data", Toast.LENGTH_SHORT).show();
                     }
                     else{
-                        Toast.makeText(getContext() , "Pesan berhasil diload", Toast.LENGTH_SHORT).show();
-                        trayekAdapter.setDataTrayek(new ArrayList<Trayek>(listTrayekItem));
+                        Toast.makeText(getContext() , "Data Trayek berhasil diload", Toast.LENGTH_SHORT).show();
+                        trayekAdapter.setDataTrayek(new ArrayList<Trayeks>(listTrayekItem));
                     }
 
                 }
 
 
                 @Override
-                public void onFailure(Call<List<Trayek>> call, Throwable t) {
-//                    load.setText(t.toString());
+                public void onFailure(Call<List<Trayeks>> call, Throwable t) {
+                    Log.e("error get Trayrks",t.toString());
                     Toast.makeText(getContext() , t.toString(), Toast.LENGTH_SHORT).show();
                 }
             });
@@ -139,10 +140,11 @@ public class TrayekFragment extends Fragment implements TrayekAdapter.OnItemClic
     }
 
     @Override
-    public void ItemClicked(Trayek trayek) {
-        Toast.makeText(getContext(), "Item yang diklik adalah : " + trayek.getTrayek(), Toast.LENGTH_SHORT).show();
+    public void ItemClicked(Trayeks trayek) {
+        Toast.makeText(getContext(), "Item yang diklik adalah : " + trayek.getTrayekId(), Toast.LENGTH_SHORT).show();
         Intent HalteIntent = new Intent(getContext(), HalteActivity.class);
         HalteIntent.putExtra("trayek", trayek);
         startActivity(HalteIntent);
     }
+
 }

@@ -24,7 +24,7 @@
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="400dp"
-        android:layout_height="350dp" />
+        android:layout_height="400dp" />
 
     <TextView
         android:id="@+id/daftarHalte"
@@ -40,12 +40,10 @@
         android:textStyle="bold" />
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/rvListHalte"
+        android:id="@+id/rvListJalur"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:padding="5dp">
+        android:layout_marginTop="8dp">
 
     </android.support.v7.widget.RecyclerView>
 

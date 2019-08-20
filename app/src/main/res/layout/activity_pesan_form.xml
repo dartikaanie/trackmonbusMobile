@@ -104,7 +104,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/cardView"
+                        app:layout_constraintTop_toBottomOf="@+id/cardBus"
                         app:layout_constraintVertical_bias="0.402" />
 
                     <Spinner
@@ -136,7 +136,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/cardView"
+                        app:layout_constraintTop_toBottomOf="@+id/cardBus"
                         app:layout_constraintVertical_bias="0.402" />
 
                     <EditText
@@ -189,7 +189,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/cardView"
+                        app:layout_constraintTop_toBottomOf="@+id/cardBus"
                         app:layout_constraintVertical_bias="0.402" />
 
                     <Spinner

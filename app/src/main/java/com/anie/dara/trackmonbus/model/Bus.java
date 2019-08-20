@@ -7,6 +7,9 @@ public class Bus {
     int tahun;
     int kapasitas;
 
+    public Bus() {
+    }
+
     public Bus(String no_bus, String no_tnkb, String tipe, int tahun, int kapasitas) {
         this.no_bus = no_bus;
         this.no_tnkb = no_tnkb;

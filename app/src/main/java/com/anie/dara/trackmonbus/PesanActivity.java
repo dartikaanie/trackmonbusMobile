@@ -84,7 +84,7 @@ public class PesanActivity extends AppCompatActivity implements com.anie.dara.tr
 
 
 
-        waiting= findViewById(R.id.loadDataTrayek);
+        waiting= findViewById(R.id.loadData);
         load = findViewById(R.id.memuat_data);
 
         pesanAdapter = new pesanAdapter(this);

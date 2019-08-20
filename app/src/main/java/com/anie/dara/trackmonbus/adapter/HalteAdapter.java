@@ -9,17 +9,25 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.anie.dara.trackmonbus.R;
-import com.anie.dara.trackmonbus.model.Halte;
+import com.anie.dara.trackmonbus.model.Trayeks.HalteItem;
 
-import java.util.ArrayList;
+import java.util.List;
 
-public class HalteAdapter extends  RecyclerView.Adapter<HalteAdapter.HalteHolder>{
+public class HalteAdapter extends  RecyclerView.Adapter<HalteAdapter.HalteHolder> {
 
-    private ArrayList<Halte> dataHalte;
+    private List<HalteItem> dataHalte;
     Context context;
-    HalteAdapter.OnItemClicked clickHandler;
+    OnHalteListener halteListener;
 
-    public void setDataHalte(ArrayList<Halte> data){
+
+    public HalteAdapter(List<HalteItem> data, OnHalteListener listener) {
+        dataHalte = data;
+        this.halteListener = listener;
+        notifyDataSetChanged();
+    }
+
+
+    public void setDataHalte(List<HalteItem> data){
         dataHalte = data;
         notifyDataSetChanged();
     }
@@ -31,58 +39,62 @@ public class HalteAdapter extends  RecyclerView.Adapter<HalteAdapter.HalteHolder
         View v = LayoutInflater
                 .from(parent.getContext())
                 .inflate(R.layout.daftar_halte, parent, false);
-        HalteAdapter.HalteHolder holder = new HalteAdapter.HalteHolder(v);
+        HalteAdapter.HalteHolder holder = new HalteAdapter.HalteHolder(v, halteListener);
         context = parent.getContext();
         return holder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull HalteAdapter.HalteHolder holder, int position) {
-        Halte halte = dataHalte.get(position);
+    public void onBindViewHolder(@NonNull HalteHolder holder, int position) {
+        final HalteItem halte = dataHalte.get(position);
         holder.namaHalte.setText(String.valueOf(halte.getNama()));
-        holder.lat_lng.setText(String.valueOf(halte.getLat() +" , " + halte.getLng()));
+        holder.lat_lng.setText(String.valueOf(halte.getLat() + " , " + halte.getLng()));
+
     }
 
 
     @Override
     public int getItemCount() {
         //mengembalikan jumlah data yang dimiliki
-        if(dataHalte!=null){
+        if (dataHalte != null) {
             return dataHalte.size();
-        }else {
+        } else {
             return 0;
         }
     }
 
     // Inner CLASS
-    public class HalteHolder extends RecyclerView.ViewHolder{
+    public class HalteHolder extends RecyclerView.ViewHolder {
         TextView namaHalte, lat_lng;
+        private OnHalteListener halteListener;
 
-        public HalteHolder(@NonNull View itemView){
+        public HalteHolder(@NonNull View itemView, final OnHalteListener halteListener) {
             super(itemView);
             namaHalte = itemView.findViewById(R.id.nama_trayek);
             lat_lng = itemView.findViewById(R.id.lat_lng);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
-                    Halte halte= dataHalte.get(getAdapterPosition());
-                    clickHandler.ItemClicked(halte);
+                public void onClick(View view) {
+                    if(halteListener != null){
+                        HalteItem item = dataHalte.get(getAdapterPosition());
+                        halteListener.onHalteClick(item);
+                    }
+
                 }
             });
+
         }
     }
 
-    public interface OnItemClicked{
-        void ItemClicked(Halte halte);
+    public interface OnHalteListener {
 
-    }
+    void onHalteClick(HalteItem halteItem);
+}
 
+    public void setClickHandler(HalteAdapter.OnHalteListener halteListener) {
 
-
-    public void setClickHandler(HalteAdapter.OnItemClicked clickHandler) {
-
-        this.clickHandler = clickHandler;
+        this.halteListener = halteListener;
     }
 
 }

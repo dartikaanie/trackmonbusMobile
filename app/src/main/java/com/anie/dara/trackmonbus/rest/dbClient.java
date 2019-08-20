@@ -5,8 +5,10 @@ import com.anie.dara.trackmonbus.model.Halte;
 import com.anie.dara.trackmonbus.model.Komentar;
 import com.anie.dara.trackmonbus.model.Perihal;
 import com.anie.dara.trackmonbus.model.Pesan;
-import com.anie.dara.trackmonbus.model.Trayek;
+import com.anie.dara.trackmonbus.model.Trayeks.JalurItem;
+import com.anie.dara.trackmonbus.model.Trayeks.Trayeks;
 import com.anie.dara.trackmonbus.model.User;
+import com.anie.dara.trackmonbus.model.noBus;
 
 import java.util.List;
 
@@ -17,6 +19,7 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface dbClient {
 
@@ -85,6 +88,9 @@ public interface dbClient {
     @GET("api/viewBuses")
     Call<List<Bus>> getAllBus();
 
+    @GET("api/getDataBus/{no_bus}")
+    Call<Bus> getDataBus(@Path("no_bus") String no_bus);
+
     @GET("api/viewHaltes/{trayek_id}")
     Call<List<Halte>> getAllHalte(@Path("trayek_id") String trayek_id);
 
@@ -92,8 +98,13 @@ public interface dbClient {
     Call<List<Halte>> getAllHalte();
 
     @GET("api/viewTrayeks")
-    Call<List<Trayek>> getAllTrayek();
+    Call<List<Trayeks>> getAllTrayek();
 
+    @GET("api/viewAllJalur")
+    Call<List<JalurItem>> getAllJalur();
+
+    @GET("api/getBusSearah")
+    Call<List<noBus>> getBusSearah(@Query("jalur_id") String jalur_id);
 
 
 

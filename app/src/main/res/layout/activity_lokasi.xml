@@ -24,20 +24,191 @@
     <fragment
         android:id="@+id/map_lokasi"
         android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="386dp"
-        android:layout_height="389dp" />
+        android:layout_width="match_parent"
+        android:layout_height="435dp" />
 
-    <Button
-        android:id="@+id/btnCurrentLok"
-        android:layout_width="131dp"
-        android:layout_height="40dp"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="6dp"
-        android:background="@drawable/button_bg_rounded"
-        android:padding="8dp"
-        android:text="Lokasi Anda "
-        android:textColor="@android:color/background_light" />
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swlayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="15dp">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/linearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/appBar"
+                app:layout_constraintVertical_bias="0.0">
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="5dp"
+                    android:text="Pilih Halte"
+                    android:textColor="@android:color/black"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rvDaftarHalte"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="8dp"
+                    android:scrollbars="horizontal"
+                    android:visibility="visible" />
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/cardBus"
+                    android:layout_width="match_parent"
+                    android:layout_height="67dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="10dp"
+                    android:visibility="invisible"
+                    app:cardBackgroundColor="@color/cardview_light_background"
+                    app:cardCornerRadius="15dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/cardview_light_background"
+                        android:orientation="horizontal"
+                        android:padding="5dp">
+
+                        <ImageView
+                            android:id="@+id/imageView4"
+                            android:layout_width="53dp"
+                            android:layout_height="match_parent"
+                            android:padding="5dp"
+                            app:srcCompat="@drawable/bus" />
+
+                        <LinearLayout
+                            android:id="@+id/B"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:background="@android:color/holo_orange_light"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/no_bus"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:fontFamily="@font/text_me_one"
+                                android:gravity="center_vertical|center"
+                                android:paddingLeft="8dp"
+                                android:paddingRight="8dp"
+
+                                android:text="00"
+                                android:textSize="30sp"
+                                android:textStyle="bold"
+                                app:layout_constraintBottom_toBottomOf="@+id/view2"
+                                app:layout_constraintEnd_toEndOf="@+id/view2"
+                                app:layout_constraintHorizontal_bias="0.0"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintVertical_bias="0.0" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/linearLayout4"
+                            android:layout_width="229dp"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/TVdurasi"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="bottom"
+                                android:layout_weight="1"
+                                android:drawablePadding="4dp"
+                                android:gravity="center"
+                                android:text="Durasi"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                                android:textColor="@android:color/black"
+                                android:textSize="24sp"
+                                app:layout_constraintBottom_toTopOf="@+id/namaTrayek2"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintHorizontal_bias="0.0"
+                                app:layout_constraintStart_toEndOf="@+id/view2"
+                                app:layout_constraintTop_toBottomOf="@+id/tgl" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/no_tnkb"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:fontFamily="@font/text_me_one"
+                                    android:gravity="center_vertical|center_horizontal|center"
+                                    android:text="BA 0000 XX"
+                                    android:textColor="@android:color/darker_gray"
+                                    android:textSize="18sp"
+                                    android:textStyle="bold"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toStartOf="@+id/view2"
+                                    app:layout_constraintHorizontal_bias="0.0"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toBottomOf="@+id/tvNoBus3"
+                                    app:layout_constraintVertical_bias="0.0" />
+
+                                <TextView
+                                    android:id="@+id/kapasitas"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center"
+                                    android:layout_weight="1"
+                                    android:fontFamily="@font/text_me_one"
+                                    android:foregroundGravity="center"
+                                    android:gravity="center"
+                                    android:text="00 orang"
+                                    android:textAlignment="center"
+                                    android:textColor="@android:color/darker_gray"
+                                    android:textSize="18sp"
+                                    android:textStyle="bold"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="@+id/view2"
+                                    app:layout_constraintHorizontal_bias="0.21"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toBottomOf="@+id/tvNoBus"
+                                    app:layout_constraintVertical_bias="1.0" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </android.support.v7.widget.CardView>
+
+            </LinearLayout>
+        </ScrollView>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </LinearLayout>
