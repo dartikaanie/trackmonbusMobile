@@ -78,10 +78,9 @@
     </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.CardView
-        android:id="@+id/cardView"
+        android:id="@+id/cardViewBus"
         android:layout_width="match_parent"
-        android:layout_height="122dp"
-        android:layout_marginBottom="-10dp"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
@@ -91,223 +90,210 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.943">
+        app:layout_constraintVertical_bias="0.97">
 
-        <android.support.constraint.ConstraintLayout
-            android:id="@+id/linearLayout"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="123dp"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="10dp">
 
-            <TextView
-                android:id="@+id/namaHalte"
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="30dp"
-                android:layout_gravity="bottom"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="64dp"
-                android:layout_weight="1"
-                android:drawableLeft="@drawable/person_icon"
-                android:drawablePadding="4dp"
-                android:gravity="center_vertical"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:orientation="vertical"
                 android:paddingLeft="10dp"
-                android:text="Nama Halte"
-                android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                android:textColor="@android:color/darker_gray"
-                android:textSize="12sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/view2"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:paddingRight="5dp">
 
-            <TextView
-                android:id="@+id/namaTrayek2"
-                android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/tvNoBus2"
+                    android:layout_width="match_parent"
+                    android:layout_height="16dp"
+                    android:layout_marginStart="8dp"
+                    android:fontFamily="@font/text_me_one"
+                    android:text="No Bus"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <TextView
+                    android:id="@+id/NoBus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:fontFamily="@font/text_me_one"
+                    android:text="00"
+                    android:textSize="60sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/view2"
+                    app:layout_constraintEnd_toEndOf="@+id/view2"
+
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <TextView
+                    android:id="@+id/tvNoBus3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:fontFamily="@font/text_me_one"
+                    android:text="No TNKB"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="8sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/NoBus"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <TextView
+                    android:id="@+id/no_tnkb"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:fontFamily="@font/text_me_one"
+                    android:text="BA 0000 XX"
+                    android:textColor="@android:color/black"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/view2"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvNoBus3"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <TextView
+                    android:id="@+id/tvNoBus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:fontFamily="@font/text_me_one"
+                    android:text="Kapasitas"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="8sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/no_tnkb" />
+
+                <TextView
+                    android:id="@+id/kapasitas"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:fontFamily="@font/text_me_one"
+                    android:text="00 orang"
+                    android:textColor="@android:color/black"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/view2"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvNoBus"
+                    app:layout_constraintVertical_bias="0.0" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="36dp"
-                android:layout_weight="1"
-                android:drawableLeft="@drawable/person_icon"
-                android:drawablePadding="4dp"
-                android:gravity="center_vertical"
-                android:paddingLeft="10dp"
-                android:text="Nama Trayek"
-                android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                android:textColor="@android:color/darker_gray"
-                android:textSize="12sp"
-                app:layout_constraintBottom_toTopOf="@+id/namaHalte"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/view2"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.666" />
+                android:orientation="vertical"
+                android:padding="1dp">
 
-            <TextView
-                android:id="@+id/tgl"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_weight="1"
-                android:drawableLeft="@drawable/person_icon"
-                android:drawablePadding="4dp"
-                android:gravity="center_vertical"
-                android:paddingLeft="10dp"
-                android:text="Nama Supir - Nama Pramugara"
-                android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                android:textColor="@android:color/darker_gray"
-                android:textSize="12sp"
-                app:layout_constraintBottom_toTopOf="@+id/namaTrayek2"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/view2"
-                app:layout_constraintTop_toTopOf="parent" />
+                <TextView
+                    android:id="@+id/namaSupir"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="bottom"
+                    android:layout_margin="2dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_weight="1"
+                    android:drawableLeft="@drawable/person_icon"
+                    android:drawablePadding="4dp"
+                    android:gravity="center_vertical"
+                    android:text="Nama Supir"
+                    android:textAllCaps="false"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                    android:textColor="@android:color/black"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toTopOf="@+id/namaTrayek2"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/view2"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <View
-                android:id="@+id/view2"
-                android:layout_width="3dp"
-                android:layout_height="135dp"
-                android:layout_marginEnd="24dp"
-                android:layout_marginStart="80dp"
-                android:background="#e9e9ea"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="1.0" />
+                <TextView
+                    android:id="@+id/namaTrayek2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_margin="2dp"
+                    android:layout_weight="1"
+                    android:drawableLeft="@drawable/person_icon"
+                    android:drawablePadding="4dp"
+                    android:gravity="center_vertical"
+                    android:text="Nama Trayek"
+                    android:textAllCaps="false"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                    android:textColor="@android:color/black"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toTopOf="@+id/namaJalur"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/view2"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.666" />
 
-            <TextView
-                android:id="@+id/tvNoBus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:fontFamily="@font/text_me_one"
-                android:text="Kapasitas"
-                android:textColor="@android:color/background_light"
-                android:textSize="8sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/no_tnkb" />
+                <TextView
+                    android:id="@+id/namaJalur"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="bottom"
+                    android:layout_margin="2dp"
+                    android:layout_weight="1"
+                    android:drawableLeft="@drawable/person_icon"
+                    android:drawablePadding="4dp"
+                    android:gravity="center_vertical"
+                    android:text="Nama Halte"
+                    android:textAllCaps="false"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                    android:textColor="@android:color/black"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/view2"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/tvNoBus3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginLeft="5dp"
-                android:fontFamily="@font/text_me_one"
-                android:text="No TNKB"
-                android:textColor="@android:color/background_light"
-                android:textSize="8sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/NoBus"
-                app:layout_constraintVertical_bias="0.0" />
+                <Button
+                    android:id="@+id/btnCheckin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="27dp"
+                    android:layout_gravity="right"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/button_bg_rounded"
+                    android:foregroundGravity="right"
+                    android:text="Check-in"
+                    android:textColor="@android:color/background_light"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toEndOf="@+id/view2"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="1.0" />
 
-            <TextView
-                android:id="@+id/tvNoBus2"
-                android:layout_width="46dp"
-                android:layout_height="16dp"
-                android:layout_margin="10dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginStart="8dp"
-                android:fontFamily="@font/text_me_one"
-                android:text="No Bus"
-                android:textColor="@android:color/background_light"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0" />
+            </LinearLayout>
 
-            <TextView
-                android:id="@+id/no_tnkb"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="4dp"
-                android:layout_marginStart="4dp"
-                android:fontFamily="@font/text_me_one"
-                android:text="BA 0000 XX"
-                android:textColor="@android:color/black"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/view2"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvNoBus3"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <TextView
-                android:id="@+id/kapasitas"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="4dp"
-                android:fontFamily="@font/text_me_one"
-                android:text="00 orang"
-                android:textColor="@android:color/black"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/view2"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvNoBus"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <TextView
-                android:id="@+id/NoBus"
-                android:layout_width="69dp"
-                android:layout_height="64dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="10dp"
-                android:fontFamily="@font/text_me_one"
-                android:text="00"
-                android:textSize="56sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/view2"
-                app:layout_constraintEnd_toEndOf="@+id/view2"
-
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <Button
-                android:id="@+id/btnCheckin"
-                android:layout_width="77dp"
-                android:layout_height="36dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/button_bg_rounded"
-                android:text="Check-in"
-                android:textColor="@android:color/background_light"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toEndOf="@+id/view2"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="1.0" />
-
-        </android.support.constraint.ConstraintLayout>
+        </LinearLayout>
 
     </android.support.v7.widget.CardView>
 

@@ -45,11 +45,12 @@ public class JadwalAdapter extends  RecyclerView.Adapter<JadwalAdapter.JadwalHol
     public void onBindViewHolder(@NonNull JadwalAdapter.JadwalHolder holder, int position) {
         Jadwal jadwal = dataJadwal.get(position);
         holder.NoBus.setText(jadwal.getNo_bus());
+        holder.tgl.setText(jadwal.getTgl());
         holder.kapasitas.setText(jadwal.getKapasitas() + " orang");
         holder.no_tnkb.setText(jadwal.getNo_tnkb());
         holder.namaTrayek2.setText(jadwal.getTrayek());
-        holder.namaHalte.setText(jadwal.getNama_halte());
-        holder.namaSupir.setText(jadwal.getNama_supir());
+        holder.namaHalte.setText(jadwal.getJalur());
+        holder.namaSupir.setText(jadwal.getNama_supir()+ " - " + jadwal.getNama_pramugara());
 
         Date date1= null;
         try {
@@ -84,7 +85,7 @@ public class JadwalAdapter extends  RecyclerView.Adapter<JadwalAdapter.JadwalHol
             tgl = itemView.findViewById(R.id.tgl);
             no_tnkb = itemView.findViewById(R.id.no_tnkb);
             namaTrayek2 = itemView.findViewById(R.id.namaTrayek2);
-            namaHalte = itemView.findViewById(R.id.namaHalte);
+            namaHalte = itemView.findViewById(R.id.namaJalur);
             namaSupir = itemView.findViewById(R.id.namaSupir);
         }
     }

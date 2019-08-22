@@ -45,7 +45,7 @@
             android:parentActivityName=".MonitoringPosisi">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".MonitoringPosisi" />
         </activity>
         <activity android:name=".UbahTransActivity" />
     </application>

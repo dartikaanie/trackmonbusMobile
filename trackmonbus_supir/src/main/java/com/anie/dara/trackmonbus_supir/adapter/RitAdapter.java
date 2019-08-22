@@ -41,8 +41,14 @@ public class RitAdapter extends  RecyclerView.Adapter<RitAdapter.RitHolder> {
     public void onBindViewHolder(@NonNull RitAdapter.RitHolder holder, int position) {
         rit rit = dataRit.get(position);
         holder.waktu_berangkat.setText(String.valueOf(rit.getWaktu_berangkat()));
-        holder.waktu_datang.setText(String.valueOf(rit.getWaktu_datang()));
-        holder.halte_tujuan.setText(String.valueOf(rit.getNama_halte_tujuan()));
+
+        if(rit.getWaktu_datang() == null){
+            holder.waktu_datang.setText("-");
+            holder.waktu_datang.setGravity(2);
+        }else{
+            holder.waktu_datang.setText(String.valueOf(rit.getWaktu_datang()));
+        }
+        holder.halte_tujuan.setText(String.valueOf(rit.getJalur()));
     }
 
 

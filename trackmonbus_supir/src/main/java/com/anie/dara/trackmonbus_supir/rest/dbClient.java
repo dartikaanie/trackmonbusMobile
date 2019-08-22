@@ -26,10 +26,10 @@ public interface dbClient {
     );
 
 
-    @FormUrlEncoded
-    @POST("api/cekJadwal")
+
+    @GET("api/cekJadwal")
     Call<Jadwal> cekJadwal(
-            @Field("user_id") String user_id
+            @Query("user_id") String user_id
     );
 
     @GET("api/cekJadwalSupir")
@@ -63,7 +63,18 @@ public interface dbClient {
 
 
     @GET("api/getBusSearah")
-    Call<List<noBus>> getBusSearah(@Query("halte_tujuan_id") String halte_tujuan_id);
+    Call<List<noBus>> getBusSearah(@Query("jalur_id") String jalur_id);
 
+
+
+    @FormUrlEncoded
+    @PUT("api/UbahDataJadwal")
+    Call<Jadwal> UbahDataJadwal(
+            @Field("no_bus") String no_bus,
+            @Field("tgl") String tgl,
+            @Field("km_awal") String km_awal,
+            @Field("km_akhir") String km_akhir,
+            @Field("keterangan") String keterangan
+    );
 
 }

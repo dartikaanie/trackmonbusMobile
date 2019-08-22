@@ -32,7 +32,7 @@
         app:layout_constraintVertical_bias="0.0" />
 
     <android.support.v7.widget.CardView
-        android:id="@+id/cardView"
+        android:id="@+id/cardViewBus"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:cardBackgroundColor="@color/cardview_light_background"
@@ -163,22 +163,25 @@
                         android:textAppearance="@style/TextAppearance.AppCompat.Small"
                         android:textColor="@android:color/black"
                         android:textSize="14sp"
-                        app:layout_constraintBottom_toTopOf="@+id/namaHalte"
+                        app:layout_constraintBottom_toTopOf="@+id/namaJalur"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toEndOf="@+id/view2" />
 
                     <TextView
-                        android:id="@+id/namaHalte"
+                        android:id="@+id/namaJalur"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_gravity="bottom"
                         android:layout_marginStart="8dp"
                         android:layout_weight="1"
+                        android:background="@color/common_google_signin_btn_text_light_disabled"
                         android:drawableLeft="@drawable/person_icon"
                         android:drawablePadding="4dp"
                         android:gravity="center_vertical"
                         android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:shadowRadius="10"
                         android:text="Nama Halte"
                         android:textAppearance="@style/TextAppearance.AppCompat.Small"
                         android:textColor="@android:color/black"
@@ -207,7 +210,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toEndOf="@+id/view2"
-                        app:layout_constraintTop_toBottomOf="@+id/tgl" />
+                        app:layout_constraintTop_toBottomOf="@+id/namaSupir" />
                 </LinearLayout>
 
             </LinearLayout>

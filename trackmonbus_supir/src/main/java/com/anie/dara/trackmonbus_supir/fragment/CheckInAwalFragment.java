@@ -59,6 +59,7 @@ public class CheckInAwalFragment extends Fragment implements View.OnClickListene
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        mView =  inflater.inflate(R.layout.fragment_check_in_awal, container, false);
         //set toolbar
         toolbar = mView.findViewById(R.id.toolbar);
         toolbarTitle = (ImageView) mView.findViewById(R.id.toolbar_title);
@@ -67,13 +68,13 @@ public class CheckInAwalFragment extends Fragment implements View.OnClickListene
             ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
 
-        mView =  inflater.inflate(R.layout.fragment_check_in_awal, container, false);
+
         NoBus = mView.findViewById(R.id.NoBus);
         no_tnkb = mView.findViewById(R.id.no_tnkb);
         kapasitas = mView.findViewById(R.id.kapasitas);
-        namaHalte = mView.findViewById(R.id.namaHalte);
+        namaHalte = mView.findViewById(R.id.namaJalur);
         namaSupir = mView.findViewById(R.id.namaSupir);
-        hari_tgl = mView.findViewById(R.id.tgl);
+        hari_tgl = mView.findViewById(R.id.hari_tgl);
         namaTrayek = mView.findViewById(R.id.namaTrayek2);
         btnMulai = mView.findViewById(R.id.mulai);
         btnMulai.setOnClickListener(this);
@@ -93,7 +94,7 @@ public class CheckInAwalFragment extends Fragment implements View.OnClickListene
             NoBus.setText(jadwal.getNo_bus());
             no_tnkb.setText(jadwal.getNo_tnkb());
             kapasitas.setText(jadwal.getKapasitas());
-            namaHalte.setText(jadwal.getNama_halte());
+            namaHalte.setText(jadwal.getJalur());
             namaSupir.setText(jadwal.getNama_supir());
             namaTrayek.setText(jadwal.getTrayek());
             no_bus = jadwal.getNo_bus();
@@ -120,19 +121,7 @@ public class CheckInAwalFragment extends Fragment implements View.OnClickListene
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                         ResponseBody s = response.body();
                         Toast.makeText(activity, "berhasil disimpan", Toast.LENGTH_LONG).show();
-
-//                        Bundle bundle = new Bundle();
-//                        bundle.putParcelable("jadwal",jadwal); // Put anything what you want
-//
-//                        Fragment monitorPosisiFragment = new MonitorPosisiFragment();
-//                        monitorPosisiFragment.setArguments(bundle);
-//
                         prog.dismiss();
-//                        getFragmentManager()
-//                                .beginTransaction()
-//                                .replace(R.id.fl_container, monitorPosisiFragment)
-//                                .commit();
-
                         Intent intent=  new Intent(getActivity(), MonitoringPosisi.class);
                         intent.putExtra("jadwal", jadwal);
                         startActivity(intent);

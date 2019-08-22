@@ -112,7 +112,8 @@ public class MypesanActivity extends AppCompatActivity implements com.anie.dara.
         swLayout = (SwipeRefreshLayout) findViewById(R.id.swlayout);
         llayout = (LinearLayout) findViewById(R.id.ll_swiperefresh);
 
-        swLayout.setColorSchemeResources(R.color.colorAccent,R.color.colorPrimary);
+        swLayout.setColorSchemeResources(R.color.colorAccent,R.color.colorYellow, R.color.colorRed);
+
 
         swLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

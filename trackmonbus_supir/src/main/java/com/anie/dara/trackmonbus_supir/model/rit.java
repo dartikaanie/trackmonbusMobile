@@ -1,7 +1,12 @@
 package com.anie.dara.trackmonbus_supir.model;
 
-public class rit {
-    String tgl,no_bus, nama_halte_tujuan, waktu_berangkat, waktu_datang;
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class rit implements Parcelable {
+    String tgl,no_bus, jalur_id, jalur , waktu_berangkat, waktu_datang;
+
+
 
     public String getTgl() {
         return tgl;
@@ -19,12 +24,20 @@ public class rit {
         this.no_bus = no_bus;
     }
 
-    public String getNama_halte_tujuan() {
-        return nama_halte_tujuan;
+    public String getJalur_id() {
+        return jalur_id;
     }
 
-    public void setNama_halte_tujuan(String nama_halte_tujuan) {
-        this.nama_halte_tujuan = nama_halte_tujuan;
+    public void setJalur_id(String jalur_id) {
+        this.jalur_id = jalur_id;
+    }
+
+    public String getJalur() {
+        return jalur;
+    }
+
+    public void setJalur(String jalur) {
+        this.jalur = jalur;
     }
 
     public String getWaktu_berangkat() {
@@ -42,4 +55,43 @@ public class rit {
     public void setWaktu_datang(String waktu_datang) {
         this.waktu_datang = waktu_datang;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.tgl);
+        dest.writeString(this.no_bus);
+        dest.writeString(this.jalur_id);
+        dest.writeString(this.jalur);
+        dest.writeString(this.waktu_berangkat);
+        dest.writeString(this.waktu_datang);
+    }
+
+    public rit() {
+    }
+
+    protected rit(Parcel in) {
+        this.tgl = in.readString();
+        this.no_bus = in.readString();
+        this.jalur_id = in.readString();
+        this.jalur = in.readString();
+        this.waktu_berangkat = in.readString();
+        this.waktu_datang = in.readString();
+    }
+
+    public static final Parcelable.Creator<rit> CREATOR = new Parcelable.Creator<rit>() {
+        @Override
+        public rit createFromParcel(Parcel source) {
+            return new rit(source);
+        }
+
+        @Override
+        public rit[] newArray(int size) {
+            return new rit[size];
+        }
+    };
 }

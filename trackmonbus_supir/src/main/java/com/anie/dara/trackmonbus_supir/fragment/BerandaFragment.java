@@ -15,6 +15,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -43,7 +44,6 @@ import com.anie.dara.trackmonbus_supir.rest.dbClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -57,8 +57,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -76,7 +76,7 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
     MapView mMapView;
     CardView cvChechkin, cvTidakJadwal;
     View mView;
-    TextView noBus, no_tnkb, kapasitas, namaSupir, namaHalte, namaTrayek;
+    TextView noBus, no_tnkb, kapasitas, namaSupir, namaJalur, namaTrayek;
     DatabaseReference mDatabase;
     HashMap hashMapMarker = new HashMap<>();
     Marker marker;
@@ -99,6 +99,7 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
 
     private Toolbar toolbar;
     private ImageView toolbarTitle;
+    private Handler handler;
 
     @Override
     public void onAttach(Context context) {
@@ -126,8 +127,8 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
         noBus = mView.findViewById(R.id.NoBus);
         no_tnkb = mView.findViewById(R.id.no_tnkb);
         kapasitas = mView.findViewById(R.id.kapasitas);
-        namaSupir = mView.findViewById(R.id.tgl);
-        namaHalte = mView.findViewById(R.id.namaHalte);
+        namaSupir = mView.findViewById(R.id.namaSupir);
+        namaJalur = mView.findViewById(R.id.namaJalur);
         namaTrayek = mView.findViewById(R.id.namaTrayek2);
 //        cardview = mView.findViewById(R.id.cvTidakJadwal);
 
@@ -140,7 +141,7 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
         cvTidakJadwal = mView.findViewById(R.id.cvTidakJadwal);
         cvTidakJadwal.setOnClickListener(this);
         cvTidakJadwal.setVisibility(View.INVISIBLE);
-        cvChechkin = mView.findViewById(R.id.cardView);
+        cvChechkin = mView.findViewById(R.id.cardViewBus);
         cvChechkin.setVisibility(View.INVISIBLE);
         Date date = new Date();
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -152,8 +153,7 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
         String status_track = sharedPreferences.getString("status_track", DEFAULT);
         Log.e("jadwal", String.valueOf(user_id));
         dialog = new ProgressDialog(getContext());
-        dialog.setMessage("Memuat Data . . .");
-        dialog.show();
+
         cekJadwalKerja();
         return mView;
     }
@@ -161,7 +161,8 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
 
 
     private void cekJadwalKerja() {
-        dialog.setMessage("Memuat Data . . .");
+        final ProgressDialog dialog = new ProgressDialog(getContext());
+        dialog.setMessage("Memuat Data. . .");
         dialog.show();
         Call<Jadwal> call = client.cekJadwal(user_id);
         call.enqueue(new Callback<Jadwal>() {
@@ -173,17 +174,15 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
                     noBus.setText(jadwal.getNo_bus());
                     no_tnkb.setText(jadwal.getNo_tnkb());
                     kapasitas.setText(jadwal.getKapasitas());
-                    namaHalte.setText(jadwal.getNama_halte());
+                    namaJalur.setText(jadwal.getJalur());
                     namaTrayek.setText(jadwal.getTrayek());
                     km_awal = Double.valueOf(jadwal.getKm_awal());
-                    namaSupir.setText(jadwal.getNama_supir());
+                    namaSupir.setText(jadwal.getNama_supir() + " - "+ jadwal.getNama_pramugara());
 
                     jam_awal = jadwal.getJam_awal();
                     jam_akhir = jadwal.getJam_akhir();
 
-
                     cvTidakJadwal.setVisibility(View.INVISIBLE);
-                    Toast.makeText(getContext(),"Ada jadwal", Toast.LENGTH_SHORT).show();
 
                 }else{
                     cvChechkin.setVisibility(View.INVISIBLE);
@@ -191,17 +190,17 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
                     Toast.makeText(getContext(),"Tidak Ada jadwal", Toast.LENGTH_SHORT).show();
                 }
                 Log.e("jadwal", String.valueOf(user_id));
+                dialog.dismiss();
             }
 
             @Override
             public void onFailure(Call<Jadwal> call, Throwable t) {
                 cvChechkin.setVisibility(View.INVISIBLE);
                 cvTidakJadwal.setVisibility(View.VISIBLE);
+                dialog.dismiss();
                 Toast.makeText(getContext()," Tidak ada Jadwal", Toast.LENGTH_SHORT).show();
             }
         });
-        dialog.dismiss();
-
     }
 
 
@@ -216,7 +215,6 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
             mMapView.onResume();
             mMapView.getMapAsync(this);
         }
-        dialog.dismiss();
     }
 
 
@@ -224,30 +222,13 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
         mDatabase.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
+                Toast.makeText(getContext() , "ada bus yang baru berkendara", Toast.LENGTH_SHORT).show();
+                getDataAksi(dataSnapshot);
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                LatLng posisi = null;
-                BitmapDrawable bitmapdraw= (BitmapDrawable) mView.getResources().getDrawable(R.drawable.trans);
-
-                String lat = dataSnapshot.child("lat").getValue().toString();
-                String lng = dataSnapshot.child("lng").getValue().toString();
-                String nomorBus = dataSnapshot.getKey().toString();
-
-                double location_lat = Double.parseDouble(lat);
-                double location_lng = Double.parseDouble(lng);
-                posisi = new LatLng(location_lat, location_lng);
-                marker = (Marker) hashMapMarker.get(nomorBus);
-                marker.remove();
-                hashMapMarker.remove(nomorBus);
-                marker = map.addMarker(new MarkerOptions()
-                        .position(posisi)
-                        .title(nomorBus)
-                        .icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 60,120))));
-                hashMapMarker.put(nomorBus,marker);
-
+                getDataAksi(dataSnapshot);
             }
 
             @Override
@@ -267,36 +248,44 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
         });
     }
 
+    public void getDataAksi(DataSnapshot dataSnapshot){
+        LatLng point = null;
+        BitmapDrawable bitmapdraw= (BitmapDrawable) this.getResources().getDrawable(R.drawable.trans);
+
+        String lat = dataSnapshot.child("lat").getValue().toString();
+        String lng = dataSnapshot.child("lng").getValue().toString();
+        String nomorBus = dataSnapshot.getKey().toString();
+
+        double location_lat = Double.parseDouble(lat);
+        double location_lng = Double.parseDouble(lng);
+        point = new LatLng(location_lat, location_lng);
+        marker = (Marker) hashMapMarker.get(nomorBus);
+        if(marker != null){
+            marker.remove();
+            hashMapMarker.remove(nomorBus);
+        }
+
+        if(map != null){
+            marker = map.addMarker(new MarkerOptions()
+                    .position(point)
+                    .title(nomorBus)
+                    .icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 60,120))));
+            hashMapMarker.put(nomorBus,marker);
+        }
+
+    }
+
+
 
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        MapsInitializer.initialize(getContext());
         map = googleMap;
         getAllHalte();
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                LatLng posisi = null;
-                BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.trans);
-
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
-
-                    String lat = child.child("lat").getValue().toString();
-                    String lng = child.child("lng").getValue().toString();
-                    String nomorBus = child.getKey().toString();
-
-                    double location_lat = Double.parseDouble(lat);
-                    double location_lng = Double.parseDouble(lng);
-                    posisi = new LatLng(location_lat, location_lng);
-
-                    marker = map.addMarker(new MarkerOptions()
-                            .position(posisi)
-                            .title(nomorBus)
-                            .icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 60,120))));
-                    hashMapMarker.put(nomorBus,marker);
-                }
-
+                getDataPosisiBus(dataSnapshot);
             }
 
             @Override
@@ -315,9 +304,33 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
             getLocation();
         }
 
+        dataMarker();
 
     }
 
+
+    public void getDataPosisiBus(DataSnapshot dataSnapshot){
+
+        LatLng posisi = null;
+        BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.trans);
+
+        for (DataSnapshot child : dataSnapshot.getChildren()) {
+
+            String lat = child.child("lat").getValue().toString();
+            String lng = child.child("lng").getValue().toString();
+            String nomorBus = child.getKey().toString();
+
+            double location_lat = Double.parseDouble(lat);
+            double location_lng = Double.parseDouble(lng);
+            posisi = new LatLng(location_lat, location_lng);
+
+            marker = map.addMarker(new MarkerOptions()
+                    .position(posisi)
+                    .title(nomorBus)
+                    .icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 60,120))));
+            hashMapMarker.put(nomorBus,marker);
+        }
+    }
 
     public void getLocation(){
         if((ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
@@ -364,9 +377,7 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
 
     private void getAllHalte() {
 
-        final ProgressDialog dialog = new ProgressDialog(getContext());
-        dialog.setMessage("Memuat Data . . .");
-        dialog.show();
+
 
         if(((MainActivity)activity).konekkah()){
             client = ApiClient.getClient().create(dbClient.class);
@@ -398,7 +409,6 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
             Toast.makeText(getContext() , "Hidupkan koneksi internet anda", Toast.LENGTH_SHORT).show();
 
         }
-        dialog.dismiss();
     }
 
     private void initMarker(List<Halte> listData){
@@ -423,7 +433,7 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
     private void showDialog(String msg){
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
         alertDialogBuilder
-                .setMessage("Belum Shift Anda. " + msg)
+                .setMessage(msg)
                 .setIcon(R.mipmap.ic_launcher)
                 .setCancelable(false)
                 .setNeutralButton("Ok", new DialogInterface.OnClickListener() {
@@ -440,37 +450,28 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.btnCheckin:
+                final ProgressDialog dialog = new ProgressDialog(getContext());
+                dialog.setMessage("Mohon Tunggu. . .");
+                dialog.show();
+                Calendar now = Calendar.getInstance();
 
-                DateFormat formatter = new SimpleDateFormat("HH:mm:ss");
-                Date jamAwal = null, jamAkhir = null;
-                try {
-                    jamAwal = formatter.parse(jam_awal);
-                    jamAkhir = formatter.parse(jam_akhir);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                Date now = new Date();
+                int hour = now.get(Calendar.HOUR_OF_DAY); // Get hour in 24 hour format
+                int minute = now.get(Calendar.MINUTE);
 
-                if((now.after(jamAwal)) && (now.before(jamAkhir))){
-                    String msg = null;
-                    if(now.after(jamAkhir)){
-                        msg = "Shift Anda telah selesai hari ini. Silakan beristirahat";
-                    }else if(now.before(jamAwal)){
-                        msg = "Silakan Checkin lagi nanti ya.";
-                    }
-                    showDialog(msg);
-                }else{
-                    Bundle bundle = new Bundle();
-                    bundle.putParcelable("jadwal",jadwal); // Put anything what you want
-//                    Fragment moveFragment;
+                Date date = parseDate(hour + ":" + minute);
+                Date jamAwal = parseDate(jadwal.getJam_awal());
+                Date jamAkhir = parseDate(jadwal.getJam_akhir());
 
-                    if(km_awal != null){
+                if (date.after( jamAwal ) && date.before(jamAkhir)) {
+                    if(km_awal != 0){
                         Intent intent=  new Intent(getActivity(), MonitoringPosisi.class);
                         intent.putExtra("jadwal", jadwal);
                         startActivity(intent);
 
                     }else{
-                        Fragment moveFragment = new MonitorPosisiFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putParcelable("jadwal",jadwal);
+                        Fragment moveFragment = new CheckInAwalFragment();
                         moveFragment.setArguments(bundle);
                         getFragmentManager()
                                 .beginTransaction()
@@ -478,12 +479,19 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
                                 .commit();
 
                     }
+                    dialog.dismiss();
                     Toast.makeText(getContext() , "Checkin", Toast.LENGTH_SHORT).show();
+                }else{
+
+                    String msg = null;
+                    if(date.after(jamAkhir)){
+                        msg = "Shift Anda telah selesai hari ini. Silakan beristirahat";
+                    }else if(now.before(jamAwal)){
+                        msg = "Shift Anda dimulai pada pukul "+ jadwal.getJam_awal()+". Silakan Checkin lagi nanti ya.";
+                    }
+                    dialog.dismiss();
+                    showDialog(msg);
                 }
-
-                Log.e("cek after", String.valueOf(now.after(jamAwal)));
-                Log.e("cek before", String.valueOf(now.after(jamAkhir)));
-
                 break;
 
             case R.id.cvTidakJadwal:
@@ -491,6 +499,17 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
                 cekJadwalKerja();
                 dataMarker();
                 break;
+        }
+    }
+
+    private Date parseDate(String date) {
+
+        final String inputFormat = "HH:mm";
+        SimpleDateFormat inputParser = new SimpleDateFormat(inputFormat);
+        try {
+            return inputParser.parse(date);
+        } catch (java.text.ParseException e) {
+            return new Date(0);
         }
     }
 

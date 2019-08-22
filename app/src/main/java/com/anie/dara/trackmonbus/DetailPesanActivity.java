@@ -114,7 +114,7 @@ public class DetailPesanActivity extends AppCompatActivity implements View.OnCli
         komentarAdapter.setClickHandler(this);
 
 
-        swLayout.setColorSchemeResources(R.color.colorAccent,R.color.colorPrimary);
+        swLayout.setColorSchemeResources(R.color.colorAccent,R.color.colorYellow, R.color.colorRed);
 
         swLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

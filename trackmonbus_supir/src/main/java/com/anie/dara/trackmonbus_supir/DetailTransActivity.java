@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +17,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,7 +40,7 @@ import static android.text.TextUtils.substring;
 public class DetailTransActivity extends AppCompatActivity implements View.OnClickListener {
 
     Jadwal jadwal;
-    TextView NoBus, no_tnkb, kapasitas, namaHalte, namaSupir, namaTrayek, hari_tgl, km_awal, km_akhir, keterangan;
+    TextView NoBus, no_tnkb, kapasitas, namaJalur, namaSupir, namaTrayek, hari_tgl, km_awal, km_akhir, keterangan;
     Button btnPeta, btnUbah, btn_checkpoint;
     String no_bus, tgl;
 
@@ -46,6 +49,8 @@ public class DetailTransActivity extends AppCompatActivity implements View.OnCli
     Toolbar toolbar;
     ImageView toolbarTitle;
     private dbClient client = ApiClient.getClient().create(dbClient.class);
+    SwipeRefreshLayout swLayout;
+    private LinearLayout llayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +70,7 @@ public class DetailTransActivity extends AppCompatActivity implements View.OnCli
         NoBus = findViewById(R.id.NoBus);
         no_tnkb = findViewById(R.id.no_tnkb);
         kapasitas = findViewById(R.id.kapasitas);
-        namaHalte = findViewById(R.id.namaHalte);
+        namaJalur = findViewById(R.id.namaJalur);
         namaSupir = findViewById(R.id.namaSupir);
         hari_tgl = findViewById(R.id.tgl);
         namaTrayek = findViewById(R.id.namaTrayek2);
@@ -85,7 +90,7 @@ public class DetailTransActivity extends AppCompatActivity implements View.OnCli
             NoBus.setText(jadwal.getNo_bus());
             no_tnkb.setText(jadwal.getNo_tnkb());
             kapasitas.setText(jadwal.getKapasitas());
-            namaHalte.setText(jadwal.getNama_halte());
+            namaJalur.setText(jadwal.getJalur());
             namaSupir.setText(jadwal.getNama_supir());
             namaTrayek.setText(jadwal.getTrayek());
             hari_tgl.setText(substring(jadwal.getTgl(),0,10));
@@ -117,6 +122,26 @@ public class DetailTransActivity extends AppCompatActivity implements View.OnCli
 
         rvDaftarRit.setLayoutManager(layoutManager);
         rvDaftarRit.setHasFixedSize(true);
+
+
+        swLayout = (SwipeRefreshLayout) findViewById(R.id.swlayout);
+        llayout = (LinearLayout) findViewById(R.id.ll_swiperefresh);
+        swLayout.setColorSchemeResources(R.color.colorAccent,R.color.colorYellow, R.color.colorRed);
+
+        swLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override public void run() {
+
+                        swLayout.setRefreshing(false);
+
+                        getDataRit();
+                    }
+                }, 1000);
+            }
+        });
 
        getDataRit();
     }

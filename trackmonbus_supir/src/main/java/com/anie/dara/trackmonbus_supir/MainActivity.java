@@ -2,7 +2,6 @@ package com.anie.dara.trackmonbus_supir;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -11,8 +10,6 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,8 +17,10 @@ import android.widget.Toast;
 import com.anie.dara.trackmonbus_supir.fragment.BerandaFragment;
 import com.anie.dara.trackmonbus_supir.fragment.JadwalFragment;
 import com.anie.dara.trackmonbus_supir.fragment.KeluarFragment;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private TextView mTextMessage;
     String user_id;
@@ -50,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    GoogleMap map;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
         }else{
             Toast.makeText(this,user_id, Toast.LENGTH_SHORT).show();
         }
+
 
     }
 
@@ -113,4 +115,9 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+    }
 }
