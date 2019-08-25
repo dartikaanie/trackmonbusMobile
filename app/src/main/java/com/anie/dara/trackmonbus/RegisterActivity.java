@@ -72,7 +72,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         dialog.setMessage("Menyimpan Data . . .");
         dialog.show();
 
-        Call<User> call = client.register(nama,email,password,"1");
+        Call<User> call = client.register(nama,email,password,"2");
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {

@@ -5,6 +5,7 @@ import com.anie.dara.trackmonbus.model.Halte;
 import com.anie.dara.trackmonbus.model.Komentar;
 import com.anie.dara.trackmonbus.model.Perihal;
 import com.anie.dara.trackmonbus.model.Pesan;
+import com.anie.dara.trackmonbus.model.Result;
 import com.anie.dara.trackmonbus.model.Trayeks.JalurItem;
 import com.anie.dara.trackmonbus.model.Trayeks.Trayeks;
 import com.anie.dara.trackmonbus.model.User;
@@ -55,7 +56,7 @@ public interface dbClient {
 
     @FormUrlEncoded
     @POST("api/TambahPesan")
-    Call<Pesan> AddPesan(
+    Call<Result> AddPesan(
             @Field("user_id") String user_id,
             @Field("perihal_id") String perihal_id,
             @Field("isi_keluhan") String isi_keluhan,

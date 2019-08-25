@@ -101,6 +101,8 @@ public class MonitoringPosisi extends AppCompatActivity implements View.OnClickL
     Toolbar toolbar;
     ImageView toolbarTitle;
 
+    String CurrentJalur = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,7 +116,7 @@ public class MonitoringPosisi extends AppCompatActivity implements View.OnClickL
         if (toolbar != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         NoBus = findViewById(R.id.NoBus);
         no_tnkb = findViewById(R.id.no_tnkb);
@@ -386,69 +388,85 @@ public class MonitoringPosisi extends AppCompatActivity implements View.OnClickL
         }
     };
 
+    public void getJalur(){
+
+    }
 
     public void cekJarak(final Location lokasiBus, final String no_bus){
-        String halte_tujuan_id = "2";
-        listBusSearah = new ArrayList<>();
-        Call<List<noBus>> call = client.getBusSearah(halte_tujuan_id);
-        call.enqueue(new Callback<List<noBus>>() {
+        Call<String> call2 = client.getCurrentJalur(no_bus,tgl);
+        call2.enqueue(new Callback<String>() {
             @Override
-            public void onResponse(Call<List<noBus>> call, Response<List<noBus>> response) {
-                List<noBus> result = response.body();
-                if(result.size() > 0){
-                    for(noBus item : result){
-                        listBusSearah.add(new noBus(item.getNo_bus()));
-                        Log.e("listBus cek item", listBusSearah.toString());
-                        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                ArrayList<String> posisiDestination = new ArrayList<>();
-                                ArrayList<Posisi> posisiBus = new ArrayList<>();
+            public void onResponse(Call<String> call2, Response<String> response) {
+                String jalurGet = response.body();
+                if(jalurGet != "false"){
+                    listBusSearah = new ArrayList<>();
+                    Call<List<noBus>> call = client.getBusSearah(jalurGet);
+                    call.enqueue(new Callback<List<noBus>>() {
+                        @Override
+                        public void onResponse(Call<List<noBus>> call, Response<List<noBus>> response) {
+                            List<noBus> result = response.body();
+                            if(result.size() > 0){
+                                for(noBus item : result){
+                                    listBusSearah.add(new noBus(item.getNo_bus()));
+                                    Log.e("listBus cek item", listBusSearah.toString());
+                                    mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            ArrayList<String> posisiDestination = new ArrayList<>();
+                                            ArrayList<Posisi> posisiBus = new ArrayList<>();
 
-                                String posisi1 = lokasiBus.getLatitude() + "," + lokasiBus.getLongitude();
-                                int n=0;
-                                for (DataSnapshot child : dataSnapshot.getChildren()) {
-                                    for(noBus busSearah : listBusSearah){
-                                           if(child.getKey().equals(busSearah.getNo_bus()) && (!child.getKey().equals(no_bus))){
-                                            double location_lat = Double.parseDouble(child.child("lat").getValue().toString());
-                                            double location_lng = Double.parseDouble(child.child("lng").getValue().toString());
+                                            String posisi1 = lokasiBus.getLatitude() + "," + lokasiBus.getLongitude();
+                                            int n=0;
+                                            for (DataSnapshot child : dataSnapshot.getChildren()) {
+                                                for(noBus busSearah : listBusSearah){
+                                                    if(child.getKey().equals(busSearah.getNo_bus()) && (!child.getKey().equals(no_bus))){
+                                                        double location_lat = Double.parseDouble(child.child("lat").getValue().toString());
+                                                        double location_lng = Double.parseDouble(child.child("lng").getValue().toString());
 
-                                            String no_bus2 = child.getKey().toString();
-                                            Posisi dataBus = new Posisi(location_lat,location_lng,no_bus2);
-                                            posisiBus.add(n,dataBus);
+                                                        String no_bus2 = child.getKey().toString();
+                                                        Posisi dataBus = new Posisi(location_lat,location_lng,no_bus2);
+                                                        posisiBus.add(n,dataBus);
 
-                                            Location lokasi2 = new Location("posisi 2");
-                                            lokasi2.setLatitude(location_lat);
-                                            lokasi2.setLongitude(location_lng);
-                                            String posisi2 = lokasi2.getLatitude() + "," + lokasi2.getLongitude();
-                                            posisiDestination.add(posisi2);
+                                                        Location lokasi2 = new Location("posisi 2");
+                                                        lokasi2.setLatitude(location_lat);
+                                                        lokasi2.setLongitude(location_lng);
+                                                        String posisi2 = lokasi2.getLatitude() + "," + lokasi2.getLongitude();
+                                                        posisiDestination.add(posisi2);
+                                                    }
+                                                }
+                                            }
+                                            Log.e("posisiDestination",posisiDestination.toString());
+                                            if(posisiDestination.size()>0){
+                                                Log.e("posisiString",convertToString(posisiDestination));
+                                                if(alertDialog != null){
+                                                    alertDialog.dismiss();
+                                                }
+                                                actionRoute(posisi1, convertToString(posisiDestination),posisiBus );
+                                            }
+
+                                            map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lokasiBus.getLatitude(), lokasiBus.getLongitude()), 16.0f));
                                         }
-                                    }
-                                }
-                                Log.e("posisiDestination",posisiDestination.toString());
-                                if(posisiDestination.size()>0){
-                                    Log.e("posisiString",convertToString(posisiDestination));
-                                    if(alertDialog != null){
-                                        alertDialog.dismiss();
-                                    }
-                                    actionRoute(posisi1, convertToString(posisiDestination),posisiBus );
-                                }
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lokasiBus.getLatitude(), lokasiBus.getLongitude()), 16.0f));
-                           }
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                                        }
+                                    });
+                                }
+                            }else{
+                                Log.e("listBus", "DAta tidak ada");
                             }
-                        });
-                    }
-                }else{
-                    Log.e("listBus", "DAta tidak ada");
+                        }
+                        @Override
+                        public void onFailure(Call<List<noBus>> call, Throwable t) {
+                            Log.e("error listBus", t.toString());
+                        }
+                    });
                 }
             }
+
             @Override
-            public void onFailure(Call<List<noBus>> call, Throwable t) {
-                Log.e("error listBus", t.toString());
+            public void onFailure(Call<String> call, Throwable t) {
+                Log.e("error jalur", t.toString());
             }
         });
     }

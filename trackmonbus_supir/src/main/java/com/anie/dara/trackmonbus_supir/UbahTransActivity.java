@@ -78,6 +78,14 @@ public class UbahTransActivity extends AppCompatActivity implements View.OnClick
                 ETKmAwal.setText(jadwal.getKm_awal());
             }
 
+            if(!jadwal.getKm_akhir().equals(0)){
+                ETKmAwal.setText(jadwal.getKm_akhir());
+            }
+
+            if(!jadwal.getKeterangan().equals(0)){
+                ETKmAwal.setText(jadwal.getKeterangan());
+            }
+
             hari_tgl.setText(substring(jadwal.getTgl(),0,10));
             no_bus = jadwal.getNo_bus();
             tgl = jadwal.getTgl();

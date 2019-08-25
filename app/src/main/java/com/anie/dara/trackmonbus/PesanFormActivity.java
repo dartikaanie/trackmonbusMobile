@@ -4,8 +4,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -20,7 +20,7 @@ import android.widget.Toast;
 
 import com.anie.dara.trackmonbus.model.Bus;
 import com.anie.dara.trackmonbus.model.Perihal;
-import com.anie.dara.trackmonbus.model.Pesan;
+import com.anie.dara.trackmonbus.model.Result;
 import com.anie.dara.trackmonbus.rest.ApiClient;
 import com.anie.dara.trackmonbus.rest.dbClient;
 
@@ -233,20 +233,26 @@ public class PesanFormActivity extends AppCompatActivity implements View.OnClick
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String created_at = dateFormat.format(date);
 
-        Call<Pesan>  call = client.AddPesan(user_id, et_perihal,et_isi_keluhan, et_nobus, created_at);
-        call.enqueue(new Callback<Pesan>() {
+        Call<Result>  call = client.AddPesan(user_id, et_perihal,et_isi_keluhan, et_nobus, created_at);
+        call.enqueue(new Callback<Result>() {
             @Override
-            public void onResponse(Call<Pesan> call, Response<Pesan> response) {
-                Pesan pesan = response.body();
-                Log.e("user", String.valueOf(pesan));
-                Toast.makeText(PesanFormActivity.this,"Data disimpan", Toast.LENGTH_SHORT).show();
-                startActivity( new Intent(PesanFormActivity.this, PesanActivity.class));
+            public void onResponse(Call<Result> call, Response<Result> response) {
+                Result result = response.body();
+                Log.e("error", result.getMsg());
+                if(result.getMsg().equals("true")){
+                    Toast.makeText(PesanFormActivity.this,"Data disimpan", Toast.LENGTH_SHORT).show();
+                    startActivity( new Intent(PesanFormActivity.this, PesanActivity.class));
+                }else{
+                    Toast.makeText(PesanFormActivity.this,"Error. Ulangi lagi" , Toast.LENGTH_SHORT).show();
+                }
+
                 dialog123.dismiss();
             }
             @Override
-            public void onFailure(Call<Pesan> call, Throwable t) {
+            public void onFailure(Call<Result> call, Throwable t) {
                 dialog123.dismiss();
-                Toast.makeText(PesanFormActivity.this,"Error. Ulangi lagi" + t.toString(), Toast.LENGTH_SHORT).show();
+                Log.e("error", t.toString());
+                Toast.makeText(PesanFormActivity.this,"Error. Ulangi lagi", Toast.LENGTH_SHORT).show();
             }
         });
     }

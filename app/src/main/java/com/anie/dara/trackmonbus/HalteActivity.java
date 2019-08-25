@@ -1,6 +1,8 @@
 package com.anie.dara.trackmonbus;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,6 +22,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -115,11 +118,12 @@ public class HalteActivity extends AppCompatActivity  implements OnMapReadyCallb
     }
 
     private void initMarker(List<HalteItem> listData){
+        BitmapDrawable bitmapdraw= (BitmapDrawable) getResources().getDrawable(R.drawable.halte);
         if(listData.size() > 0 ){
             for (int i=0; i<listData.size(); i++){
                 LatLng location = new LatLng(Double.parseDouble(listData.get(i).getLat()), Double.parseDouble(listData.get(i).getLng()));
 
-                marker =  map.addMarker(new MarkerOptions().position(location).title(listData.get(i).getNama()));
+                marker =  map.addMarker(new MarkerOptions().position(location).title(listData.get(i).getNama()).icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 70,60))));
                 HalteMarkers.put(listData.get(i).getHalteId(),marker);
             }
             LatLng latLng = new LatLng(Double.parseDouble(listData.get(0).getLat()), Double.parseDouble(listData.get(0).getLng()));
@@ -128,6 +132,14 @@ public class HalteActivity extends AppCompatActivity  implements OnMapReadyCallb
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-0.924654, 100.361908), 15.0f));
         }
 
+    }
+
+    public Bitmap getIcon (BitmapDrawable bitmapdraw, int tinggi, int lebar){
+        int height = tinggi;
+        int width = lebar;
+        Bitmap b=bitmapdraw.getBitmap();
+        Bitmap Icon = Bitmap.createScaledBitmap(b, width, height, false);
+        return Icon;
     }
 
 

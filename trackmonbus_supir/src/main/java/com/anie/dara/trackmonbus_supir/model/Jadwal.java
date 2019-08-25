@@ -6,7 +6,11 @@ import android.os.Parcelable;
 public class Jadwal implements Parcelable {
 
     String tgl, no_bus, km_awal, km_akhir, keterangan, trayek, no_tnkb, kapasitas;
-    String nama_supir,nama_pramugara, jam_awal, jam_akhir, jalur;
+    String nama_supir,nama_pramugara, jam_awal, jam_akhir, jalur,shift;
+
+    public String getShift() {
+        return shift;
+    }
 
     public String getTgl() {
         return tgl;

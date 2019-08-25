@@ -42,11 +42,8 @@ public class JalurHalteAdapter extends RecyclerView.Adapter<JalurHalteAdapter.Ja
     @Override
     public void onBindViewHolder(@NonNull JalurHalteAdapter.JalurHalteHolder holder, int position) {
         JalurItem jalur = dataJalur.get(position);
-        if((jalur.getAwal() != null)) {
-            holder.jalur.setText(String.valueOf(jalur.getAwal() + " - " + jalur.getAkhir()));
-        }else{
-            holder.jalur.setVisibility(View.INVISIBLE);
-        }
+        holder.jalur.setText(String.valueOf(jalur.getAwal() + " - " + jalur.getAkhir()));
+
 
         if(jalur.getHalte().size() > 0){
             halteAdapter = new HalteAdapter(jalur.getHalte(), this);

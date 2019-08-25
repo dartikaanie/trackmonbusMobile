@@ -65,7 +65,8 @@ public interface dbClient {
     @GET("api/getBusSearah")
     Call<List<noBus>> getBusSearah(@Query("jalur_id") String jalur_id);
 
-
+    @GET("api/getCurrentJalur")
+    Call<String> getCurrentJalur(@Query("no_bus") String no_bus,@Query("tgl") String tgl );
 
     @FormUrlEncoded
     @PUT("api/UbahDataJadwal")

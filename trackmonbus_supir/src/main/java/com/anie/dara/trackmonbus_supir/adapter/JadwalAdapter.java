@@ -3,6 +3,7 @@ package com.anie.dara.trackmonbus_supir.adapter;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,11 +12,7 @@ import android.widget.TextView;
 import com.anie.dara.trackmonbus_supir.R;
 import com.anie.dara.trackmonbus_supir.model.Jadwal;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class JadwalAdapter extends  RecyclerView.Adapter<JadwalAdapter.JadwalHolder> {
 
@@ -44,23 +41,16 @@ public class JadwalAdapter extends  RecyclerView.Adapter<JadwalAdapter.JadwalHol
     @Override
     public void onBindViewHolder(@NonNull JadwalAdapter.JadwalHolder holder, int position) {
         Jadwal jadwal = dataJadwal.get(position);
+        Log.e("jadwal", String.valueOf(jadwal.getShift()));
         holder.NoBus.setText(jadwal.getNo_bus());
         holder.tgl.setText(jadwal.getTgl());
         holder.kapasitas.setText(jadwal.getKapasitas() + " orang");
         holder.no_tnkb.setText(jadwal.getNo_tnkb());
         holder.namaTrayek2.setText(jadwal.getTrayek());
         holder.namaHalte.setText(jadwal.getJalur());
-        holder.namaSupir.setText(jadwal.getNama_supir()+ " - " + jadwal.getNama_pramugara());
-
-        Date date1= null;
-        try {
-            date1 = new SimpleDateFormat("Y-m-d").parse(jadwal.getTgl());
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        DateFormat dateFormat = new SimpleDateFormat("d-m-Y");
-        String strDate = dateFormat.format(date1);
+        holder.namaSupir.setText(jadwal.getNama_pramugara());
         holder.tgl.setText(jadwal.getTgl().substring(0,10));
+        holder.shift.setText("Waktu : " +jadwal.getShift());
     }
 
 
@@ -76,7 +66,7 @@ public class JadwalAdapter extends  RecyclerView.Adapter<JadwalAdapter.JadwalHol
 
     // Inner CLASS
     public class JadwalHolder extends RecyclerView.ViewHolder{
-        TextView NoBus,kapasitas, tgl, namaTrayek2, namaHalte, namaSupir,no_tnkb;
+        TextView NoBus,kapasitas, tgl, namaTrayek2, namaHalte, namaSupir,no_tnkb, shift;
 
         public JadwalHolder(@NonNull View itemView){
             super(itemView);
@@ -87,6 +77,7 @@ public class JadwalAdapter extends  RecyclerView.Adapter<JadwalAdapter.JadwalHol
             namaTrayek2 = itemView.findViewById(R.id.namaTrayek2);
             namaHalte = itemView.findViewById(R.id.namaJalur);
             namaSupir = itemView.findViewById(R.id.namaSupir);
+            shift = itemView.findViewById(R.id.shift);
         }
     }
 

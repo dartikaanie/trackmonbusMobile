@@ -48,7 +48,7 @@
                 android:drawableLeft="@drawable/lock_icon"
                 android:fontFamily="@font/text_me_one"
                 android:hint="@string/sandi"
-                android:inputType="numberPassword"
+                android:inputType="textPassword"
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
@@ -64,35 +64,6 @@
                 android:textColor="@android:color/background_light"
                 android:textSize="14sp"
                 android:textStyle="bold" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="25dp"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/textView4"
-                    android:layout_width="153dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:layout_weight="1"
-                    android:gravity="right"
-                    android:text="belum memiliki akun?"
-                    android:textSize="12sp" />
-
-                <Button
-                    android:id="@+id/btn_masuk"
-                    android:layout_width="8dp"
-                    android:layout_height="match_parent"
-                    android:layout_margin="5dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/button_bg_rounded"
-                    android:text="Daftar"
-                    android:textColor="@android:color/background_light"
-                    android:textSize="10sp" />
-
-            </LinearLayout>
 
 
         </LinearLayout>

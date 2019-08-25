@@ -60,7 +60,7 @@
                 android:drawableLeft="@drawable/lock_icon"
                 android:fontFamily="@font/text_me_one"
                 android:hint="@string/sandi"
-                android:inputType="numberPassword"
+                android:inputType="textPassword"
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
@@ -73,7 +73,7 @@
                 android:drawableLeft="@drawable/lock_icon"
                 android:fontFamily="@font/text_me_one"
                 android:hint="@string/ulangi_sandi"
-                android:inputType="numberPassword"
+                android:inputType="textPassword"
                 android:textSize="12sp"
                 android:textStyle="bold" />
 

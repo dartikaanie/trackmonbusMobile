@@ -37,17 +37,17 @@
         app:layout_constraintTop_toBottomOf="@+id/appBar"
         app:layout_constraintVertical_bias="0.0">
 
-        <android.support.v7.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="@dimen/fab_margin">
+        <!--<android.support.v7.widget.CardView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--app:cardCornerRadius="@dimen/fab_margin">-->
 
-            <SearchView
-                android:id="@+id/cariTrayek"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp" />
-        </android.support.v7.widget.CardView>
+            <!--<SearchView-->
+                <!--android:id="@+id/cariTrayek"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_margin="5dp" />-->
+        <!--</android.support.v7.widget.CardView>-->
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rvListTrayek"

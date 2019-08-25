@@ -219,7 +219,6 @@ public class DetailTransActivity extends AppCompatActivity implements View.OnCli
                 Intent intent =  new Intent(DetailTransActivity.this, MonitoringPosisi.class);
                 intent.putExtra("jadwal", jadwal);
                 startActivity(intent);
-
                 break;
 
             case R.id.btnCheckpoint:
@@ -228,7 +227,7 @@ public class DetailTransActivity extends AppCompatActivity implements View.OnCli
                 break;
 
             case R.id.btn_ubah:
-                Intent intent2 =  new Intent(DetailTransActivity.this, MonitoringPosisi.class);
+                Intent intent2 =  new Intent(DetailTransActivity.this, UbahTransActivity.class);
                 intent2.putExtra("jadwal", jadwal);
                 startActivity(intent2);
                 break;

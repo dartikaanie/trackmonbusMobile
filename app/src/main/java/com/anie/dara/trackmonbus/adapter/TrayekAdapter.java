@@ -44,11 +44,10 @@ public class TrayekAdapter extends RecyclerView.Adapter<TrayekAdapter.TrayekHold
         holder.trayek.setText(String.valueOf(trayek.getTrayek()));
         holder.km_rit.setText(String.valueOf(trayek.getKmRit() + " km"));
 
-        if(trayek.getJalur().size() != 0){
-            holder.jalurText.setVisibility(View.VISIBLE);
-            jalurAdapter = new JalurAdapter(trayek.getJalur(), context);
-            holder.rvJalur.setAdapter(jalurAdapter);
-        }
+        ArrayList jalurList = new ArrayList();
+        jalurList.addAll(trayek.getJalur());
+        jalurAdapter = new JalurAdapter(jalurList, context);
+        holder.rvJalur.setAdapter(jalurAdapter);
     }
 
 
@@ -77,7 +76,6 @@ public class TrayekAdapter extends RecyclerView.Adapter<TrayekAdapter.TrayekHold
             rvJalur = itemView.findViewById(R.id.rvJalur);
             jalurText = itemView.findViewById(R.id.jalurText);
 
-            jalurText.setVisibility(View.INVISIBLE);
 
             final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
             rvJalur.setLayoutManager(linearLayoutManager);

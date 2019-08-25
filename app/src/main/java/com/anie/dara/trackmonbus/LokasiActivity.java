@@ -253,12 +253,12 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
     private void initMarker(ArrayList<HalteItem> listData){
-
+        BitmapDrawable bitmapdraw= (BitmapDrawable) getResources().getDrawable(R.drawable.halte);
         if(listData.size() > 0 ){
             for (int i=0; i<listData.size(); i++){
                 LatLng location = new LatLng(Double.parseDouble(listData.get(i).getLat()), Double.parseDouble(listData.get(i).getLng()));
 
-                marker =  map.addMarker(new MarkerOptions().position(location).title(listData.get(i).getNama()));
+                marker =  map.addMarker(new MarkerOptions().position(location).title(listData.get(i).getNama()).icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 70,60))));
                 HalteMarkers.put(listData.get(i).getHalteId(),marker);
             }
             LatLng latLng = new LatLng(Double.parseDouble(listData.get(0).getLat()), Double.parseDouble(listData.get(0).getLng()));
@@ -284,7 +284,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(LokasiActivity.this);
         alertDialogBuilder
-                .setMessage("Hitung waktu kedatangan busa dari halte "+ halteItem.getNama() +" ? ")
+                .setMessage("Hitung waktu kedatangan bus dari halte "+ halteItem.getNama() +" ? ")
                 .setIcon(R.drawable.trans)
                 .setCancelable(false)
                 .setPositiveButton("Iya", new DialogInterface.OnClickListener() {
@@ -340,14 +340,12 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
                                 }
 
                                 if(posisiDestination.size()>0){
-
                                     if(alertDialog != null){
                                         alertDialog.dismiss();
                                     }
                                     actionRoute(posisiHalte, convertToString(posisiDestination),posisiBus );
                                     Log.e("cek posisi", posisiDestination.toString());
                                 }else{
-                                    actionRoute(posisiHalte, String.valueOf(posisiDestination),posisiBus );
                                     Toast.makeText(LokasiActivity.this,"TIDAK ADA BUS YANG BERKENDARA", Toast.LENGTH_SHORT).show();
                                 }
                                 dialog.dismiss();
@@ -389,7 +387,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
             @Override
             public void onResponse(Call<DistanceMatrix> call, Response<DistanceMatrix> response) {
                 DistanceMatrix data = response.body();
-                if(data.getRows().size() != 0){
+                if(data.getRows().get(0).getElements().size() > 0){
                     List<ElementsItem> row = data.getRows().get(0).getElements();
                    int durasiMin=0, durasiInt=0;
                     String durasi = null;
