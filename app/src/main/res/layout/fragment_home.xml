@@ -137,7 +137,8 @@
                     android:id="@+id/btnTextView_lokasi"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Cek Lokasi"
+                    android:gravity="center"
+                    android:text="Cek Waktu Bus"
                     android:textColor="#172646"
                     android:textSize="14sp" />
 
