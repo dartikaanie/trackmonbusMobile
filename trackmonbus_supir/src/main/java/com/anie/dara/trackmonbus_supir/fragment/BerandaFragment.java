@@ -39,6 +39,8 @@ import com.anie.dara.trackmonbus_supir.R;
 import com.anie.dara.trackmonbus_supir.SQLiteDatabaseHandler;
 import com.anie.dara.trackmonbus_supir.model.Halte;
 import com.anie.dara.trackmonbus_supir.model.Jadwal;
+import com.anie.dara.trackmonbus_supir.model.jadwal.DetailTrayeks;
+import com.anie.dara.trackmonbus_supir.model.jadwal.JadwalDetail;
 import com.anie.dara.trackmonbus_supir.rest.ApiClient;
 import com.anie.dara.trackmonbus_supir.rest.dbClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -82,7 +84,7 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
     Marker marker;
     Button btnCheckin;
     static Activity activity;
-    Jadwal jadwalSupir;
+    JadwalDetail jadwalSupir;
     Double km_awal = null;
     CardView cardview;
     List<Halte> listHalteItem;
@@ -175,23 +177,22 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
         final ProgressDialog dialog = new ProgressDialog(getContext());
         dialog.setMessage("Memuat Data. . .");
         dialog.show();
-        Call<Jadwal> call = client.cekJadwal(user_id);
-        call.enqueue(new Callback<Jadwal>() {
+        Call<JadwalDetail> call = client.cekJadwal(user_id);
+        call.enqueue(new Callback<JadwalDetail>() {
             @Override
-            public void onResponse(Call<Jadwal> call, Response<Jadwal> response) {
-                Jadwal jadwal = response.body();
+            public void onResponse(Call<JadwalDetail> call, Response<JadwalDetail> response) {
+                JadwalDetail jadwal = response.body();
+                Log.e("jadwal", String.valueOf(jadwal.getJadwal()));
                 if(jadwal!=null){
                     cvChechkin.setVisibility(View.VISIBLE);
-                    noBus.setText(jadwal.getNo_bus());
-                    no_tnkb.setText(jadwal.getNo_tnkb());
-                    kapasitas.setText(jadwal.getKapasitas());
-                    namaJalur.setText(jadwal.getJalur());
-                    namaTrayek.setText(jadwal.getTrayek());
-                    km_awal = Double.valueOf(jadwal.getKm_awal());
-                    namaSupir.setText(jadwal.getNama_supir() + " - "+ jadwal.getNama_pramugara());
+                    noBus.setText(jadwal.getJadwal().getNoBus());
+                    no_tnkb.setText(jadwal.getJadwal().getBuses().getNoTnkb());
+                    kapasitas.setText(Integer.toString(jadwal.getJadwal().getBuses().getKapasitas()));
+                    namaJalur.setText(jadwal.getJadwal().getDetailTrayeks().getJalurs().getNamaJalur());
+                    namaTrayek.setText(jadwal.getJadwal().getDetailTrayeks().getTrayeks().getTrayek());
+                    km_awal = Double.valueOf(jadwal.getJadwal().getKmAwal());
+                    namaSupir.setText(jadwal.getUsers().getName() + " - "+ jadwal.getPramugaras().getNamaPramugara());
 
-                    jam_awal = jadwal.getJam_awal();
-                    jam_akhir = jadwal.getJam_akhir();
                     jadwalSupir = jadwal;
                     cvTidakJadwal.setVisibility(View.INVISIBLE);
 
@@ -205,7 +206,7 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
             }
 
             @Override
-            public void onFailure(Call<Jadwal> call, Throwable t) {
+            public void onFailure(Call<JadwalDetail> call, Throwable t) {
                 cvChechkin.setVisibility(View.INVISIBLE);
                 cvTidakJadwal.setVisibility(View.VISIBLE);
                 dialog.dismiss();
@@ -345,6 +346,8 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
             ActivityCompat.requestPermissions((Activity) getContext(), new String [] {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
         }
         else{
+
+
             Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             if(location!=null){
                 double lat = location.getLatitude();
@@ -461,10 +464,10 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
 
                 int hour = now.get(Calendar.HOUR_OF_DAY); // Get hour in 24 hour format
                 int minute = now.get(Calendar.MINUTE);
-
+                Log.e("jadwal", jadwalSupir.getShifts().getJamAwal());
                 Date date = parseDate(hour + ":" + minute);
-                Date jamAwal = parseDate(jadwalSupir.getJam_awal());
-                Date jamAkhir = parseDate(jadwalSupir.getJam_akhir());
+                Date jamAwal = parseDate(jadwalSupir.getShifts().getJamAwal());
+                Date jamAkhir = parseDate(jadwalSupir.getShifts().getJamAkhir());
 
                 if (date.after( jamAwal ) && date.before(jamAkhir)) {
                     if(km_awal != 0){
@@ -491,7 +494,7 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
                     if(date.after(jamAkhir)){
                         msg = "Shift Anda telah selesai hari ini. Silakan beristirahat";
                     }else{
-                        msg = "Shift Anda dimulai pada pukul "+ jadwalSupir.getJam_awal()+". Silakan Checkin lagi nanti ya.";
+                        msg = "Shift Anda dimulai pada pukul "+ jadwalSupir.getShifts().getJamAwal()+". Silakan Checkin lagi nanti ya.";
                     }
                     dialog.dismiss();
                     showDialog(msg);

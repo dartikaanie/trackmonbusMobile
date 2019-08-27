@@ -37,6 +37,7 @@ import com.anie.dara.trackmonbus_supir.distanceMatrix.ElementsItem;
 import com.anie.dara.trackmonbus_supir.model.Halte;
 import com.anie.dara.trackmonbus_supir.model.Jadwal;
 import com.anie.dara.trackmonbus_supir.model.Posisi;
+import com.anie.dara.trackmonbus_supir.model.jadwal.JadwalDetail;
 import com.anie.dara.trackmonbus_supir.model.noBus;
 import com.anie.dara.trackmonbus_supir.rest.ApiClient;
 import com.anie.dara.trackmonbus_supir.rest.DistanceApiServices;
@@ -75,7 +76,7 @@ import static android.text.TextUtils.substring;
 public class MonitoringPosisi extends AppCompatActivity implements View.OnClickListener, OnMapReadyCallback {
 
 
-    Jadwal jadwal;
+    JadwalDetail jadwal;
     TextView NoBus, no_tnkb, kapasitas, namaHalte, namaSupir, namaTrayek, hari_tgl, namaPramugara;
     Button btnCheck, btnDetail, btnUbah, btnSelesai;
     GoogleMap map;
@@ -144,13 +145,13 @@ public class MonitoringPosisi extends AppCompatActivity implements View.OnClickL
         mDatabase = FirebaseDatabase.getInstance().getReference().child(tgl_skrg);
         jadwal =   getIntent().getExtras().getParcelable("jadwal");
         if(jadwal != null){
-            NoBus.setText(jadwal.getNo_bus());
-            no_tnkb.setText(jadwal.getNo_tnkb());
-            kapasitas.setText(jadwal.getKapasitas());
-            namaHalte.setText(jadwal.getJalur());
-            namaSupir.setText(jadwal.getNama_supir() + " - "+ jadwal.getNama_pramugara() );
-            namaTrayek.setText(jadwal.getTrayek());
-            no_bus = jadwal.getNo_bus();
+            NoBus.setText(jadwal.getJadwal().getBuses().getNoBus());
+            no_tnkb.setText(jadwal.getJadwal().getBuses().getNoTnkb());
+            kapasitas.setText(Integer.toString(jadwal.getJadwal().getBuses().getKapasitas()));
+            namaHalte.setText(jadwal.getJadwal().getDetailTrayeks().getJalurs().getNamaJalur());
+            namaSupir.setText(jadwal.getUsers().getName() + " - "+ jadwal.getPramugaras().getNamaPramugara() );
+            namaTrayek.setText(jadwal.getJadwal().getDetailTrayeks().getTrayeks().getTrayek());
+            no_bus =jadwal.getJadwal().getBuses().getNoBus();
             tgl = jadwal.getTgl();
             hari_tgl.setText(substring(jadwal.getTgl(),0,10));
         }
@@ -212,7 +213,7 @@ public class MonitoringPosisi extends AppCompatActivity implements View.OnClickL
         else
         {
             getCurrentPosisi();
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentPosisi.getLat(), currentPosisi.getLng()), 16.0f));
+
 
         }
 
@@ -263,7 +264,6 @@ public class MonitoringPosisi extends AppCompatActivity implements View.OnClickL
         mDatabase.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                Toast.makeText(MonitoringPosisi.this,"Anda Belum Login", Toast.LENGTH_SHORT).show();
                 Toast.makeText(MonitoringPosisi.this , "ada bus yang baru berkendara", Toast.LENGTH_SHORT).show();
                 getDataAksi(dataSnapshot);
             }
@@ -540,6 +540,7 @@ public class MonitoringPosisi extends AppCompatActivity implements View.OnClickL
                 Double lng = location.getLongitude();
                 currentPosisi = new Posisi(lat,lng, no_bus);
                 currentLocation = location;
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentPosisi.getLat(), currentPosisi.getLng()), 16.0f));
             }
         }
 
@@ -568,19 +569,24 @@ public class MonitoringPosisi extends AppCompatActivity implements View.OnClickL
                     double jarak=0;
                    int n=0;
                     for(ElementsItem item : row){
-                        jarak = Double.parseDouble(String.valueOf(item.getDistance().getValue()));
-                        Log.e("jarak direction", String.valueOf(jarak));
-                        if(jarak  < 500){
-                            Posisi bus = busPosisi.get(n);
-                            if(alertDialog != null){
-                                alertDialog.dismiss();
+                        try{
+                            jarak = Double.parseDouble(String.valueOf(item.getDistance().getValue()));
+                            Log.e("jarak direction", String.valueOf(jarak));
+                            if(jarak  < 500){
+                                Posisi bus = busPosisi.get(n);
+                                if(alertDialog != null){
+                                    alertDialog.dismiss();
+                                }
+                                marker = (Marker) hashMapMarker.get(bus.getNo_bus());
+                                marker.showInfoWindow();
+                                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(bus.getLat(), bus.getLng()), 16.0f));
+                                showDialog(bus.getNo_bus());
                             }
-                            marker = (Marker) hashMapMarker.get(bus.getNo_bus());
-                            marker.showInfoWindow();
-                            map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(bus.getLat(), bus.getLng()), 16.0f));
-                            showDialog(bus.getNo_bus());
+                            n++;
+                        }catch (Exception ex){
+//                            Toast.makeText(MonitoringPosisi.this, "Ada yang error", Toast.LENGTH_LONG).show();
                         }
-                        n++;
+
                     }
                 }
             }

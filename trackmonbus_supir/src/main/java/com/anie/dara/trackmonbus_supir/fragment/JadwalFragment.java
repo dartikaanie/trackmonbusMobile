@@ -25,6 +25,7 @@ import com.anie.dara.trackmonbus_supir.MainActivity;
 import com.anie.dara.trackmonbus_supir.R;
 import com.anie.dara.trackmonbus_supir.adapter.JadwalAdapter;
 import com.anie.dara.trackmonbus_supir.model.Jadwal;
+import com.anie.dara.trackmonbus_supir.model.jadwal.JadwalDetail;
 import com.anie.dara.trackmonbus_supir.rest.ApiClient;
 import com.anie.dara.trackmonbus_supir.rest.dbClient;
 
@@ -124,21 +125,21 @@ public class JadwalFragment extends Fragment {
 
         if(((MainActivity)activity).konekkah()){
             client = ApiClient.getClient().create(dbClient.class);
-            Call<List<Jadwal>> call = client.getJadwalUser(user_id);
-            call.enqueue(new Callback<List<Jadwal>>() {
+            Call<List<JadwalDetail>> call = client.getJadwalUser(user_id);
+            call.enqueue(new Callback<List<JadwalDetail>>() {
 
                 @Override
-                public void onResponse(Call<List<Jadwal>> call, Response<List<Jadwal>> response) {
+                public void onResponse(Call<List<JadwalDetail>> call, Response<List<JadwalDetail>> response) {
                     rvDaftarJadwal.setVisibility(View.VISIBLE);
-                    List<Jadwal> listItem = response.body();
+                    List<JadwalDetail> listItem = response.body();
 
                     Toast.makeText(getContext() , "Pesan berhasil diload", Toast.LENGTH_SHORT).show();
-                    jadwalAdapter.setData(new ArrayList<Jadwal>(listItem));
+                    jadwalAdapter.setData(new ArrayList<JadwalDetail>(listItem));
                     dialog.dismiss();
                 }
 
                 @Override
-                public void onFailure(Call<List<Jadwal>> call, Throwable t) {
+                public void onFailure(Call<List<JadwalDetail>> call, Throwable t) {
                     Log.e("jadwal", t.toString());
                     dialog.dismiss();
                 }

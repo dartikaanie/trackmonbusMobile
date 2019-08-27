@@ -11,15 +11,16 @@ import android.widget.TextView;
 
 import com.anie.dara.trackmonbus_supir.R;
 import com.anie.dara.trackmonbus_supir.model.Jadwal;
+import com.anie.dara.trackmonbus_supir.model.jadwal.JadwalDetail;
 
 import java.util.ArrayList;
 
 public class JadwalAdapter extends  RecyclerView.Adapter<JadwalAdapter.JadwalHolder> {
 
-    private ArrayList<Jadwal> dataJadwal;
+    private ArrayList<JadwalDetail> dataJadwal;
     Context context;
 
-    public void setData(ArrayList<Jadwal> data){
+    public void setData(ArrayList<JadwalDetail> data){
         dataJadwal = data;
         notifyDataSetChanged();
     }
@@ -40,17 +41,17 @@ public class JadwalAdapter extends  RecyclerView.Adapter<JadwalAdapter.JadwalHol
 
     @Override
     public void onBindViewHolder(@NonNull JadwalAdapter.JadwalHolder holder, int position) {
-        Jadwal jadwal = dataJadwal.get(position);
-        Log.e("jadwal", String.valueOf(jadwal.getShift()));
-        holder.NoBus.setText(jadwal.getNo_bus());
+        JadwalDetail jadwal = dataJadwal.get(position);
+        Log.e("jadwal", String.valueOf(jadwal));
+        holder.NoBus.setText(jadwal.getJadwal().getNoBus());
         holder.tgl.setText(jadwal.getTgl());
-        holder.kapasitas.setText(jadwal.getKapasitas() + " orang");
-        holder.no_tnkb.setText(jadwal.getNo_tnkb());
-        holder.namaTrayek2.setText(jadwal.getTrayek());
-        holder.namaHalte.setText(jadwal.getJalur());
-        holder.namaSupir.setText(jadwal.getNama_pramugara());
+        holder.kapasitas.setText(Integer.toString(jadwal.getJadwal().getBuses().getKapasitas()) + " orang");
+        holder.no_tnkb.setText(jadwal.getJadwal().getBuses().getNoTnkb());
+        holder.namaTrayek2.setText(jadwal.getJadwal().getDetailTrayeks().getTrayeks().getTrayek());
+        holder.namaHalte.setText(jadwal.getJadwal().getDetailTrayeks().getJalurs().getNamaJalur());
+        holder.namaSupir.setText(jadwal.getPramugaras().getNamaPramugara());
         holder.tgl.setText(jadwal.getTgl().substring(0,10));
-        holder.shift.setText("Waktu : " +jadwal.getShift());
+        holder.shift.setText("Waktu : " +jadwal.getShifts().getJamAwal()+ " - "+ jadwal.getShifts().getJamAkhir());
     }
 
 

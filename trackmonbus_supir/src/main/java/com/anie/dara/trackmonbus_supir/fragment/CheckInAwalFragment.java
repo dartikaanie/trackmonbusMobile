@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.anie.dara.trackmonbus_supir.MainActivity;
 import com.anie.dara.trackmonbus_supir.MonitoringPosisi;
 import com.anie.dara.trackmonbus_supir.R;
+import com.anie.dara.trackmonbus_supir.model.jadwal.JadwalDetail;
 import com.anie.dara.trackmonbus_supir.rest.dbClient;
 import com.anie.dara.trackmonbus_supir.model.Jadwal;
 import com.anie.dara.trackmonbus_supir.rest.ApiClient;
@@ -38,8 +39,8 @@ import static android.text.TextUtils.substring;
 
 public class CheckInAwalFragment extends Fragment implements View.OnClickListener {
 
-    Jadwal jadwal;
-    TextView NoBus, no_tnkb, kapasitas, namaHalte, namaSupir, namaTrayek, hari_tgl;
+    JadwalDetail jadwal;
+    TextView NoBus, no_tnkb, kapasitas, namaJalur, namaSupir, namaTrayek, hari_tgl;
     Button btnMulai;
     View mView;
     EditText etKmAwal;
@@ -72,7 +73,7 @@ public class CheckInAwalFragment extends Fragment implements View.OnClickListene
         NoBus = mView.findViewById(R.id.NoBus);
         no_tnkb = mView.findViewById(R.id.no_tnkb);
         kapasitas = mView.findViewById(R.id.kapasitas);
-        namaHalte = mView.findViewById(R.id.namaJalur);
+        namaJalur = mView.findViewById(R.id.namaJalur);
         namaSupir = mView.findViewById(R.id.namaSupir);
         hari_tgl = mView.findViewById(R.id.hari_tgl);
         namaTrayek = mView.findViewById(R.id.namaTrayek2);
@@ -91,13 +92,13 @@ public class CheckInAwalFragment extends Fragment implements View.OnClickListene
 
         jadwal =  bundle.getParcelable("jadwal");
         if(bundle != null){
-            NoBus.setText(jadwal.getNo_bus());
-            no_tnkb.setText(jadwal.getNo_tnkb());
-            kapasitas.setText(jadwal.getKapasitas());
-            namaHalte.setText(jadwal.getJalur());
-            namaSupir.setText(jadwal.getNama_supir());
-            namaTrayek.setText(jadwal.getTrayek());
-            no_bus = jadwal.getNo_bus();
+            NoBus.setText(jadwal.getJadwal().getNoBus());
+            no_tnkb.setText(jadwal.getJadwal().getBuses().getNoTnkb());
+            kapasitas.setText(jadwal.getJadwal().getBuses().getKapasitas());
+            namaJalur.setText(jadwal.getJadwal().getDetailTrayeks().getJalurs().getNamaJalur());
+            namaTrayek.setText(jadwal.getJadwal().getDetailTrayeks().getTrayeks().getTrayek());
+            namaSupir.setText(jadwal.getUsers().getName() + " - "+ jadwal.getPramugaras().getNamaPramugara());
+
             tgl = jadwal.getTgl();
             hari_tgl.setText(substring(jadwal.getTgl(),0,10));
             Toast.makeText(getContext() , "Silakan isi km awal bus", Toast.LENGTH_SHORT).show();

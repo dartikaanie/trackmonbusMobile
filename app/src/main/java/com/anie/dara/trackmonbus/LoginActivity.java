@@ -98,6 +98,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
+                dialog.dismiss();
                 Toast.makeText(LoginActivity.this,"Error. Ulangi lagi", Toast.LENGTH_SHORT).show();
             }
         });

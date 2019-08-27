@@ -3,6 +3,8 @@ package com.anie.dara.trackmonbus_supir.rest;
 import com.anie.dara.trackmonbus_supir.model.Halte;
 import com.anie.dara.trackmonbus_supir.model.Jadwal;
 import com.anie.dara.trackmonbus_supir.model.User;
+import com.anie.dara.trackmonbus_supir.model.jadwal.DetailTrayeks;
+import com.anie.dara.trackmonbus_supir.model.jadwal.JadwalDetail;
 import com.anie.dara.trackmonbus_supir.model.noBus;
 import com.anie.dara.trackmonbus_supir.model.rit;
 
@@ -28,12 +30,12 @@ public interface dbClient {
 
 
     @GET("api/cekJadwal")
-    Call<Jadwal> cekJadwal(
+    Call<JadwalDetail> cekJadwal(
             @Query("user_id") String user_id
     );
 
     @GET("api/cekJadwalSupir")
-    Call<List<Jadwal>> getJadwalUser(@Query("user_id") String user_id);
+    Call<List<JadwalDetail>> getJadwalUser(@Query("user_id") String user_id);
 
 
     @GET("api/viewHaltes")

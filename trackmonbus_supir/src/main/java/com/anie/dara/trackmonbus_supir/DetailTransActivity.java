@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.anie.dara.trackmonbus_supir.adapter.RitAdapter;
 import com.anie.dara.trackmonbus_supir.model.Jadwal;
+import com.anie.dara.trackmonbus_supir.model.jadwal.JadwalDetail;
 import com.anie.dara.trackmonbus_supir.model.rit;
 import com.anie.dara.trackmonbus_supir.rest.ApiClient;
 import com.anie.dara.trackmonbus_supir.rest.dbClient;
@@ -39,7 +40,7 @@ import static android.text.TextUtils.substring;
 
 public class DetailTransActivity extends AppCompatActivity implements View.OnClickListener {
 
-    Jadwal jadwal;
+    JadwalDetail jadwal;
     TextView NoBus, no_tnkb, kapasitas, namaJalur, namaSupir, namaTrayek, hari_tgl, km_awal, km_akhir, keterangan;
     Button btnPeta, btnUbah, btn_checkpoint;
     String no_bus, tgl;
@@ -87,18 +88,20 @@ public class DetailTransActivity extends AppCompatActivity implements View.OnCli
         jadwal =   getIntent().getExtras().getParcelable("jadwal");
 
         if(jadwal != null){
-            NoBus.setText(jadwal.getNo_bus());
-            no_tnkb.setText(jadwal.getNo_tnkb());
-            kapasitas.setText(jadwal.getKapasitas());
-            namaJalur.setText(jadwal.getJalur());
-            namaSupir.setText(jadwal.getNama_supir());
-            namaTrayek.setText(jadwal.getTrayek());
-            hari_tgl.setText(substring(jadwal.getTgl(),0,10));
-            km_akhir.setText(jadwal.getKm_akhir());
-            km_awal.setText(jadwal.getKm_awal());
-            keterangan.setText(jadwal.getKeterangan());
+            NoBus.setText(jadwal.getJadwal().getBuses().getNoBus());
+            no_tnkb.setText(jadwal.getJadwal().getBuses().getNoTnkb());
+            kapasitas.setText(Integer.toString(jadwal.getJadwal().getBuses().getKapasitas()));
+            namaJalur.setText(jadwal.getJadwal().getDetailTrayeks().getJalurs().getNamaJalur());
+            namaSupir.setText(jadwal.getUsers().getName() + " - "+ jadwal.getPramugaras().getNamaPramugara() );
+            namaTrayek.setText(jadwal.getJadwal().getDetailTrayeks().getTrayeks().getTrayek());
+            no_bus =jadwal.getJadwal().getBuses().getNoBus();
 
-            no_bus = jadwal.getNo_bus();
+            hari_tgl.setText(substring(jadwal.getTgl(),0,10));
+            km_akhir.setText(Float.toString(jadwal.getJadwal().getKmAkhir()));
+            km_awal.setText(Float.toString(jadwal.getJadwal().getKmAwal()));
+            keterangan.setText(jadwal.getJadwal().getKeterangan());
+
+            no_bus =jadwal.getJadwal().getBuses().getNoBus();
             tgl = jadwal.getTgl();
         }else{
             Intent intent =  new Intent(DetailTransActivity.this, MonitoringPosisi.class);
@@ -168,6 +171,8 @@ public class DetailTransActivity extends AppCompatActivity implements View.OnCli
 
                 @Override
                 public void onFailure(Call<List<rit>> call, Throwable t) {
+                    Log.e("error detailActivity",  t.toString());
+                    dialog.dismiss();
 
                 }
             });

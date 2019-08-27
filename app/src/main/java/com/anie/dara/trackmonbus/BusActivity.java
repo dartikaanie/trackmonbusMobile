@@ -96,7 +96,7 @@ public class BusActivity extends AppCompatActivity {
                         Toast.makeText(BusActivity.this , "Maaf, Tidak ada data", Toast.LENGTH_SHORT).show();
                     }
                     else{
-                        Toast.makeText(BusActivity.this , "Pesan berhasil diload", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(BusActivity.this , "Data Bus berhasil diload", Toast.LENGTH_SHORT).show();
                         busAdapter.setDataBus(new ArrayList<Bus>(listBusItem));
                     }
 

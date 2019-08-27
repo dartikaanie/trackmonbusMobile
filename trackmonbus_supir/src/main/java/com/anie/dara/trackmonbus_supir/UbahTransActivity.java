@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anie.dara.trackmonbus_supir.model.Jadwal;
+import com.anie.dara.trackmonbus_supir.model.jadwal.JadwalDetail;
 import com.anie.dara.trackmonbus_supir.rest.ApiClient;
 import com.anie.dara.trackmonbus_supir.rest.dbClient;
 
@@ -29,7 +30,7 @@ public class UbahTransActivity extends AppCompatActivity implements View.OnClick
     TextView NoBus, no_tnkb, kapasitas, namaSupir, namaTrayek, hari_tgl, namaJalur;
     EditText ETKmAwal, ETkmAkhir, ETketerangan;
     Button btnSimpan, btnBatal;
-    Jadwal jadwal;
+    JadwalDetail jadwal;
     String no_bus, tgl;
     private dbClient client = ApiClient.getClient().create(dbClient.class);
 
@@ -67,27 +68,28 @@ public class UbahTransActivity extends AppCompatActivity implements View.OnClick
         jadwal =   getIntent().getExtras().getParcelable("jadwal");
 
         if(jadwal != null){
-            NoBus.setText(jadwal.getNo_bus());
-            no_tnkb.setText(jadwal.getNo_tnkb());
-            kapasitas.setText(jadwal.getKapasitas());
-            namaJalur.setText(jadwal.getJalur());
-            namaSupir.setText(jadwal.getNama_supir());
-            namaTrayek.setText(jadwal.getTrayek());
+            NoBus.setText(jadwal.getJadwal().getBuses().getNoBus());
+            no_tnkb.setText(jadwal.getJadwal().getBuses().getNoTnkb());
+            kapasitas.setText(Integer.toString(jadwal.getJadwal().getBuses().getKapasitas()));
+            namaJalur.setText(jadwal.getJadwal().getDetailTrayeks().getJalurs().getNamaJalur());
+            namaSupir.setText(jadwal.getUsers().getName() + " - "+ jadwal.getPramugaras().getNamaPramugara() );
+            namaTrayek.setText(jadwal.getJadwal().getDetailTrayeks().getTrayeks().getTrayek());
+            no_bus =jadwal.getJadwal().getBuses().getNoBus();
 
-            if(!jadwal.getKm_awal().equals(0)){
-                ETKmAwal.setText(jadwal.getKm_awal());
+            if(jadwal.getJadwal().getKmAwal() != 0){
+                ETKmAwal.setText(Float.toString(jadwal.getJadwal().getKmAwal()));
             }
 
-            if(!jadwal.getKm_akhir().equals(0)){
-                ETKmAwal.setText(jadwal.getKm_akhir());
+            if(jadwal.getJadwal().getKmAkhir()!=0){
+                ETKmAwal.setText(Float.toString(jadwal.getJadwal().getKmAkhir()));
             }
 
-            if(!jadwal.getKeterangan().equals(0)){
-                ETKmAwal.setText(jadwal.getKeterangan());
+            if(!jadwal.getJadwal().getKeterangan().equals(null)){
+                ETKmAwal.setText(jadwal.getJadwal().getKeterangan());
             }
 
             hari_tgl.setText(substring(jadwal.getTgl(),0,10));
-            no_bus = jadwal.getNo_bus();
+            no_bus = jadwal.getJadwal().getNoBus();
             tgl = jadwal.getTgl();
         }else{
             startActivity(new Intent(UbahTransActivity.this, MainActivity.class));
@@ -135,7 +137,7 @@ public class UbahTransActivity extends AppCompatActivity implements View.OnClick
         call.enqueue(new Callback<Jadwal>() {
             @Override
             public void onResponse(Call<Jadwal> call, Response<Jadwal> response) {
-                   jadwal = response.body();
+                   Jadwal dataJadwal = response.body();
                     Toast.makeText(UbahTransActivity.this,"Perubahan berhasil disimpan", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                     Intent intent =  new Intent(UbahTransActivity.this, DetailTransActivity.class);
