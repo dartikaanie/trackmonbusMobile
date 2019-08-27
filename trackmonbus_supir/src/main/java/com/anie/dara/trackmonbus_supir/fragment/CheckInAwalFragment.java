@@ -26,7 +26,6 @@ import com.anie.dara.trackmonbus_supir.MonitoringPosisi;
 import com.anie.dara.trackmonbus_supir.R;
 import com.anie.dara.trackmonbus_supir.model.jadwal.JadwalDetail;
 import com.anie.dara.trackmonbus_supir.rest.dbClient;
-import com.anie.dara.trackmonbus_supir.model.Jadwal;
 import com.anie.dara.trackmonbus_supir.rest.ApiClient;
 
 import okhttp3.ResponseBody;

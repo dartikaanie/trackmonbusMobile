@@ -1,97 +1,110 @@
 package com.anie.dara.trackmonbus_supir.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
+import com.anie.dara.trackmonbus_supir.model.jadwal.DetailTrayeks;
+import com.google.gson.annotations.SerializedName;
 
-public class rit implements Parcelable {
-    String tgl,no_bus, jalur_id, jalur , waktu_berangkat, waktu_datang;
+public class Rit{
 
+	@SerializedName("jalur_id")
+	private String jalurId;
 
+	@SerializedName("waktu_berangkat")
+	private String waktuBerangkat;
 
-    public String getTgl() {
-        return tgl;
-    }
+	@SerializedName("tgl")
+	private String tgl;
 
-    public void setTgl(String tgl) {
-        this.tgl = tgl;
-    }
+	@SerializedName("detail_trayeks")
+	private DetailTrayeks detailTrayeks;
 
-    public String getNo_bus() {
-        return no_bus;
-    }
+	@SerializedName("waktu_datang")
+	private Object waktuDatang;
 
-    public void setNo_bus(String no_bus) {
-        this.no_bus = no_bus;
-    }
+	@SerializedName("trayek_id")
+	private String trayekId;
 
-    public String getJalur_id() {
-        return jalur_id;
-    }
+	@SerializedName("rits_id")
+	private String ritsId;
 
-    public void setJalur_id(String jalur_id) {
-        this.jalur_id = jalur_id;
-    }
+	@SerializedName("no_bus")
+	private String noBus;
 
-    public String getJalur() {
-        return jalur;
-    }
+	public void setJalurId(String jalurId){
+		this.jalurId = jalurId;
+	}
 
-    public void setJalur(String jalur) {
-        this.jalur = jalur;
-    }
+	public String getJalurId(){
+		return jalurId;
+	}
 
-    public String getWaktu_berangkat() {
-        return waktu_berangkat;
-    }
+	public void setWaktuBerangkat(String waktuBerangkat){
+		this.waktuBerangkat = waktuBerangkat;
+	}
 
-    public void setWaktu_berangkat(String waktu_berangkat) {
-        this.waktu_berangkat = waktu_berangkat;
-    }
+	public String getWaktuBerangkat(){
+		return waktuBerangkat;
+	}
 
-    public String getWaktu_datang() {
-        return waktu_datang;
-    }
+	public void setTgl(String tgl){
+		this.tgl = tgl;
+	}
 
-    public void setWaktu_datang(String waktu_datang) {
-        this.waktu_datang = waktu_datang;
-    }
+	public String getTgl(){
+		return tgl;
+	}
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
+	public void setDetailTrayeks(DetailTrayeks detailTrayeks){
+		this.detailTrayeks = detailTrayeks;
+	}
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.tgl);
-        dest.writeString(this.no_bus);
-        dest.writeString(this.jalur_id);
-        dest.writeString(this.jalur);
-        dest.writeString(this.waktu_berangkat);
-        dest.writeString(this.waktu_datang);
-    }
+	public DetailTrayeks getDetailTrayeks(){
+		return detailTrayeks;
+	}
 
-    public rit() {
-    }
+	public void setWaktuDatang(Object waktuDatang){
+		this.waktuDatang = waktuDatang;
+	}
 
-    protected rit(Parcel in) {
-        this.tgl = in.readString();
-        this.no_bus = in.readString();
-        this.jalur_id = in.readString();
-        this.jalur = in.readString();
-        this.waktu_berangkat = in.readString();
-        this.waktu_datang = in.readString();
-    }
+	public Object getWaktuDatang(){
+		return waktuDatang;
+	}
 
-    public static final Parcelable.Creator<rit> CREATOR = new Parcelable.Creator<rit>() {
-        @Override
-        public rit createFromParcel(Parcel source) {
-            return new rit(source);
-        }
+	public void setTrayekId(String trayekId){
+		this.trayekId = trayekId;
+	}
 
-        @Override
-        public rit[] newArray(int size) {
-            return new rit[size];
-        }
-    };
+	public String getTrayekId(){
+		return trayekId;
+	}
+
+	public void setRitsId(String ritsId){
+		this.ritsId = ritsId;
+	}
+
+	public String getRitsId(){
+		return ritsId;
+	}
+
+	public void setNoBus(String noBus){
+		this.noBus = noBus;
+	}
+
+	public String getNoBus(){
+		return noBus;
+	}
+
+	@Override
+ 	public String toString(){
+		return 
+			"Rit{" + 
+			"jalur_id = '" + jalurId + '\'' + 
+			",waktu_berangkat = '" + waktuBerangkat + '\'' + 
+			",tgl = '" + tgl + '\'' + 
+			",detail_trayeks = '" + detailTrayeks + '\'' + 
+			",waktu_datang = '" + waktuDatang + '\'' + 
+			",trayek_id = '" + trayekId + '\'' + 
+			",rits_id = '" + ritsId + '\'' + 
+			",no_bus = '" + noBus + '\'' + 
+			"}";
+		}
 }

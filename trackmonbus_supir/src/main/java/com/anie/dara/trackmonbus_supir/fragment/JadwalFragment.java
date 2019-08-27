@@ -24,7 +24,6 @@ import android.widget.Toast;
 import com.anie.dara.trackmonbus_supir.MainActivity;
 import com.anie.dara.trackmonbus_supir.R;
 import com.anie.dara.trackmonbus_supir.adapter.JadwalAdapter;
-import com.anie.dara.trackmonbus_supir.model.Jadwal;
 import com.anie.dara.trackmonbus_supir.model.jadwal.JadwalDetail;
 import com.anie.dara.trackmonbus_supir.rest.ApiClient;
 import com.anie.dara.trackmonbus_supir.rest.dbClient;
@@ -133,14 +132,14 @@ public class JadwalFragment extends Fragment {
                     rvDaftarJadwal.setVisibility(View.VISIBLE);
                     List<JadwalDetail> listItem = response.body();
 
-                    Toast.makeText(getContext() , "Pesan berhasil diload", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext() , "Jadwal berhasil diload", Toast.LENGTH_SHORT).show();
                     jadwalAdapter.setData(new ArrayList<JadwalDetail>(listItem));
                     dialog.dismiss();
                 }
 
                 @Override
                 public void onFailure(Call<List<JadwalDetail>> call, Throwable t) {
-                    Log.e("jadwal", t.toString());
+                    Log.e("jadwal error", t.toString());
                     dialog.dismiss();
                 }
             });

@@ -22,9 +22,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anie.dara.trackmonbus_supir.adapter.RitAdapter;
-import com.anie.dara.trackmonbus_supir.model.Jadwal;
+import com.anie.dara.trackmonbus_supir.model.Rit;
 import com.anie.dara.trackmonbus_supir.model.jadwal.JadwalDetail;
-import com.anie.dara.trackmonbus_supir.model.rit;
 import com.anie.dara.trackmonbus_supir.rest.ApiClient;
 import com.anie.dara.trackmonbus_supir.rest.dbClient;
 
@@ -156,21 +155,21 @@ public class DetailTransActivity extends AppCompatActivity implements View.OnCli
 
         if(konekkah()){
             client = ApiClient.getClient().create(dbClient.class);
-            Call<List<rit>> call = client.getRit(no_bus, tgl);
-            call.enqueue(new Callback<List<rit>>() {
+            Call<List<Rit>> call = client.getRit(no_bus, tgl);
+            call.enqueue(new Callback<List<Rit>>() {
 
                 @Override
-                public void onResponse(Call<List<rit>> call, Response<List<rit>> response) {
+                public void onResponse(Call<List<Rit>> call, Response<List<Rit>> response) {
                     rvDaftarRit.setVisibility(View.VISIBLE);
-                    List<rit> listItem = response.body();
+                    List<Rit> listItem = response.body();
 
                         Toast.makeText(DetailTransActivity.this , "Pesan berhasil diload", Toast.LENGTH_SHORT).show();
-                        ritAdapter.setDataRit(new ArrayList<rit>(listItem));
+                        ritAdapter.setDataRit(new ArrayList<Rit>(listItem));
                     dialog.dismiss();
                 }
 
                 @Override
-                public void onFailure(Call<List<rit>> call, Throwable t) {
+                public void onFailure(Call<List<Rit>> call, Throwable t) {
                     Log.e("error detailActivity",  t.toString());
                     dialog.dismiss();
 

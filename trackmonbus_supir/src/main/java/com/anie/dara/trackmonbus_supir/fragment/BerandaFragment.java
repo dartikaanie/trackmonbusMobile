@@ -38,7 +38,6 @@ import com.anie.dara.trackmonbus_supir.MonitoringPosisi;
 import com.anie.dara.trackmonbus_supir.R;
 import com.anie.dara.trackmonbus_supir.SQLiteDatabaseHandler;
 import com.anie.dara.trackmonbus_supir.model.Halte;
-import com.anie.dara.trackmonbus_supir.model.Jadwal;
 import com.anie.dara.trackmonbus_supir.model.jadwal.DetailTrayeks;
 import com.anie.dara.trackmonbus_supir.model.jadwal.JadwalDetail;
 import com.anie.dara.trackmonbus_supir.rest.ApiClient;

@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.anie.dara.trackmonbus_supir.R;
-import com.anie.dara.trackmonbus_supir.model.Jadwal;
 import com.anie.dara.trackmonbus_supir.model.jadwal.JadwalDetail;
 
 import java.util.ArrayList;
@@ -42,7 +41,6 @@ public class JadwalAdapter extends  RecyclerView.Adapter<JadwalAdapter.JadwalHol
     @Override
     public void onBindViewHolder(@NonNull JadwalAdapter.JadwalHolder holder, int position) {
         JadwalDetail jadwal = dataJadwal.get(position);
-        Log.e("jadwal", String.valueOf(jadwal));
         holder.NoBus.setText(jadwal.getJadwal().getNoBus());
         holder.tgl.setText(jadwal.getTgl());
         holder.kapasitas.setText(Integer.toString(jadwal.getJadwal().getBuses().getKapasitas()) + " orang");

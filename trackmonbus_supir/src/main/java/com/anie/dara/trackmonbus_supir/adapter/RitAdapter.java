@@ -9,16 +9,16 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.anie.dara.trackmonbus_supir.R;
-import com.anie.dara.trackmonbus_supir.model.rit;
+import com.anie.dara.trackmonbus_supir.model.Rit;
 
 import java.util.ArrayList;
 
 public class RitAdapter extends  RecyclerView.Adapter<RitAdapter.RitHolder> {
 
-    private ArrayList<rit> dataRit;
+    private ArrayList<Rit> dataRit;
     Context context;
 
-    public void setDataRit(ArrayList<rit> data){
+    public void setDataRit(ArrayList<Rit> data){
         dataRit = data;
         notifyDataSetChanged();
     }
@@ -39,16 +39,16 @@ public class RitAdapter extends  RecyclerView.Adapter<RitAdapter.RitHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull RitAdapter.RitHolder holder, int position) {
-        rit rit = dataRit.get(position);
-        holder.waktu_berangkat.setText(String.valueOf(rit.getWaktu_berangkat()));
+        Rit rit = dataRit.get(position);
+        holder.waktu_berangkat.setText(String.valueOf(rit.getWaktuBerangkat()));
 
-        if(rit.getWaktu_datang() == null){
+        if(rit.getWaktuDatang() == null){
             holder.waktu_datang.setText("-");
             holder.waktu_datang.setGravity(2);
         }else{
-            holder.waktu_datang.setText(String.valueOf(rit.getWaktu_datang()));
+            holder.waktu_datang.setText(String.valueOf(rit.getWaktuDatang()));
         }
-        holder.halte_tujuan.setText(String.valueOf(rit.getJalur()));
+        holder.namaJalur.setText(String.valueOf(rit.getDetailTrayeks().getJalurs().getNamaJalur()));
     }
 
 
@@ -64,13 +64,13 @@ public class RitAdapter extends  RecyclerView.Adapter<RitAdapter.RitHolder> {
 
     // Inner CLASS
     public class RitHolder extends RecyclerView.ViewHolder{
-        TextView waktu_berangkat, waktu_datang, halte_tujuan;
+        TextView waktu_berangkat, waktu_datang, namaJalur;
 
         public RitHolder(@NonNull View itemView){
             super(itemView);
             waktu_berangkat = itemView.findViewById(R.id.waktu_berangkat);
             waktu_datang = itemView.findViewById(R.id.waktu_datang);
-            halte_tujuan = itemView.findViewById(R.id.halte_tujuan);
+            namaJalur = itemView.findViewById(R.id.namaJalur);
         }
     }
 

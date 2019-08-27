@@ -1,12 +1,11 @@
 package com.anie.dara.trackmonbus_supir.rest;
 
 import com.anie.dara.trackmonbus_supir.model.Halte;
-import com.anie.dara.trackmonbus_supir.model.Jadwal;
+import com.anie.dara.trackmonbus_supir.model.Rit;
 import com.anie.dara.trackmonbus_supir.model.User;
-import com.anie.dara.trackmonbus_supir.model.jadwal.DetailTrayeks;
+import com.anie.dara.trackmonbus_supir.model.jadwal.Jadwal;
 import com.anie.dara.trackmonbus_supir.model.jadwal.JadwalDetail;
 import com.anie.dara.trackmonbus_supir.model.noBus;
-import com.anie.dara.trackmonbus_supir.model.rit;
 
 import java.util.List;
 
@@ -58,7 +57,7 @@ public interface dbClient {
 
     @FormUrlEncoded
     @POST("api/getRit")
-    Call<List<rit>> getRit(
+    Call<List<Rit>> getRit(
             @Field("no_bus") String no_bus,
             @Field("tgl") String tgl
     );

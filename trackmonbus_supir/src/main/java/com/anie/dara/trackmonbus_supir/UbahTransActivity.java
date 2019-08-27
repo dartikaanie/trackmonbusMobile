@@ -12,7 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.anie.dara.trackmonbus_supir.model.Jadwal;
+import com.anie.dara.trackmonbus_supir.model.jadwal.Jadwal;
 import com.anie.dara.trackmonbus_supir.model.jadwal.JadwalDetail;
 import com.anie.dara.trackmonbus_supir.rest.ApiClient;
 import com.anie.dara.trackmonbus_supir.rest.dbClient;
@@ -85,7 +85,7 @@ public class UbahTransActivity extends AppCompatActivity implements View.OnClick
             }
 
             if(!jadwal.getJadwal().getKeterangan().equals(null)){
-                ETKmAwal.setText(jadwal.getJadwal().getKeterangan());
+                ETketerangan.setText(jadwal.getJadwal().getKeterangan());
             }
 
             hari_tgl.setText(substring(jadwal.getTgl(),0,10));

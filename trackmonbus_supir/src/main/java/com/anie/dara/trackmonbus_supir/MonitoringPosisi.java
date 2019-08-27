@@ -35,7 +35,6 @@ import android.widget.Toast;
 import com.anie.dara.trackmonbus_supir.distanceMatrix.DistanceMatrix;
 import com.anie.dara.trackmonbus_supir.distanceMatrix.ElementsItem;
 import com.anie.dara.trackmonbus_supir.model.Halte;
-import com.anie.dara.trackmonbus_supir.model.Jadwal;
 import com.anie.dara.trackmonbus_supir.model.Posisi;
 import com.anie.dara.trackmonbus_supir.model.jadwal.JadwalDetail;
 import com.anie.dara.trackmonbus_supir.model.noBus;
