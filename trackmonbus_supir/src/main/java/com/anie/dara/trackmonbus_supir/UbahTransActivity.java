@@ -81,7 +81,7 @@ public class UbahTransActivity extends AppCompatActivity implements View.OnClick
             }
 
             if(jadwal.getJadwal().getKmAkhir()!=0){
-                ETKmAwal.setText(Float.toString(jadwal.getJadwal().getKmAkhir()));
+                ETkmAkhir.setText(Float.toString(jadwal.getJadwal().getKmAkhir()));
             }
 
             if(!jadwal.getJadwal().getKeterangan().equals(null)){

@@ -253,7 +253,7 @@
 
                         <TextView
                             android:id="@+id/TVkm_awal"
-                            android:layout_width="wrap_content"
+                            android:layout_width="20dp"
                             android:layout_height="wrap_content"
                             android:layout_margin="5dp"
                             android:text="00 km" />
@@ -280,7 +280,7 @@
 
                         <TextView
                             android:id="@+id/TVKM_akhir"
-                            android:layout_width="wrap_content"
+                            android:layout_width="20dp"
                             android:layout_height="wrap_content"
                             android:layout_margin="5dp"
                             android:text="00 km" />
@@ -304,17 +304,12 @@
                             android:layout_margin="5dp"
                             android:text="Keterangan" />
 
-                    </TableRow>
-
-                    <TableRow
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-
                         <TextView
                             android:id="@+id/TVKeterangan"
-                            android:layout_width="wrap_content"
+                            android:layout_width="119dp"
                             android:layout_height="wrap_content"
                             android:layout_margin="5dp"
+                            android:layout_weight="2"
                             android:text="keterangan" />
                     </TableRow>
 
