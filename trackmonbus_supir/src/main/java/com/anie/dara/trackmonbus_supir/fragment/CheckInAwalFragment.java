@@ -93,7 +93,7 @@ public class CheckInAwalFragment extends Fragment implements View.OnClickListene
         if(bundle != null){
             NoBus.setText(jadwal.getJadwal().getNoBus());
             no_tnkb.setText(jadwal.getJadwal().getBuses().getNoTnkb());
-            kapasitas.setText(jadwal.getJadwal().getBuses().getKapasitas());
+            kapasitas.setText(Integer.toString(jadwal.getJadwal().getBuses().getKapasitas()));
             namaJalur.setText(jadwal.getJadwal().getDetailTrayeks().getJalurs().getNamaJalur());
             namaTrayek.setText(jadwal.getJadwal().getDetailTrayeks().getTrayeks().getTrayek());
             namaSupir.setText(jadwal.getUsers().getName() + " - "+ jadwal.getPramugaras().getNamaPramugara());

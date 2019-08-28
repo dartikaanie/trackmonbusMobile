@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
@@ -22,6 +23,7 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -72,7 +74,7 @@ import retrofit2.Response;
 
 import static android.text.TextUtils.substring;
 
-public class MonitoringPosisi extends AppCompatActivity implements View.OnClickListener, OnMapReadyCallback {
+public class MonitoringPosisi extends AppCompatActivity implements  View.OnClickListener, OnMapReadyCallback {
 
 
     JadwalDetail jadwal;
@@ -88,21 +90,19 @@ public class MonitoringPosisi extends AppCompatActivity implements View.OnClickL
     private List<noBus> listBusSearah;
     private dbClient client = ApiClient.getClient().create(dbClient.class);
     private DistanceApiServices distanceApi = initLibrary.getClient().create(DistanceApiServices.class);
-    LocationManager locationManager;
+//    LocationManager locationManager;
     Location currentLocation;
     Posisi currentPosisi;
     AlertDialog alertDialog = null;
     private static  final  int REQUEST_LOCATION =1;
     private SQLiteDatabaseHandler db;
-    private List<Halte> listHalte = new ArrayList<>();
 
     private Handler handler = new Handler();
     boolean running = true;
     Toolbar toolbar;
     ImageView toolbarTitle;
 
-    String CurrentJalur = null;
-
+    private LocationManager locationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,6 +165,7 @@ public class MonitoringPosisi extends AppCompatActivity implements View.OnClickL
         }
 
         handler.postDelayed(runTrack, 5000);
+        getLocation();
     }
 
     public void getDataPosisiBus(DataSnapshot dataSnapshot){
@@ -212,8 +213,6 @@ public class MonitoringPosisi extends AppCompatActivity implements View.OnClickL
         else
         {
             getCurrentPosisi();
-
-
         }
 
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -382,7 +381,7 @@ public class MonitoringPosisi extends AppCompatActivity implements View.OnClickL
                     getJarak(currentPosisi, currentLocation);
                 }
 
-                handler.postDelayed(this, 10000);
+                handler.postDelayed(this, 2000);
             }
         }
     };
@@ -655,5 +654,38 @@ public class MonitoringPosisi extends AppCompatActivity implements View.OnClickL
                 activeNetwork.isConnectedOrConnecting();
 
         return konek;
+    }
+
+    public void getLocation(){
+        Double latitude = 0.0, longitude;
+        String message = "";
+        LocationManager mlocManager = null;
+        LocationListener mlocListener;
+        mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        mlocListener = new loclistener(this);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mlocListener);
+        if (mlocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+
+            latitude = loclistener.latitude;
+            longitude = loclistener.longitude;
+
+            Toast.makeText(getApplicationContext(), latitude.toString(), Toast.LENGTH_LONG).show();
+            if (latitude == 0.0) {
+                Toast.makeText(getApplicationContext(), "Currently gps has not found your location....", Toast.LENGTH_LONG).show();
+            }
+
+        } else {
+            Toast.makeText(getApplicationContext(), "GPS is currently off...", Toast.LENGTH_LONG).show();
+        }
     }
 }
