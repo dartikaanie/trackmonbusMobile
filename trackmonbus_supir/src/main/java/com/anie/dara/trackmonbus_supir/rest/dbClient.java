@@ -3,6 +3,7 @@ package com.anie.dara.trackmonbus_supir.rest;
 import com.anie.dara.trackmonbus_supir.model.Halte;
 import com.anie.dara.trackmonbus_supir.model.Rit;
 import com.anie.dara.trackmonbus_supir.model.User;
+import com.anie.dara.trackmonbus_supir.model.jadwal.DetailTrayeks;
 import com.anie.dara.trackmonbus_supir.model.jadwal.Jadwal;
 import com.anie.dara.trackmonbus_supir.model.jadwal.JadwalDetail;
 import com.anie.dara.trackmonbus_supir.model.noBus;
@@ -62,6 +63,13 @@ public interface dbClient {
             @Field("tgl") String tgl
     );
 
+    @GET("api/getDataJadwal")
+    Call<JadwalDetail> getDataJadwal(
+            @Query("no_bus") String no_bus,
+            @Query("tgl") String tgl
+    );
+
+
 
     @GET("api/getBusSearah")
     Call<List<noBus>> getBusSearah(@Query("jalur_id") String jalur_id);
@@ -70,7 +78,7 @@ public interface dbClient {
     Call<String> getCurrentJalur(@Query("no_bus") String no_bus,@Query("tgl") String tgl );
 
     @FormUrlEncoded
-    @PUT("api/UbahDataJadwal")
+    @POST("api/UbahDataJadwal")
     Call<Jadwal> UbahDataJadwal(
             @Field("no_bus") String no_bus,
             @Field("tgl") String tgl,

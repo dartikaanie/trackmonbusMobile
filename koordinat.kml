@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ASCII"?>
+ <kml xmlns="http://earth.google.com/kml/2.2">
+ <Document>
+ <name>GE2ADT</name>
+ <Placemark><name>1</name><description>move position</description><Point><coordinates> 100.316277, -0.809674, 0</coordinates></Point></Placemark>
+ <Placemark><name>2</name><description>move position</description><Point><coordinates>100.316245,-0.809717, 0</coordinates></Point></Placemark>
+ <Placemark><name>3</name><description>move position</description><Point><coordinates>100.316502,-0.810200,  0</coordinates></Point></Placemark>
+ <Placemark><name>4</name><description>move position</description><Point><coordinates>100.316813,-0.810479, 0</coordinates></Point></Placemark>
+ <Placemark><name>5</name><description>move position</description><Point><coordinates>100.316963,-0.810694, 0</coordinates></Point></Placemark>
+ <Placemark><name>6</name><description>move position</description><Point><coordinates>100.317188,-0.810909, 0</coordinates></Point></Placemark>
+ <Placemark><name>7</name><description>move position</description><Point><coordinates>100.317714,-0.811413, 0</coordinates></Point></Placemark>
+<Placemark><name>8</name><description>move position</description><Point><coordinates> 100.318036,-0.811670,0</coordinates></Point></Placemark>
+<Placemark><name>9</name><description>move position</description><Point><coordinates>100.318251,-0.811927, 0</coordinates></Point></Placemark>
+<Placemark><name>10</name><description>move position</description><Point><coordinates>100.318584,-0.812292, 0</coordinates></Point></Placemark>
+<Placemark><name>11</name><description>move position</description><Point><coordinates> 100.319078,-0.812753,0</coordinates></Point></Placemark>
+<Placemark><name>12</name><description>move position</description><Point><coordinates>100.319529,-0.813161, 0</coordinates></Point></Placemark>
+<Placemark><name>13</name><description>move position</description><Point><coordinates> 100.319819,-0.813494,0</coordinates></Point></Placemark>
+<Placemark><name>14</name><description>move position</description><Point><coordinates>100.320270,-0.813955, 0</coordinates></Point></Placemark>
+
+ </Document>
+ </kml>

@@ -73,7 +73,7 @@ public class DetailPesanActivity extends AppCompatActivity implements View.OnCli
         perihal = findViewById(R.id.perihal);
         isi = findViewById(R.id.isi_pesan);
         jumKomentar = findViewById(R.id.komentar);
-        userKomentar = findViewById(R.id.user_komentar);
+//        userKomentar = findViewById(R.id.user_komentar);
         swLayout = (SwipeRefreshLayout) findViewById(R.id.swlayout);
         btnAddKomentar = findViewById(R.id.btn_add_komenar);
         btnAddKomentar.setOnClickListener(this);
@@ -82,7 +82,7 @@ public class DetailPesanActivity extends AppCompatActivity implements View.OnCli
         SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
         String username = sharedPreferences.getString("name", DEFAULT);
        user_id = sharedPreferences.getString("user_id", DEFAULT);
-        userKomentar.setText(username);
+//        userKomentar.setText(username);
 
         Intent detailIntent = getIntent();
         if(null != detailIntent) {

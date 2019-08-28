@@ -533,7 +533,8 @@ public class MonitoringPosisi extends AppCompatActivity implements View.OnClickL
             Toast.makeText(MonitoringPosisi.this,"Aktifkan GPS anda", Toast.LENGTH_SHORT).show();
         }
         else {
-            Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            Log.e("currentPosisi", String.valueOf(location.getLatitude()+ " - "+ location.getLongitude()));
             if (location != null) {
                 Double lat = location.getLatitude();
                 Double lng = location.getLongitude();
@@ -550,6 +551,7 @@ public class MonitoringPosisi extends AppCompatActivity implements View.OnClickL
             Toast.makeText(MonitoringPosisi.this,"Ada KESALAHAN. LOKASINYA TIDAK TAMPIL", Toast.LENGTH_SHORT).show();
         }
         else{
+            Log.e("posisi_update lokasi", String.valueOf(posisi.getLat()+ " - "+ posisi.getLng()));
             mDatabase.child(no_bus).setValue(posisi);
             Log.e("posisi_update", posisi.toString());
             Toast.makeText(MonitoringPosisi.this, "Update Posisi", Toast.LENGTH_LONG).show();

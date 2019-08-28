@@ -87,19 +87,6 @@ public class DetailTransActivity extends AppCompatActivity implements View.OnCli
         jadwal =   getIntent().getExtras().getParcelable("jadwal");
 
         if(jadwal != null){
-            NoBus.setText(jadwal.getJadwal().getBuses().getNoBus());
-            no_tnkb.setText(jadwal.getJadwal().getBuses().getNoTnkb());
-            kapasitas.setText(Integer.toString(jadwal.getJadwal().getBuses().getKapasitas()));
-            namaJalur.setText(jadwal.getJadwal().getDetailTrayeks().getJalurs().getNamaJalur());
-            namaSupir.setText(jadwal.getUsers().getName() + " - "+ jadwal.getPramugaras().getNamaPramugara() );
-            namaTrayek.setText(jadwal.getJadwal().getDetailTrayeks().getTrayeks().getTrayek());
-            no_bus =jadwal.getJadwal().getBuses().getNoBus();
-
-            hari_tgl.setText(substring(jadwal.getTgl(),0,10));
-            km_akhir.setText(Float.toString(jadwal.getJadwal().getKmAkhir()));
-            km_awal.setText(Float.toString(jadwal.getJadwal().getKmAwal()));
-            keterangan.setText(jadwal.getJadwal().getKeterangan());
-
             no_bus =jadwal.getJadwal().getBuses().getNoBus();
             tgl = jadwal.getTgl();
         }else{
@@ -107,7 +94,7 @@ public class DetailTransActivity extends AppCompatActivity implements View.OnCli
             intent.putExtra("jadwal", jadwal);
             startActivity(intent);
         }
-
+        getJadwal();
         //detail RIT
 
         ritAdapter = new RitAdapter();
@@ -138,7 +125,7 @@ public class DetailTransActivity extends AppCompatActivity implements View.OnCli
                     @Override public void run() {
 
                         swLayout.setRefreshing(false);
-
+                        getJadwal();
                         getDataRit();
                     }
                 }, 1000);
@@ -146,6 +133,45 @@ public class DetailTransActivity extends AppCompatActivity implements View.OnCli
         });
 
        getDataRit();
+    }
+
+
+    private void getJadwal() {
+        final ProgressDialog dialog = new ProgressDialog(this);
+        dialog.setMessage("Memuat Data. . .");
+        dialog.show();
+        Call<JadwalDetail> call = client.getDataJadwal(no_bus,tgl);
+        call.enqueue(new Callback<JadwalDetail>() {
+            @Override
+            public void onResponse(Call<JadwalDetail> call, Response<JadwalDetail> response) {
+                JadwalDetail jadwal = response.body();
+                Log.e("jadwal", String.valueOf(jadwal.getJadwal()));
+                if(jadwal!=null){
+                    NoBus.setText(jadwal.getJadwal().getBuses().getNoBus());
+                    no_tnkb.setText(jadwal.getJadwal().getBuses().getNoTnkb());
+                    kapasitas.setText(Integer.toString(jadwal.getJadwal().getBuses().getKapasitas()));
+                    namaJalur.setText(jadwal.getJadwal().getDetailTrayeks().getJalurs().getNamaJalur());
+                    namaSupir.setText(jadwal.getUsers().getName() + " - "+ jadwal.getPramugaras().getNamaPramugara() );
+                    namaTrayek.setText(jadwal.getJadwal().getDetailTrayeks().getTrayeks().getTrayek());
+                    no_bus =jadwal.getJadwal().getBuses().getNoBus();
+
+                    hari_tgl.setText(substring(jadwal.getTgl(),0,10));
+                    km_akhir.setText(Float.toString(jadwal.getJadwal().getKmAkhir()));
+                    km_awal.setText(Float.toString(jadwal.getJadwal().getKmAwal()));
+                    keterangan.setText(jadwal.getJadwal().getKeterangan());
+
+                    no_bus =jadwal.getJadwal().getBuses().getNoBus();
+                    tgl = jadwal.getTgl();
+                }
+                dialog.dismiss();
+            }
+
+            @Override
+            public void onFailure(Call<JadwalDetail> call, Throwable t) {
+                dialog.dismiss();
+                Toast.makeText(DetailTransActivity.this,"Ada Kesalahan", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public void getDataRit(){

@@ -347,7 +347,7 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
         else{
 
 
-            Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             if(location!=null){
                 double lat = location.getLatitude();
                 double lng = location.getLongitude();
