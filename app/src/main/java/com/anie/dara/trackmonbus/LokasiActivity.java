@@ -193,6 +193,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
             getLocation();
         }
         if(ListHalte.size() >0){
+            Log.e("listHalte", String.valueOf(ListHalte.size()));
             initMarker(ListHalte);
         }
 
@@ -256,6 +257,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
         BitmapDrawable bitmapdraw= (BitmapDrawable) getResources().getDrawable(R.drawable.halte);
         if(listData.size() > 0 ){
             for (int i=0; i<listData.size(); i++){
+                Log.e("cek", String.valueOf(listData.get(i)));
                 LatLng location = new LatLng(Double.parseDouble(listData.get(i).getLat()), Double.parseDouble(listData.get(i).getLng()));
 
                 marker =  map.addMarker(new MarkerOptions().position(location).title(listData.get(i).getNama()).icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 70,60))));
