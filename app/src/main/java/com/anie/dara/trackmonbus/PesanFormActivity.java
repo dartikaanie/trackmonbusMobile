@@ -41,7 +41,7 @@ public class PesanFormActivity extends AppCompatActivity implements View.OnClick
     Spinner spinPerihal, spinnerBus;
     dbClient client;
     TextView nama, noBus;
-    Button btnAddBus, btnAddPesan, btn_noAddbus;
+    Button btnAddBus, btnAddPesan, btn_noAddbus, btnAddPerihal;
     EditText etIsi;
     ProgressDialog loading;
     String user_id,et_perihal, et_isi_keluhan, et_nobus = null;
@@ -69,6 +69,8 @@ public class PesanFormActivity extends AppCompatActivity implements View.OnClick
         btnAddPesan.setOnClickListener(this);
         spinnerBus = findViewById(R.id.spinnerBus);
         btnAddBus = findViewById(R.id.btn_addbus);
+        btnAddPerihal = findViewById(R.id.btnAddPerihal);
+        btnAddPerihal.setOnClickListener(this);
         btn_noAddbus = findViewById(R.id.btn_nobus);
         btn_noAddbus.setOnClickListener(this);
         btnAddBus.setOnClickListener(this);
@@ -126,7 +128,7 @@ public class PesanFormActivity extends AppCompatActivity implements View.OnClick
                     List<Perihal> perihals = response.body();
                     List<String> listSpinner = new ArrayList<String>();
                     for (int i = 0; i < perihals.size(); i++){
-                        listSpinner.add( perihals.get(i).getPerihal_id() +" - "+ perihals.get(i).getPerihal());
+                        listSpinner.add( perihals.get(i).getPerihal());
                     }
 
                     ArrayAdapter<String> adapter = new ArrayAdapter<String>(PesanFormActivity.this,
@@ -206,6 +208,11 @@ public class PesanFormActivity extends AppCompatActivity implements View.OnClick
                     addFormPesan(et_isi_keluhan,et_perihal,et_nobus);
                 }
                 break;
+
+            case R.id.btnAddPerihal:
+              startActivity(new Intent(PesanFormActivity.this, addPerihalActivity.class));
+                break;
+
 
         }
     }

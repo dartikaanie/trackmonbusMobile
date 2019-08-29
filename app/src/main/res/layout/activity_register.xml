@@ -34,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
                 android:drawableLeft="@drawable/person_icon"
-                android:fontFamily="@font/text_me_one"
+                android:fontFamily="sans-serif"
                 android:hint="@string/nama"
                 android:inputType="text|textEmailAddress"
                 android:textSize="14sp"
@@ -46,7 +46,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:drawableLeft="@drawable/email"
-                android:fontFamily="@font/text_me_one"
+                android:fontFamily="sans-serif"
                 android:hint="@string/email"
                 android:inputType="textEmailAddress"
                 android:textSize="14sp"
@@ -58,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:drawableLeft="@drawable/lock_icon"
-                android:fontFamily="@font/text_me_one"
+                android:fontFamily="sans-serif"
                 android:hint="@string/sandi"
                 android:inputType="textPassword"
                 android:textSize="14sp"
@@ -71,7 +71,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:drawableLeft="@drawable/lock_icon"
-                android:fontFamily="@font/text_me_one"
+                android:fontFamily="sans-serif"
                 android:hint="@string/ulangi_sandi"
                 android:inputType="textPassword"
                 android:textSize="14sp"
@@ -103,7 +103,7 @@
                     android:layout_weight="1"
                     android:gravity="right"
                     android:text="sudah memiliki akun?"
-                    android:textSize="12sp" />
+                    android:textSize="14sp" />
 
                 <Button
                     android:id="@+id/btn_masuk"

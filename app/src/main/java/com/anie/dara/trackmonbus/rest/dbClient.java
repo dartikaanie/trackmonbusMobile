@@ -55,6 +55,12 @@ public interface dbClient {
     Call<List<Komentar>> getPesanKomentar(@Path("keluhan_id") String keluhan_id);
 
     @FormUrlEncoded
+    @POST("api/addPerihal")
+    Call<Perihal> addPerihal(
+            @Field("perihal") String perihal
+    );
+
+    @FormUrlEncoded
     @POST("api/TambahPesan")
     Call<Result> AddPesan(
             @Field("user_id") String user_id,

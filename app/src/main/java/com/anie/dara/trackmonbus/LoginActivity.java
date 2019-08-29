@@ -89,7 +89,7 @@ public class LoginActivity extends AppCompatActivity {
                     Intent intent =  new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
                 }else{
-                    Toast.makeText(LoginActivity.this,"Error. Ulangi lagi", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this,"Email / Password salah", Toast.LENGTH_SHORT).show();
                 }
 
                 dialog.dismiss();

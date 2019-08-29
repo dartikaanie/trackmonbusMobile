@@ -386,9 +386,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
         }
     };
 
-    public void getJalur(){
 
-    }
 
     public void cekJarak(final Location lokasiBus, final String no_bus){
         Call<String> call2 = client.getCurrentJalur(no_bus,tgl);
@@ -521,6 +519,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                     }
                 });
     }
+
     public void getCurrentPosisi(){
 
         if((ActivityCompat.checkSelfPermission(MonitoringPosisi.this, Manifest.permission.ACCESS_FINE_LOCATION)

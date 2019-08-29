@@ -2,6 +2,7 @@ package com.anie.dara.trackmonbus;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -11,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -49,6 +51,7 @@ import com.anie.dara.trackmonbus.rest.dbClient;
 import com.anie.dara.trackmonbus.rest.initLibrary;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -77,6 +80,8 @@ import retrofit2.Response;
 public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallback, HalteAdapter.OnHalteListener {
 
     GoogleMap map;
+    MapView mMapView;
+
     DatabaseReference mDatabase;
     TextView textView4;
     JalurItem jalur;
@@ -93,8 +98,9 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
     TextView no_bus, no_tnkb, kapasitas, Tvdurasi;
 
     private static  final  int REQUEST_LOCATION =1;
-    LocationManager locationManager;
-
+    private LocationManager locationManager;
+    Location currentLocation;
+    Posisi currentPosisi;
 
     Toolbar toolbar;
     ImageView toolbarTitle;
@@ -136,10 +142,6 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
         swLayout = (SwipeRefreshLayout) findViewById(R.id.swlayout);
         LinearLayout llayout = (LinearLayout) findViewById(R.id.ll_swiperefresh);
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map_lokasi);
-        mapFragment.getMapAsync(this);
-
         Intent IntentMove = getIntent();
         jalur = IntentMove.getParcelableExtra("jalur");
         halteAdapter = new HalteAdapter(jalur.getHalte(), this);
@@ -165,7 +167,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
                         swLayout.setRefreshing(false);
 
                         // fungsi-fungsi lain yang dijalankan saat refresh berhenti
-                        getLocation();
+                        getCurrentPosisi();
                         Intent IntentMove = getIntent();
                         jalur = IntentMove.getParcelableExtra("jalur");
                         ListHalte = new ArrayList<>();
@@ -176,14 +178,53 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
                 }, 5000);
             }
         });
+        mMapView = (MapView) findViewById(R.id.map_monitor);
+//        dataMarker();
+
+        if(mMapView !=null){
+            mMapView.onCreate(null);
+            mMapView.onResume();
+            mMapView.getMapAsync(this);
+        }
+
     }
 
+
+
+    public void getDataPosisiBus(DataSnapshot dataSnapshot){
+
+        LatLng posisi = null;
+        BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.trans);
+
+        for (DataSnapshot child : dataSnapshot.getChildren()) {
+
+            String lat = child.child("lat").getValue().toString();
+            String lng = child.child("lng").getValue().toString();
+            String nomorBus = child.getKey().toString();
+
+            double location_lat = Double.parseDouble(lat);
+            double location_lng = Double.parseDouble(lng);
+            posisi = new LatLng(location_lat, location_lng);
+
+            marker = map.addMarker(new MarkerOptions()
+                    .position(posisi)
+                    .title(nomorBus)
+                    .icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 60,120))));
+            hashMapMarker.put(nomorBus,marker);
+        }
+    }
 
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         MapsInitializer.initialize(this);
         map = googleMap;
+        if(ListHalte.size() >0){
+            initMarker(ListHalte);
+        }
+
+
+        //map ke lokasi terkini
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
             buildAlertMessageNoGPS();
@@ -192,44 +233,72 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
         {
             getLocation();
         }
-        if(ListHalte.size() >0){
-            Log.e("listHalte", String.valueOf(ListHalte.size()));
-            initMarker(ListHalte);
-        }
 
-        dataBus();
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                getDataPosisiBus(dataSnapshot);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("error", databaseError.toString());
+
+            }
+        });
+
+        dataMarker();
+
+
+    }
+
+    public void dataMarker(){
+        mDatabase.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                 getDataAksi(dataSnapshot);
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                getDataAksi(dataSnapshot);
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
 
-    public void getLocation(){
-        locationManager = (LocationManager) LokasiActivity.this.getSystemService(Context.LOCATION_SERVICE);
-        if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-            buildAlertMessageNoGPS();
-        }
-        else
-        {
-            if((ActivityCompat.checkSelfPermission(LokasiActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED )
-                    &&
-                    (ActivityCompat.checkSelfPermission(LokasiActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                            != PackageManager.PERMISSION_GRANTED)){
-                ActivityCompat.requestPermissions(LokasiActivity.this, new String [] {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
-            }
-            else{
-                Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                if(location!=null){
 
-                    double lat = location.getLatitude();
-                    double lng = location.getLongitude();
-                    LatLng currentPosisi = new LatLng(lat, lng);
-                    map.addMarker(new MarkerOptions()
-                            .position(currentPosisi)
-                            .title("Anda"));
-                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentPosisi.latitude,currentPosisi.longitude), 16.0f));
-                }
-                else{
-                    Toast.makeText(LokasiActivity.this,"TIDAK TAMPIL LOKASINYA YA", Toast.LENGTH_SHORT).show();
-                }
+    public void getCurrentPosisi(){
+
+        if((ActivityCompat.checkSelfPermission(LokasiActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED )
+                &&
+                (ActivityCompat.checkSelfPermission(LokasiActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED)){
+            ActivityCompat.requestPermissions((Activity) LokasiActivity.this, new String [] {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
+            Toast.makeText(LokasiActivity.this,"Aktifkan GPS anda", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if (location != null) {
+                Double lat = location.getLatitude();
+                Double lng = location.getLongitude();
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 16.0f));
             }
         }
 
@@ -257,14 +326,14 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
         BitmapDrawable bitmapdraw= (BitmapDrawable) getResources().getDrawable(R.drawable.halte);
         if(listData.size() > 0 ){
             for (int i=0; i<listData.size(); i++){
-                Log.e("cek", String.valueOf(listData.get(i)));
                 LatLng location = new LatLng(Double.parseDouble(listData.get(i).getLat()), Double.parseDouble(listData.get(i).getLng()));
 
-                marker =  map.addMarker(new MarkerOptions().position(location).title(listData.get(i).getNama()).icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 70,60))));
+                marker =  map.addMarker(new MarkerOptions().position(location).title(listData.get(i).getNama()).icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 100,80))));
                 HalteMarkers.put(listData.get(i).getHalteId(),marker);
             }
             LatLng latLng = new LatLng(Double.parseDouble(listData.get(0).getLat()), Double.parseDouble(listData.get(0).getLng()));
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude,latLng.longitude), 14.0f));
+            map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            map.animateCamera(CameraUpdateFactory.zoomTo(16));
         }
     }
 
@@ -282,7 +351,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
         marker = (Marker) HalteMarkers.get(halteItem.getHalteId());
         marker.showInfoWindow();
         LatLng latLng = new LatLng(Double.parseDouble(halteItem.getLat()), Double.parseDouble(halteItem.getLng()));
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude,latLng.longitude), 16.0f));
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude,latLng.longitude), 14.0f));
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(LokasiActivity.this);
         alertDialogBuilder
@@ -483,35 +552,6 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
 
-    public void dataBus(){
-        mDatabase.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                getDataAksi(dataSnapshot);
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                getDataAksi(dataSnapshot);
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-
     public void getDataAksi(DataSnapshot dataSnapshot){
         LatLng point = null;
         BitmapDrawable bitmapdraw= (BitmapDrawable) getResources().getDrawable(R.drawable.trans);
@@ -545,6 +585,30 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
 
         return konek;
     }
+
+    public void getLocation(){
+        Double latitude = 0.0, longitude;
+        LocationManager mlocManager = null;
+        LocationListener mlocListener;
+        mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        mlocListener = new loclistener(this);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mlocListener);
+        if (mlocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+
+            latitude = loclistener.latitude;
+            longitude = loclistener.longitude;
+           Log.e("eror", latitude +" - - " + longitude);
+            if (latitude == 0.0) {
+                Toast.makeText(getApplicationContext(), "Currently gps has not found your location....", Toast.LENGTH_LONG).show();
+            }
+        } else {
+            Toast.makeText(getApplicationContext(), "GPS is currently off...", Toast.LENGTH_LONG).show();
+        }
+    }
+
 
 
 }

@@ -55,7 +55,7 @@ public class MypesanActivity extends AppCompatActivity implements com.anie.dara.
     String user_id;
     public static  final String DEFAULT ="N/A";
     private Toolbar toolbar;
-    private ImageView toolbarTitle;
+    private ImageView toolbarTitle, noPesan;
 
 
     @Override
@@ -91,7 +91,7 @@ public class MypesanActivity extends AppCompatActivity implements com.anie.dara.
 
         waiting= findViewById(R.id.loadData);
         load = findViewById(R.id.memuat_data);
-
+        noPesan = findViewById(R.id.noPesan);
         pesanAdapter = new pesanAdapter(this);
         pesanAdapter.setClickHandler(this);
 
@@ -143,6 +143,8 @@ public class MypesanActivity extends AppCompatActivity implements com.anie.dara.
         load.setText("Memuat Data");
         waiting.setVisibility(View.VISIBLE);
         load.setVisibility(View.VISIBLE);
+        noPesan.setVisibility(View.INVISIBLE);
+
         Log.e("user", user_id);
         rvDaftarPesan.setVisibility(View.INVISIBLE);
 
@@ -157,7 +159,8 @@ public class MypesanActivity extends AppCompatActivity implements com.anie.dara.
                     rvDaftarPesan.setVisibility(View.VISIBLE);
 
                     List<Pesan> listPesanItem = response.body();
-                    if(listPesanItem == null){
+                    if(listPesanItem.size() == 0 || listPesanItem == null){
+                        noPesan.setVisibility(View.VISIBLE);
                         Toast.makeText(MypesanActivity.this , "Maaf, Tidak ada data", Toast.LENGTH_SHORT).show();
                     }
                     else{

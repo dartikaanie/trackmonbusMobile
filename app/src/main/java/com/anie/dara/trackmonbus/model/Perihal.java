@@ -4,6 +4,12 @@ public class Perihal {
 
     String perihal_id, perihal;
 
+    public Perihal(String perihal_id, String perihal) {
+
+        this.perihal = perihal;
+        this.perihal_id = perihal_id;
+    }
+
     public String getPerihal_id() {
         return perihal_id;
     }

@@ -34,11 +34,10 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:drawableLeft="@drawable/person_icon"
-                android:fontFamily="@font/text_me_one"
+                android:fontFamily="sans-serif"
                 android:hint="@string/email"
                 android:inputType="textEmailAddress"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                android:textSize="14sp" />
 
             <EditText
                 android:id="@+id/ETpassword"
@@ -46,11 +45,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:drawableLeft="@drawable/lock_icon"
-                android:fontFamily="@font/text_me_one"
+                android:fontFamily="sans-serif"
                 android:hint="@string/sandi"
                 android:inputType="textPassword"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                android:textSize="14sp" />
 
 
             <Button
@@ -79,11 +77,10 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight="1"
-                    android:fontFamily="@font/text_me_one"
+                    android:fontFamily="sans-serif"
                     android:padding="10dp"
                     android:text="@string/belum_mempunyai_akun"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
+                    android:textSize="14sp" />
 
                 <Button
                     android:id="@+id/btn_daftar"

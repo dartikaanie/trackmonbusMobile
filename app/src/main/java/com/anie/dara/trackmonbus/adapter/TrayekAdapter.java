@@ -4,12 +4,14 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.anie.dara.trackmonbus.R;
+import com.anie.dara.trackmonbus.model.Trayeks.JalurItem;
 import com.anie.dara.trackmonbus.model.Trayeks.Trayeks;
 
 import java.util.ArrayList;
@@ -43,16 +45,19 @@ public class TrayekAdapter extends RecyclerView.Adapter<TrayekAdapter.TrayekHold
         Trayeks trayek = dataTrayek.get(position);
         holder.trayek.setText(String.valueOf(trayek.getTrayek()));
         holder.km_rit.setText(String.valueOf(trayek.getKmRit() + " km"));
+        if(trayek.getJalur().size() != 0){
+            jalurAdapter = new JalurAdapter(trayek.getJalur(), context);
+            holder.rvJalur.setAdapter(jalurAdapter);
+        }else{
+            holder.jalurText.setVisibility(View.INVISIBLE);
+        }
 
-        ArrayList jalurList = new ArrayList();
-        jalurList.addAll(trayek.getJalur());
-        jalurAdapter = new JalurAdapter(jalurList, context);
-        holder.rvJalur.setAdapter(jalurAdapter);
     }
 
 
     @Override
     public int getItemCount() {
+
         //mengembalikan jumlah data yang dimiliki
         if(dataTrayek!=null){
             return dataTrayek.size();
@@ -77,7 +82,7 @@ public class TrayekAdapter extends RecyclerView.Adapter<TrayekAdapter.TrayekHold
             jalurText = itemView.findViewById(R.id.jalurText);
 
 
-            final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
+            final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
             rvJalur.setLayoutManager(linearLayoutManager);
 
             itemView.setOnClickListener(new View.OnClickListener() {

@@ -189,7 +189,7 @@
                         <android.support.v7.widget.RecyclerView
                             android:id="@+id/rvKomentarPesan"
                             android:layout_width="match_parent"
-                            android:layout_height="260dp"
+                            android:layout_height="263dp"
                             android:layout_margin="2dp" />
 
                         <LinearLayout
@@ -230,5 +230,11 @@
             </LinearLayout>
         </ScrollView>
     </android.support.v4.widget.SwipeRefreshLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </android.support.constraint.ConstraintLayout>
 
 </LinearLayout>

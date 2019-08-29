@@ -88,7 +88,6 @@ public class HalteActivity extends AppCompatActivity  implements OnMapReadyCallb
         jalurAdapter.setClickHandler(new JalurHalteAdapter.Onlistener() {
             @Override
             public void HalteClickItem(HalteItem halte) {
-                Toast.makeText(HalteActivity.this, "Item yang diklik adalah : " + halte.getNama(), Toast.LENGTH_SHORT).show();
                 marker = (Marker) HalteMarkers.get(halte.getHalteId());
                 marker.showInfoWindow();
                 LatLng latLng = new LatLng(Double.parseDouble(halte.getLat()), Double.parseDouble(halte.getLng()));
@@ -123,7 +122,7 @@ public class HalteActivity extends AppCompatActivity  implements OnMapReadyCallb
             for (int i=0; i<listData.size(); i++){
                 LatLng location = new LatLng(Double.parseDouble(listData.get(i).getLat()), Double.parseDouble(listData.get(i).getLng()));
 
-                marker =  map.addMarker(new MarkerOptions().position(location).title(listData.get(i).getNama()).icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 70,60))));
+                marker =  map.addMarker(new MarkerOptions().position(location).title(listData.get(i).getNama()).icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 100,80))));
                 HalteMarkers.put(listData.get(i).getHalteId(),marker);
             }
             LatLng latLng = new LatLng(Double.parseDouble(listData.get(0).getLat()), Double.parseDouble(listData.get(0).getLng()));
