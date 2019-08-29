@@ -466,6 +466,11 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
                 Date jamAwal = parseDate(jadwalSupir.getJam_awal());
                 Date jamAkhir = parseDate(jadwalSupir.getJam_akhir());
 
+                Log.e("cek", String.valueOf(date.after( jamAwal )));
+                Log.e("cek", String.valueOf( jadwalSupir.getJam_akhir()));
+                Log.e("cek", String.valueOf( date));
+                Log.e("cek", String.valueOf( date.before(jamAkhir)));
+
                 if (date.after( jamAwal ) && date.before(jamAkhir)) {
                     if(km_awal != 0){
                         Intent intent=  new Intent(getActivity(), MonitoringPosisi.class);
