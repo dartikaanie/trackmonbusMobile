@@ -463,7 +463,7 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
                 dialog.setMessage("Mohon Tunggu. . .");
                 dialog.show();
                 Calendar now = Calendar.getInstance();
-
+                cekJadwalKerja();
                 int hour = now.get(Calendar.HOUR_OF_DAY); // Get hour in 24 hour format
                 int minute = now.get(Calendar.MINUTE);
                 Log.e("jadwal", jadwalSupir.getShifts().getJamAwal());
