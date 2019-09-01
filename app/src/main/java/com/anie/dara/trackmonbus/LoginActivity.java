@@ -50,8 +50,7 @@ public class LoginActivity extends AppCompatActivity {
         if(user_id.equals(DEFAULT)){
             Toast.makeText(this,"Anda Belum Login", Toast.LENGTH_SHORT).show();
         }else{
-            Intent intent =  new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(intent);
+            cekUser(user_id);
         }
 
         btnLogin = findViewById(R.id.btn_login);
@@ -66,6 +65,31 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+
+    private void cekUser(String user_id){
+        final ProgressDialog dialog = new ProgressDialog(this);
+        dialog.setMessage("Memuat Data . . .");
+        dialog.show();
+
+        Call<User> call = client.cekUser(user_id);
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                User user = response.body();
+                if(user.getMessage().equals("true")){
+                    Intent intent =  new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
+                }
+                dialog.dismiss();
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                dialog.dismiss();
+            }
+        });
     }
 
     private void doLogin(final String email, String password) {

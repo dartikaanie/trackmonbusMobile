@@ -31,6 +31,11 @@ public interface dbClient {
             @Field("password") String password
     );
 
+    @GET("api/cekUser")
+    Call<User> cekUser(
+            @Query( "user_id") String user_id
+    );
+
     @FormUrlEncoded
     @POST("api/register")
     Call<User> register(

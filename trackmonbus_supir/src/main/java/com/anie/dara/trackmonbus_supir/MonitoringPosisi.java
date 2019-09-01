@@ -98,7 +98,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
     private SQLiteDatabaseHandler db;
 
     private Handler handler = new Handler();
-    boolean running = true;
+    public boolean running = true;
     Toolbar toolbar;
     ImageView toolbarTitle;
 
@@ -381,20 +381,23 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                     getJarak(currentPosisi, currentLocation);
                 }
 
-                handler.postDelayed(this, 2000);
+                handler.postDelayed(this, 10000);
             }
         }
     };
 
+//    public void getBusSearah
 
 
     public void cekJarak(final Location lokasiBus, final String no_bus){
+
         Call<String> call2 = client.getCurrentJalur(no_bus,tgl);
         call2.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call2, Response<String> response) {
                 String jalurGet = response.body();
-                if(jalurGet != "false"){
+                Log.e("cek cekJrak", jalurGet.toString());
+                if(jalurGet != null){
                     listBusSearah = new ArrayList<>();
                     Call<List<noBus>> call = client.getBusSearah(jalurGet);
                     call.enqueue(new Callback<List<noBus>>() {
@@ -565,27 +568,35 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                 DistanceMatrix data = response.body();
                if(data.getRows().size() != 0){
                     List<ElementsItem> row = data.getRows().get(0).getElements();
-                    double jarak=0;
+                    double jarak=0, jarakMin=0;
                    int n=0;
+                   Posisi bus;
+                   String listBusDekat="";
                     for(ElementsItem item : row){
                         try{
                             jarak = Double.parseDouble(String.valueOf(item.getDistance().getValue()));
                             Log.e("jarak direction", String.valueOf(jarak));
                             if(jarak  < 500){
-                                Posisi bus = busPosisi.get(n);
+                                bus = busPosisi.get(n);
+                                listBusDekat = listBusDekat +" - "+busPosisi.get(n).getNo_bus();
                                 if(alertDialog != null){
                                     alertDialog.dismiss();
                                 }
                                 marker = (Marker) hashMapMarker.get(bus.getNo_bus());
                                 marker.showInfoWindow();
                                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(bus.getLat(), bus.getLng()), 16.0f));
-                                showDialog(bus.getNo_bus());
-                            }
+
+                        }
                             n++;
                         }catch (Exception ex){
-//                            Toast.makeText(MonitoringPosisi.this, "Ada yang error", Toast.LENGTH_LONG).show();
+                            Log.e("error jarak", ex.toString());
+                            Toast.makeText(MonitoringPosisi.this, "Ada yang error" , Toast.LENGTH_LONG).show();
                         }
 
+                    }
+
+                    if(!listBusDekat.equals("")){
+                        showDialog(listBusDekat);
                     }
                 }
             }

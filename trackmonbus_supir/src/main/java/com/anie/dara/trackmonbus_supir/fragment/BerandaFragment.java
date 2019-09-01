@@ -31,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -80,6 +81,8 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
     CardView cvChechkin, cvTidakJadwal;
     View mView;
     TextView noBus, no_tnkb, kapasitas, namaSupir, namaJalur, namaTrayek;
+    static ProgressBar waiting;
+    static TextView load;
     DatabaseReference mDatabase;
     HashMap hashMapMarker = new HashMap<>();
     Marker marker;
@@ -87,9 +90,8 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
     static Activity activity;
     JadwalDetail jadwalSupir;
     Double km_awal = null;
-    CardView cardview;
-    List<Halte> listHalteItem;
-    String jam_awal ="00:00:00" ,jam_akhir = "00:00:00", user_id;
+    String  user_id;
+    public boolean running = false;
 
     private static  final  int REQUEST_LOCATION =1;
     LocationManager locationManager;
@@ -124,7 +126,8 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
             ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
 
-
+        waiting= mView.findViewById(R.id.loadData);
+        load = mView.findViewById(R.id.memuat_data);
         noBus = mView.findViewById(R.id.NoBus);
         no_tnkb = mView.findViewById(R.id.no_tnkb);
         kapasitas = mView.findViewById(R.id.kapasitas);
@@ -137,7 +140,6 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
 
         btnCheckin = mView.findViewById(R.id.btnCheckin);
         btnCheckin.setOnClickListener(this);
-
 
         cvTidakJadwal = mView.findViewById(R.id.cvTidakJadwal);
         cvTidakJadwal.setOnClickListener(this);
@@ -166,6 +168,10 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
             }
 
         }
+
+        load.setText("Memuat Data");
+        waiting.setVisibility(View.VISIBLE);
+        load.setVisibility(View.VISIBLE);
 
         cekJadwalKerja();
 
@@ -256,7 +262,7 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
 
     public void getDataAksi(DataSnapshot dataSnapshot){
         LatLng point = null;
-        BitmapDrawable bitmapdraw= (BitmapDrawable) this.getResources().getDrawable(R.drawable.trans);
+        BitmapDrawable bitmapdraw= (BitmapDrawable) ((MainActivity)activity).getResources().getDrawable(R.drawable.trans);
 
         String lat = dataSnapshot.child("lat").getValue().toString();
         String lng = dataSnapshot.child("lng").getValue().toString();
@@ -312,6 +318,7 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
         }
 
         dataMarker();
+        load.setText("Memuat Data");
 
     }
 
@@ -429,6 +436,9 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
         }
         LatLng latLng = new LatLng(Double.parseDouble(listData.get(0).getLat()), Double.parseDouble(listData.get(0).getLng()));
 //        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude,latLng.longitude), 15.0f));
+
+        waiting.setVisibility(View.INVISIBLE);
+        load.setVisibility(View.INVISIBLE);
     }
 
     public Bitmap getIcon (BitmapDrawable bitmapdraw, int tinggi, int lebar){

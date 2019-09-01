@@ -42,8 +42,8 @@ public interface dbClient {
     Call<List<Halte>> getAllHalte();
 
     @FormUrlEncoded
-    @PUT("api/updateKmAwal")
-    Call<ResponseBody> updateKmAwal(
+    @POST("api/updateKmAwal")
+    Call<Jadwal> updateKmAwal(
             @Field("no_bus") String no_bus,
             @Field("tgl") String tgl,
             @Field("km_awal") Double km_awal

@@ -1,7 +1,10 @@
 package com.anie.dara.trackmonbus_supir;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -10,6 +13,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,7 +46,33 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     loadFragment(new JadwalFragment());
                     return true;
                 case R.id.navigation_keluar:
-                    loadFragment(new KeluarFragment());
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+                    alertDialogBuilder
+                            .setMessage("Apakah Anda yakin untuk keluar ?")
+                            .setIcon(R.mipmap.ic_launcher)
+                            .setCancelable(false)
+                            .setPositiveButton("Iya", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                                    editor.putString("user_id", DEFAULT);
+                                    editor.putString("name", DEFAULT);
+
+                                    String A = sharedPreferences.getString("user_id", DEFAULT);
+                                    editor.commit();
+
+                                    Log.e("s",A);
+
+
+
+                                    Intent intent =  new Intent(MainActivity.this, LoginActivity.class);
+                                    startActivity(intent);
+                                }
+                            }).setNegativeButton("Batal", null);
+
+                    AlertDialog alertDialog = alertDialogBuilder.create();
+                    alertDialog.show();
                     return true;
             }
             return false;

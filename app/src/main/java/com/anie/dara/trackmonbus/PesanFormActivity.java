@@ -248,7 +248,7 @@ public class PesanFormActivity extends AppCompatActivity implements View.OnClick
                 Log.e("error", result.getMsg());
                 if(result.getMsg().equals("true")){
                     Toast.makeText(PesanFormActivity.this,"Data disimpan", Toast.LENGTH_SHORT).show();
-                    startActivity( new Intent(PesanFormActivity.this, PesanActivity.class));
+                    startActivity( new Intent(PesanFormActivity.this, MypesanActivity.class));
                 }else{
                     Toast.makeText(PesanFormActivity.this,"Error. Ulangi lagi" , Toast.LENGTH_SHORT).show();
                 }

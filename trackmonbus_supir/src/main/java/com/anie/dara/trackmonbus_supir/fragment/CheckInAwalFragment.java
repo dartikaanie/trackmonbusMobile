@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.anie.dara.trackmonbus_supir.MainActivity;
 import com.anie.dara.trackmonbus_supir.MonitoringPosisi;
 import com.anie.dara.trackmonbus_supir.R;
+import com.anie.dara.trackmonbus_supir.model.jadwal.Jadwal;
 import com.anie.dara.trackmonbus_supir.model.jadwal.JadwalDetail;
 import com.anie.dara.trackmonbus_supir.rest.dbClient;
 import com.anie.dara.trackmonbus_supir.rest.ApiClient;
@@ -98,7 +99,8 @@ public class CheckInAwalFragment extends Fragment implements View.OnClickListene
             namaTrayek.setText(jadwal.getJadwal().getDetailTrayeks().getTrayeks().getTrayek());
             namaSupir.setText(jadwal.getUsers().getName() + " - "+ jadwal.getPramugaras().getNamaPramugara());
 
-            tgl = jadwal.getTgl();
+            no_bus = jadwal.getNoBus();
+            tgl = substring(jadwal.getTgl(),0,10);
             hari_tgl.setText(substring(jadwal.getTgl(),0,10));
             Toast.makeText(getContext() , "Silakan isi km awal bus", Toast.LENGTH_SHORT).show();
         }
@@ -114,21 +116,26 @@ public class CheckInAwalFragment extends Fragment implements View.OnClickListene
             prog.show();
             if (((MainActivity) activity).konekkah()) {
                 Double km = Double.valueOf(etKmAwal.getText().toString());
-                Log.e("km", km.toString());
-                Call<ResponseBody> call = client.updateKmAwal(no_bus, tgl,km);
-                call.enqueue(new Callback<ResponseBody>() {
+                Log.e("km", no_bus +" "+ tgl +" "+  km);
+                Call<Jadwal> call = client.updateKmAwal(no_bus, tgl,km);
+                call.enqueue(new Callback<Jadwal>() {
                     @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        ResponseBody s = response.body();
-                        Toast.makeText(activity, "berhasil disimpan", Toast.LENGTH_LONG).show();
+                    public void onResponse(Call<Jadwal> call, Response<Jadwal> response) {
+                        Jadwal s = response.body();
+                        if(s != null){
+                            jadwal.getJadwal().setKmAwal(s.getKmAwal());
+                            Log.e("kmAwal", String.valueOf(jadwal.getJadwal().getKmAwal()));
+                            Toast.makeText(activity, "berhasil disimpan", Toast.LENGTH_LONG).show();
+                            Intent intent=  new Intent(getActivity(), MonitoringPosisi.class);
+                            intent.putExtra("jadwal", jadwal);
+                            startActivity(intent);
+                        }
+//                        jad
                         prog.dismiss();
-                        Intent intent=  new Intent(getActivity(), MonitoringPosisi.class);
-                        intent.putExtra("jadwal", jadwal);
-                        startActivity(intent);
                     }
 
                     @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    public void onFailure(Call<Jadwal> call, Throwable t) {
                         prog.dismiss();
                         Toast.makeText(activity, "gagal disimpan", Toast.LENGTH_LONG).show();
                     }

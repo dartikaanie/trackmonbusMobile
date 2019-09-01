@@ -86,7 +86,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
     TextView textView4;
     JalurItem jalur;
     HashMap hashMapMarker = new HashMap<>();
-    Marker marker;
+    Marker marker, markerBus;
     HalteAdapter halteAdapter;
     RecyclerView rvDaftarHalte;
     ArrayList<HalteItem> ListHalte;
@@ -130,7 +130,9 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
         Date date = new Date();
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String tgl_skrg = dateFormat.format(date);
+
         mDatabase = FirebaseDatabase.getInstance().getReference().child(tgl_skrg);
+
         rvDaftarHalte = findViewById(R.id.rvDaftarHalte);
         cardBus = findViewById(R.id.cardBus);
         Tvdurasi = findViewById(R.id.TVdurasi);
@@ -151,6 +153,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
         LinearLayoutManager layoutManager = new LinearLayoutManager(LokasiActivity.this, LinearLayoutManager.HORIZONTAL, false);
         rvDaftarHalte.setLayoutManager(layoutManager);
         rvDaftarHalte.setHasFixedSize(true);
+        mDatabase = FirebaseDatabase.getInstance().getReference().child(tgl_skrg);
 
 
         swLayout.setColorSchemeResources(R.color.colorAccent,R.color.colorYellow, R.color.colorRed);
@@ -206,11 +209,13 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
             double location_lng = Double.parseDouble(lng);
             posisi = new LatLng(location_lat, location_lng);
 
-            marker = map.addMarker(new MarkerOptions()
+            markerBus = map.addMarker(new MarkerOptions()
                     .position(posisi)
                     .title(nomorBus)
                     .icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 60,120))));
-            hashMapMarker.put(nomorBus,marker);
+            hashMapMarker.put(nomorBus,markerBus);
+
+            Log.e("noBus", nomorBus);
         }
     }
 
@@ -223,21 +228,11 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
             initMarker(ListHalte);
         }
 
-
-        //map ke lokasi terkini
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-            buildAlertMessageNoGPS();
-        }
-        else
-        {
-            getLocation();
-        }
-
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 getDataPosisiBus(dataSnapshot);
+                Log.e("get mdatabase", String.valueOf(dataSnapshot));
             }
 
             @Override
@@ -248,6 +243,24 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
         });
 
         dataMarker();
+
+        //map ke lokasi terkini
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+            buildAlertMessageNoGPS();
+        }
+        else
+        {
+            getLocation();
+            getCurrentPosisi();
+        }
+
+
+
+
 
 
     }
@@ -262,6 +275,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 getDataAksi(dataSnapshot);
+                Log.e("bus change", s);
             }
 
             @Override
@@ -463,12 +477,14 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
                    int durasiMin=0, durasiInt=0;
                     String durasi = null;
                     int n=0;
-                    String noBusMin = null;
+//                    String noBusMin = null;
+                    Posisi noBusMinPosisi = null;
                     for(ElementsItem item : row){
                         if(n==0){
                             durasiInt= item.getDuration().getValue();
                             durasi = item.getDuration().getText();
-                            noBusMin = busPosisi.get(n).getNo_bus();
+//                            noBusMin = busPosisi.get(n).getNo_bus();
+                            noBusMinPosisi = new Posisi(busPosisi.get(n).getLat(), busPosisi.get(n).getLng(),busPosisi.get(n).getNo_bus());
                             durasiMin=durasiInt;
                             n++;
                         }else{
@@ -477,17 +493,24 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
                             if(durasiInt  < durasiMin){
                                 durasiMin = durasiInt;
                                 durasi = item.getDuration().getText();
-                                noBusMin = busPosisi.get(n).getNo_bus();
+//                                noBusMin = busPosisi.get(n).getNo_bus();
+                                noBusMinPosisi = new Posisi(busPosisi.get(n).getLat(), busPosisi.get(n).getLng(),busPosisi.get(n).getNo_bus());
                             }
                             n++;
                         }
                     }
-                    if(noBusMin != null){
+                    if(noBusMinPosisi != null){
                         if(alertDialog != null){
                             alertDialog.dismiss();
                         }
                         dialog.dismiss();
-                        ShowDurasi(durasi, noBusMin);
+                        marker = (Marker) hashMapMarker.get(noBusMinPosisi.getNo_bus());
+                        Log.e("cekmarker", String.valueOf(hashMapMarker.get(noBusMinPosisi.getNo_bus())));
+                        if(marker != null){
+                            marker.showInfoWindow();
+                        }
+                        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(noBusMinPosisi.getLat(), noBusMinPosisi.getLng()), 16.0f));
+                        ShowDurasi(durasi, noBusMinPosisi.getNo_bus());
                     }
                 }
 

@@ -2,20 +2,27 @@
  <kml xmlns="http://earth.google.com/kml/2.2">
  <Document>
  <name>GE2ADT</name>
- <Placemark><name>1</name><description>move position</description><Point><coordinates> 100.316277, -0.809674, 0</coordinates></Point></Placemark>
- <Placemark><name>2</name><description>move position</description><Point><coordinates>100.316245,-0.809717, 0</coordinates></Point></Placemark>
- <Placemark><name>3</name><description>move position</description><Point><coordinates>100.316502,-0.810200,  0</coordinates></Point></Placemark>
- <Placemark><name>4</name><description>move position</description><Point><coordinates>100.316813,-0.810479, 0</coordinates></Point></Placemark>
- <Placemark><name>5</name><description>move position</description><Point><coordinates>100.316963,-0.810694, 0</coordinates></Point></Placemark>
- <Placemark><name>6</name><description>move position</description><Point><coordinates>100.317188,-0.810909, 0</coordinates></Point></Placemark>
- <Placemark><name>7</name><description>move position</description><Point><coordinates>100.317714,-0.811413, 0</coordinates></Point></Placemark>
-<Placemark><name>8</name><description>move position</description><Point><coordinates> 100.318036,-0.811670,0</coordinates></Point></Placemark>
-<Placemark><name>9</name><description>move position</description><Point><coordinates>100.318251,-0.811927, 0</coordinates></Point></Placemark>
-<Placemark><name>10</name><description>move position</description><Point><coordinates>100.318584,-0.812292, 0</coordinates></Point></Placemark>
-<Placemark><name>11</name><description>move position</description><Point><coordinates> 100.319078,-0.812753,0</coordinates></Point></Placemark>
-<Placemark><name>12</name><description>move position</description><Point><coordinates>100.319529,-0.813161, 0</coordinates></Point></Placemark>
-<Placemark><name>13</name><description>move position</description><Point><coordinates> 100.319819,-0.813494,0</coordinates></Point></Placemark>
-<Placemark><name>14</name><description>move position</description><Point><coordinates>100.320270,-0.813955, 0</coordinates></Point></Placemark>
+ <Placemark><name>1</name><description>move position</description><Point><coordinates> 100.316083,-0.809600, 0</coordinates></Point></Placemark>
+ <Placemark><name>2</name><description>move position</description><Point><coordinates>100.316139,-0.809648, 0</coordinates></Point></Placemark>
+ <Placemark><name>3</name><description>move position</description><Point><coordinates>100.316396,-0.810094,  0</coordinates></Point></Placemark>
+ <Placemark><name>4</name><description>move position</description><Point><coordinates>100.316533,-0.810266, 0</coordinates></Point></Placemark>
+ <Placemark><name>5</name><description>move position</description><Point><coordinates>100.316605,-0.810352, 0</coordinates></Point></Placemark>
+ <Placemark><name>6</name><description>move position</description><Point><coordinates>100.316736,-0.810441, 0</coordinates></Point></Placemark>
+ <Placemark><name>7</name><description>move position</description><Point><coordinates>100.317074,-0.810803, 0</coordinates></Point></Placemark>
+<Placemark><name>8</name><description>move position</description><Point><coordinates> 100.317302,-0.811039,0</coordinates></Point></Placemark>
+<Placemark><name>9</name><description>move position</description><Point><coordinates>100.317589,-0.811329, 0</coordinates></Point></Placemark>
+<Placemark><name>10</name><description>move position</description><Point><coordinates>100.317837,-0.811534, 0</coordinates></Point></Placemark>
+<Placemark><name>11</name><description>move position</description><Point><coordinates> 100.318469,-0.812198,0</coordinates></Point></Placemark>
+<Placemark><name>12</name><description>move position</description><Point><coordinates>100.319128,-0.812837, 0</coordinates></Point></Placemark>
+<Placemark><name>13</name><description>move position</description><Point><coordinates> 100.319633,-0.813396,0</coordinates></Point></Placemark>
+<Placemark><name>14</name><description>move position</description><Point><coordinates>100.320232,-0.814040, 0</coordinates></Point></Placemark>
+<Placemark><name>14</name><description>move position</description><Point><coordinates>100.320841,-0.814696, 0</coordinates></Point></Placemark>
+<Placemark><name>14</name><description>move position</description><Point><coordinates>100.321257,-0.815203, 0</coordinates></Point></Placemark>
+<Placemark><name>14</name><description>move position</description><Point><coordinates>100.321651,-0.815694, 0</coordinates></Point></Placemark>
+<Placemark><name>14</name><description>move position</description><Point><coordinates>100.322094,-0.816238, 0</coordinates></Point></Placemark>
+<Placemark><name>14</name><description>move position</description><Point><coordinates>100.322531,-0.816748, 0</coordinates></Point></Placemark>
+<Placemark><name>14</name><description>move position</description><Point><coordinates>100.322818,-0.817287, 0</coordinates></Point></Placemark>
+<Placemark><name>14</name><description>move position</description><Point><coordinates>100.323322,-0.818023, 0</coordinates></Point></Placemark>
 
  </Document>
  </kml>

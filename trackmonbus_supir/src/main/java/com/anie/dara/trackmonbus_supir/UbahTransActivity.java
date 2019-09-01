@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -84,7 +85,8 @@ public class UbahTransActivity extends AppCompatActivity implements View.OnClick
                 ETkmAkhir.setText(Float.toString(jadwal.getJadwal().getKmAkhir()));
             }
 
-            if(!jadwal.getJadwal().getKeterangan().equals(null)){
+            Log.e("keterangan", String.valueOf(jadwal.getJadwal().getKeterangan()));
+            if(jadwal.getJadwal().getKeterangan() != null){
                 ETketerangan.setText(jadwal.getJadwal().getKeterangan());
             }
 

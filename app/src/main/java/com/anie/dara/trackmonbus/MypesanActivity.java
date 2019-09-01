@@ -161,6 +161,7 @@ public class MypesanActivity extends AppCompatActivity implements com.anie.dara.
                     List<Pesan> listPesanItem = response.body();
                     if(listPesanItem.size() == 0 || listPesanItem == null){
                         noPesan.setVisibility(View.VISIBLE);
+                        rvDaftarPesan.setVisibility(View.INVISIBLE);
                         Toast.makeText(MypesanActivity.this , "Maaf, Tidak ada data", Toast.LENGTH_SHORT).show();
                     }
                     else{
@@ -205,6 +206,7 @@ public class MypesanActivity extends AppCompatActivity implements com.anie.dara.
                         final ProgressDialog dialog123 = new ProgressDialog(MypesanActivity.this);
                         dialog123.setMessage("Menghapus Komentar. . .");
                         dialog123.show();
+                        Log.e("pesan.getKeluhan_id()", pesan.getKeluhan_id());
                         Call<ResponseBody>  call = client.hapusPesan(pesan.getKeluhan_id());
                         call.enqueue(new Callback<ResponseBody>() {
                             @Override
@@ -219,6 +221,7 @@ public class MypesanActivity extends AppCompatActivity implements com.anie.dara.
                             @Override
                             public void onFailure(Call<ResponseBody> call, Throwable t) {
                                 dialog123.dismiss();
+                                Log.e("deletePesan", t.toString());
                                 Toast.makeText(MypesanActivity.this,"Error. Ulangi lagi" + t.toString(), Toast.LENGTH_SHORT).show();
                             }
                         });
