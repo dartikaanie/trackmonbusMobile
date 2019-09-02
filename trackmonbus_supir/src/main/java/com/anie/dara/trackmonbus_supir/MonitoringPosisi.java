@@ -634,10 +634,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 runTrackMati();
-                                btnCheck.setEnabled(!btnCheck.isEnabled());
-                                Intent intent = new Intent(MonitoringPosisi.this, MainActivity.class);
-                                intent.putExtra("jadwal", jadwal);
-                                startActivity(intent);
+
 
                             }
                         }).setNegativeButton("Batal", null);
@@ -651,7 +648,10 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
     public void runTrackMati(){
         running = false;
         handler.removeCallbacks(runTrack);
-        Toast.makeText(MonitoringPosisi.this,"runTrack mati", Toast.LENGTH_SHORT).show();
+        btnCheck.setEnabled(!btnCheck.isEnabled());
+        Intent intent = new Intent(MonitoringPosisi.this, MainActivity.class);
+        intent.putExtra("jadwal", jadwal);
+        startActivity(intent);
 
     }
 

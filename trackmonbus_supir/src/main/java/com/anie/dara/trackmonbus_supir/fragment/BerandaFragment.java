@@ -234,7 +234,6 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
         mDatabase.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                Toast.makeText(getContext() , "ada bus yang baru berkendara", Toast.LENGTH_SHORT).show();
                 getDataAksi(dataSnapshot);
             }
 
