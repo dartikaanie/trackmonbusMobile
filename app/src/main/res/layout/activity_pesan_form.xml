@@ -65,7 +65,7 @@
                         android:layout_marginTop="5dp"
                         android:paddingBottom="5dp"
                         android:paddingRight="10dp"
-                        android:text="Sampaikan saran/kritik anda kepada kami."
+                        android:text="Sampaikan kritik / saran anda kepada kami."
                         android:textColor="@android:color/background_light" />
                 </LinearLayout>
 
@@ -140,7 +140,7 @@
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="8dp"
                         android:fontFamily="@font/advent_pro_medium"
-                        android:text="Isi Pesan/Kritik"
+                        android:text="Isi Kritik/ Saran"
                         android:textColor="@android:color/black"
                         android:textSize="14sp"
                         android:textStyle="bold"
@@ -159,7 +159,7 @@
                         android:layout_marginEnd="16dp"
                         android:layout_marginStart="16dp"
                         android:ems="10"
-                        android:hint="Tuliskan Pesan / Kritik Anda Disini . . . ."
+                        android:hint="Tuliskan Kritik / Saran Anda Disini . . . ."
                         android:inputType="textMultiLine" />
 
                     <Button
