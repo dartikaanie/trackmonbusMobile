@@ -113,7 +113,7 @@ public interface dbClient {
     Call<List<Trayeks>> getAllTrayek();
 
     @GET("api/viewAllJalur")
-    Call<List<JalurItem>> getAllJalur();
+    Call<List<JalurItem>> getAllJalur(@Query("trayek_id") String trayek_id);
 
     @GET("api/getBusSearah")
     Call<List<noBus>> getBusSearah(@Query("jalur_id") String jalur_id);

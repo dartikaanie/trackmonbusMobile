@@ -42,7 +42,7 @@ public class JalurHalteAdapter extends RecyclerView.Adapter<JalurHalteAdapter.Ja
     @Override
     public void onBindViewHolder(@NonNull JalurHalteAdapter.JalurHalteHolder holder, int position) {
         JalurItem jalur = dataJalur.get(position);
-        holder.jalur.setText(String.valueOf(jalur.getAwal() + " - " + jalur.getAkhir()));
+        holder.jalur.setText(String.valueOf(jalur.getNamaJalur()));
 
 
         if(jalur.getHalte().size() > 0){

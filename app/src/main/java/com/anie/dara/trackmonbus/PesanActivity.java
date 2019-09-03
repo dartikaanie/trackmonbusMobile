@@ -157,7 +157,7 @@ public class PesanActivity extends AppCompatActivity implements com.anie.dara.tr
                         Toast.makeText(PesanActivity.this , "Maaf, Tidak ada data", Toast.LENGTH_SHORT).show();
                     }
                     else{
-                        Toast.makeText(PesanActivity.this , "Pesan berhasil diload", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PesanActivity.this , "Data berhasil diload", Toast.LENGTH_SHORT).show();
                         pesanAdapter.setDataPesan(new ArrayList<Pesan>(listPesanItem));
                     }
 
@@ -187,7 +187,7 @@ public class PesanActivity extends AppCompatActivity implements com.anie.dara.tr
     public void deletePesan(final Pesan pesan) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(PesanActivity.this);
         alertDialogBuilder
-                .setMessage("Apakah Anda yakin untuk Menghapus pesan ini ?")
+                .setMessage("Apakah Anda yakin untuk Menghapus data ini ?")
                 .setIcon(R.drawable.trans)
                 .setCancelable(false)
                 .setPositiveButton("Iya", new DialogInterface.OnClickListener() {
@@ -204,7 +204,7 @@ public class PesanActivity extends AppCompatActivity implements com.anie.dara.tr
                             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                                 ResponseBody result = response.body();
                                 if(result != null){
-                                    Toast.makeText(PesanActivity.this, "Pesan dihapus", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(PesanActivity.this, "Data dihapus", Toast.LENGTH_SHORT).show();
                                     dialog123.dismiss();
                                     getAllPesan();
                                 }

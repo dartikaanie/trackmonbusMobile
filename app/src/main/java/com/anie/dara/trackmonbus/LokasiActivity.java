@@ -99,9 +99,6 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
 
     private static  final  int REQUEST_LOCATION =1;
     private LocationManager locationManager;
-    Location currentLocation;
-    Posisi currentPosisi;
-
     Toolbar toolbar;
     ImageView toolbarTitle;
 
@@ -190,6 +187,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
             mMapView.getMapAsync(this);
         }
 
+//        getLocation();
     }
 
 
@@ -254,7 +252,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
         }
         else
         {
-            getLocation();
+//            getLocation();
             getCurrentPosisi();
         }
 
@@ -312,6 +310,10 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
             if (location != null) {
                 Double lat = location.getLatitude();
                 Double lng = location.getLongitude();
+                LatLng currentPosisi = new LatLng(lat, lng);
+                map.addMarker(new MarkerOptions()
+                        .position(currentPosisi)
+                        .title("Anda")).showInfoWindow();
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 16.0f));
             }
         }
@@ -431,7 +433,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
                                     actionRoute(posisiHalte, convertToString(posisiDestination),posisiBus );
                                     Log.e("cek posisi", posisiDestination.toString());
                                 }else{
-                                    Toast.makeText(LokasiActivity.this,"TIDAK ADA BUS YANG BERKENDARA", Toast.LENGTH_SHORT).show();
+                                    showAlert("Tidak ada bus yang berkendara pada jalur ini saat ini");
                                 }
                                 dialog.dismiss();
 
@@ -443,6 +445,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
                         });
                     }
                 }else{
+                    showAlert("Tidak ada bus yang berkendara pada saat ini");
                     Log.e("listBus", "DAta tidak ada");
                 }
             }
@@ -464,6 +467,22 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
         return builder.toString();
     }
 
+    public void showAlert(String msg){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(LokasiActivity.this);
+        alertDialogBuilder
+                .setMessage(msg)
+                .setIcon(R.mipmap.ic_launcher)
+                .setCancelable(false)
+                .setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        alertDialog.dismiss();
+                    }
+                });
+        alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
     private void actionRoute(String posisiHalte , String posisiBusCek, final ArrayList<Posisi> busPosisi) {
         dialog.setMessage("Memuat Data . . .");
         dialog.show();
@@ -477,13 +496,11 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
                    int durasiMin=0, durasiInt=0;
                     String durasi = null;
                     int n=0;
-//                    String noBusMin = null;
                     Posisi noBusMinPosisi = null;
                     for(ElementsItem item : row){
                         if(n==0){
                             durasiInt= item.getDuration().getValue();
                             durasi = item.getDuration().getText();
-//                            noBusMin = busPosisi.get(n).getNo_bus();
                             noBusMinPosisi = new Posisi(busPosisi.get(n).getLat(), busPosisi.get(n).getLng(),busPosisi.get(n).getNo_bus());
                             durasiMin=durasiInt;
                             n++;
@@ -493,7 +510,6 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
                             if(durasiInt  < durasiMin){
                                 durasiMin = durasiInt;
                                 durasi = item.getDuration().getText();
-//                                noBusMin = busPosisi.get(n).getNo_bus();
                                 noBusMinPosisi = new Posisi(busPosisi.get(n).getLat(), busPosisi.get(n).getLng(),busPosisi.get(n).getNo_bus());
                             }
                             n++;
@@ -608,30 +624,4 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
 
         return konek;
     }
-
-    public void getLocation(){
-        Double latitude = 0.0, longitude;
-        LocationManager mlocManager = null;
-        LocationListener mlocListener;
-        mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        mlocListener = new loclistener(this);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mlocListener);
-        if (mlocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-
-            latitude = loclistener.latitude;
-            longitude = loclistener.longitude;
-           Log.e("eror", latitude +" - - " + longitude);
-            if (latitude == 0.0) {
-                Toast.makeText(getApplicationContext(), "Currently gps has not found your location....", Toast.LENGTH_LONG).show();
-            }
-        } else {
-            Toast.makeText(getApplicationContext(), "GPS is currently off...", Toast.LENGTH_LONG).show();
-        }
-    }
-
-
-
 }

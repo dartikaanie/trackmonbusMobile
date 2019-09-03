@@ -165,7 +165,7 @@ public class MypesanActivity extends AppCompatActivity implements com.anie.dara.
                         Toast.makeText(MypesanActivity.this , "Maaf, Tidak ada data", Toast.LENGTH_SHORT).show();
                     }
                     else{
-                        Toast.makeText(MypesanActivity.this , "Pesan berhasil diload", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MypesanActivity.this , "Data berhasil diload", Toast.LENGTH_SHORT).show();
                         pesanAdapter.setDataPesan(new ArrayList<Pesan>(listPesanItem));
                     }
 
@@ -195,7 +195,7 @@ public class MypesanActivity extends AppCompatActivity implements com.anie.dara.
     public void deletePesan(final Pesan pesan) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MypesanActivity.this);
         alertDialogBuilder
-                .setMessage("Apakah Anda yakin untuk Menghapus pesan ini ?")
+                .setMessage("Apakah Anda yakin untuk Menghapus data ini ?")
                 .setIcon(R.drawable.trans)
                 .setCancelable(false)
                 .setPositiveButton("Iya", new DialogInterface.OnClickListener() {
@@ -206,14 +206,14 @@ public class MypesanActivity extends AppCompatActivity implements com.anie.dara.
                         final ProgressDialog dialog123 = new ProgressDialog(MypesanActivity.this);
                         dialog123.setMessage("Menghapus Komentar. . .");
                         dialog123.show();
-                        Log.e("pesan.getKeluhan_id()", pesan.getKeluhan_id());
+//                        Log.e("pesan.getKeluhan_id()", pesan.getKeluhan_id());
                         Call<ResponseBody>  call = client.hapusPesan(pesan.getKeluhan_id());
                         call.enqueue(new Callback<ResponseBody>() {
                             @Override
                             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                                 ResponseBody result = response.body();
                                 if(result != null){
-                                    Toast.makeText(MypesanActivity.this, "Pesan dihapus", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(MypesanActivity.this, "data dihapus", Toast.LENGTH_SHORT).show();
                                     dialog123.dismiss();
                                     getAllPesan();
                                 }

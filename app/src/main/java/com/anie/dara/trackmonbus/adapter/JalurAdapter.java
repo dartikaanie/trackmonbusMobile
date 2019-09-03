@@ -47,8 +47,7 @@ public class JalurAdapter extends RecyclerView.Adapter<JalurAdapter.JalurHolder>
     @Override
     public void onBindViewHolder(@NonNull JalurAdapter.JalurHolder holder, int position) {
         JalurItem jalur = dataJalur.get(position);
-            holder.awal.setText(String.valueOf(jalur.getAwal()));
-            holder.akhir.setText(String.valueOf(jalur.getAkhir()));
+            holder.namaJalur.setText(String.valueOf(jalur.getNamaJalur()));
     }
 
 
@@ -64,13 +63,12 @@ public class JalurAdapter extends RecyclerView.Adapter<JalurAdapter.JalurHolder>
 
     // Inner CLASS
     public class JalurHolder extends RecyclerView.ViewHolder{
-        TextView awal, akhir;
+        TextView namaJalur, akhir;
         CardView cardViewJalur;
 
         public JalurHolder(@NonNull View itemView){
             super(itemView);
-            awal = itemView.findViewById(R.id.awal);
-            akhir = itemView.findViewById(R.id.akhir);
+            namaJalur = itemView.findViewById(R.id.awal);
             cardViewJalur = itemView.findViewById(R.id.cardViewJalur);
 
             itemView.setOnClickListener(new View.OnClickListener() {

@@ -7,7 +7,10 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.PRIORITY_HIGH_ACCURACY" />
-    <uses-feature android:name="android.hardware.location" android:required="true" />
+
+    <uses-feature
+        android:name="android.hardware.location"
+        android:required="true" />
     <uses-feature android:name="android.hardware.location.gps" />
 
     <application
@@ -23,77 +26,72 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/map_key" />
 
-        <activity android:name=".LoginActivity"
-            android:screenOrientation="portrait" >
-
+        <activity
+            android:name=".LoginActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity"
-            android:screenOrientation="portrait"
-            />
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait" />
 
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
 
-        <activity android:name=".RegisterActivity"
-            android:screenOrientation="portrait"/>
-
+        <activity
+            android:name=".RegisterActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".BerandaActivity"
             android:label="@string/title_activity_beranda"
-            android:screenOrientation="portrait"/>
-
+            android:screenOrientation="portrait" />
         <activity
             android:name=".PesanActivity"
             android:label="@string/title_activity_pesan"
-            android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-
         <activity
             android:name=".BusActivity"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-
         <activity
             android:name=".HalteActivity"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-
-        <activity android:name=".DetailPesanActivity"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".PesanActivity">
+        <activity
+            android:name=".DetailPesanActivity"
+            android:parentActivityName=".PesanActivity"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".PesanActivity" />
         </activity>
-
         <activity
             android:name=".LokasiActivity"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-
         <activity
             android:name=".PesanFormActivity"
             android:parentActivityName=".MypesanActivity">
@@ -101,32 +99,31 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MypesanActivity" />
         </activity>
-
         <activity
             android:name=".MypesanActivity"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-
-        <activity android:name=".PilihJalurActivity"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".MainActivity">
-        <meta-data
-            android:name="android.support.PARENT_ACTIVITY"
-            android:value=".MainActivity" />
+        <activity
+            android:name=".PilihJalurActivity"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
         </activity>
-
-        <activity android:name=".addPerihalActivity"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".PesanFormActivity">
+        <activity
+            android:name=".addPerihalActivity"
+            android:parentActivityName=".PesanFormActivity"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".PesanFormActivity" />
         </activity>
-
+        <activity android:name=".TrayekActivity"></activity>
     </application>
 
 </manifest>

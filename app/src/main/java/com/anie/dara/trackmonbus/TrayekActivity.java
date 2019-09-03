@@ -1,17 +1,19 @@
 package com.anie.dara.trackmonbus;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -19,8 +21,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.anie.dara.trackmonbus.adapter.JalurAdapter;
-import com.anie.dara.trackmonbus.model.Trayeks.JalurItem;
+import com.anie.dara.trackmonbus.adapter.TrayekAdapter;
 import com.anie.dara.trackmonbus.model.Trayeks.Trayeks;
 import com.anie.dara.trackmonbus.rest.ApiClient;
 import com.anie.dara.trackmonbus.rest.dbClient;
@@ -32,23 +33,25 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class PilihJalurActivity extends AppCompatActivity implements JalurAdapter.jalurClick {
+public class TrayekActivity extends AppCompatActivity implements TrayekAdapter.OnItemClicked {
 
-    static RecyclerView rvDaftarJalur;
-    static JalurAdapter jalurAdapter;
-    static ProgressBar waiting;
-    static TextView load;
-    ArrayList<JalurItem> jalurItems = new ArrayList<>();
+    RecyclerView rvDaftarTrayek;
+    TrayekAdapter trayekAdapter;
+    ProgressBar waiting;
+    TextView load;
+    Activity activity;
     private dbClient client = ApiClient.getClient().create(dbClient.class);
-    Toolbar toolbar;
-    ImageView toolbarTitle;
+
+
+    private Toolbar toolbar;
+    private ImageView toolbarTitle;
     private SwipeRefreshLayout swLayout;
-    Trayeks trayek;
+    private LinearLayout llayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pilih_jalur);
+        setContentView(R.layout.activity_trayek);
 
         toolbar = findViewById(R.id.toolbar);
         toolbarTitle = (ImageView) findViewById(R.id.toolbar_title);
@@ -58,88 +61,95 @@ public class PilihJalurActivity extends AppCompatActivity implements JalurAdapte
         }
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        swLayout = (SwipeRefreshLayout) findViewById(R.id.swlayout);
-        LinearLayout llayout = (LinearLayout) findViewById(R.id.ll_swiperefresh);
 
         waiting= findViewById(R.id.loadData);
-        load = findViewById(R.id.memuat_data);
+        load = findViewById(R.id.memuat_trayek);
 
-        jalurAdapter = new JalurAdapter(jalurItems, this);
-        jalurAdapter.SetClickJalur(this);
+        trayekAdapter = new TrayekAdapter();
+        trayekAdapter.setClickHandler(this);
 
-        rvDaftarJalur = findViewById(R.id.rvListJalur);
-        rvDaftarJalur.setAdapter(jalurAdapter);
+        rvDaftarTrayek = findViewById(R.id.rvListTrayek);
+        rvDaftarTrayek.setAdapter(trayekAdapter);
         RecyclerView.LayoutManager layoutManager;
 
-        rvDaftarJalur.setVisibility(View.INVISIBLE);
+        rvDaftarTrayek.setVisibility(View.INVISIBLE);
         waiting.setVisibility(View.VISIBLE);
         load.setVisibility(View.VISIBLE);
+
         layoutManager = new LinearLayoutManager(this);
-        rvDaftarJalur.setLayoutManager(layoutManager);
-        rvDaftarJalur.setHasFixedSize(true);
 
-        Intent HalteIntent = getIntent();
-        if (null != HalteIntent) {
-            trayek = HalteIntent.getParcelableExtra("trayek");
-        }
+        rvDaftarTrayek.setLayoutManager(layoutManager);
+        rvDaftarTrayek.setHasFixedSize(true);
 
-        getAllJalur();
+        swLayout = (SwipeRefreshLayout) findViewById(R.id.swlayout);
+        llayout = (LinearLayout) findViewById(R.id.ll_swiperefresh);
 
         swLayout.setColorSchemeResources(R.color.colorAccent,R.color.colorYellow, R.color.colorRed);
+
 
         swLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-
-                // Handler untuk menjalankan jeda selama 5 detik
                 new Handler().postDelayed(new Runnable() {
                     @Override public void run() {
-
-                        // Berhenti berputar/refreshing
                         swLayout.setRefreshing(false);
-
-                        // fungsi-fungsi lain yang dijalankan saat refresh berhenti
-                        getAllJalur();
+                        getAllTrayek();
                     }
-                }, 5000);
+                }, 1000);
             }
         });
+        getAllTrayek();
     }
 
-    private void getAllJalur() {
+    private void getAllTrayek() {
         load.setText("Memuat Data");
         waiting.setVisibility(View.VISIBLE);
         load.setVisibility(View.VISIBLE);
-        rvDaftarJalur.setVisibility(View.INVISIBLE);
+        rvDaftarTrayek.setVisibility(View.INVISIBLE);
 
         if(konekkah()){
-            Call<List<JalurItem>> call = client.getAllJalur(trayek.getTrayekId());
-            call.enqueue(new Callback<List<JalurItem>>() {
+            client = ApiClient.getClient().create(dbClient.class);
+            Call<List<Trayeks>> call = client.getAllTrayek();
+            call.enqueue(new Callback<List<Trayeks>>() {
                 @Override
-                public void onResponse(Call<List<JalurItem>> call,  Response<List<JalurItem>> response) {
+                public void onResponse(Call<List<Trayeks>> call,  Response<List<Trayeks>> response) {
                     waiting.setVisibility(View.INVISIBLE);
-                    load.setVisibility(View.INVISIBLE);
-                    rvDaftarJalur.setVisibility(View.VISIBLE);
-                    List<JalurItem> listItem = response.body();
-                    if(listItem == null){
-                        Toast.makeText(PilihJalurActivity.this , "Maaf, Tidak ada data", Toast.LENGTH_SHORT).show();
+
+                    rvDaftarTrayek.setVisibility(View.VISIBLE);
+
+                    List<Trayeks> listTrayekItem = response.body();
+                    if(listTrayekItem == null){
+                        load.setText("Tidak ada data");
+                        Toast.makeText(TrayekActivity.this , "Maaf, Tidak ada data", Toast.LENGTH_SHORT).show();
                     }
                     else{
-                        Toast.makeText(PilihJalurActivity.this , "Data berhasil diload", Toast.LENGTH_SHORT).show();
-                        jalurAdapter.setJalurList(new ArrayList<JalurItem>(listItem));
+                        load.setVisibility(View.INVISIBLE);
+                        Toast.makeText(TrayekActivity.this  , "Data Trayek berhasil diload", Toast.LENGTH_SHORT).show();
+                        trayekAdapter.setDataTrayek(new ArrayList<Trayeks>(listTrayekItem));
                     }
 
                 }
 
+
                 @Override
-                public void onFailure(Call<List<JalurItem>> call, Throwable t) {
-                    load.setText(t.toString());
-                    Toast.makeText(PilihJalurActivity.this , t.toString(), Toast.LENGTH_SHORT).show();
+                public void onFailure(Call<List<Trayeks>> call, Throwable t) {
+                    Log.e("error get Trayrks",t.toString());
+                    waiting.setVisibility(View.INVISIBLE);
+                    load.setText("Ada Kesalahan. Silakan Coba lagi");
+                    Toast.makeText(TrayekActivity.this , t.toString(), Toast.LENGTH_SHORT).show();
                 }
             });
         }else{
-            Toast.makeText(PilihJalurActivity.this , "Hidupkan koneksi internet anda", Toast.LENGTH_SHORT).show();
+            Toast.makeText(TrayekActivity.this  , "Hidupkan koneksi internet anda", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void ItemClicked(Trayeks trayek) {
+        Toast.makeText(TrayekActivity.this , "Item yang diklik adalah : " + trayek.getTrayekId(), Toast.LENGTH_SHORT).show();
+        Intent HalteIntent = new Intent(TrayekActivity.this , PilihJalurActivity.class);
+        HalteIntent.putExtra("trayek", trayek);
+        startActivity(HalteIntent);
     }
 
     public Boolean konekkah(){
@@ -151,12 +161,5 @@ public class PilihJalurActivity extends AppCompatActivity implements JalurAdapte
                 activeNetwork.isConnectedOrConnecting();
 
         return konek;
-    }
-
-    @Override
-    public void OnKlikJalur(JalurItem jalurItem) {
-        Intent moveActivity = new Intent(PilihJalurActivity.this, LokasiActivity.class);
-        moveActivity.putExtra("jalur", jalurItem);
-        startActivity(moveActivity);
     }
 }

@@ -53,7 +53,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     private boolean loadFragment(android.support.v4.app.Fragment fragment){
         if (fragment != null) {
-
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fl_container, fragment)
                     .commit();
@@ -71,9 +70,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 case R.id.navigation_home:
                     loadFragment(new HomeFragment());
                     return true;
-                case R.id.navigation_trayek:
-                    loadFragment(new TrayekFragment());
-                    return true;
+//                case R.id.navigation_trayek:
+//                    loadFragment(new TrayekFragment());
+//                    return true;
                 case R.id.navigation_keluar:
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
                     alertDialogBuilder

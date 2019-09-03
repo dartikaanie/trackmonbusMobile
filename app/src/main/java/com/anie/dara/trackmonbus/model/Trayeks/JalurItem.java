@@ -19,14 +19,11 @@ public class JalurItem implements Parcelable {
 	@SerializedName("urut")
 	private int urut;
 
-	@SerializedName("awal")
-	private String awal;
+	@SerializedName("nama_jalur")
+	private String NamaJalur;
 
 	@SerializedName("trayek_id")
 	private String trayekId;
-
-	@SerializedName("akhir")
-	private String akhir;
 
 	public void setJalurId(String jalurId){
 		this.jalurId = jalurId;
@@ -52,12 +49,12 @@ public class JalurItem implements Parcelable {
 		return urut;
 	}
 
-	public void setAwal(String awal){
-		this.awal = awal;
+	public void setNamaJalur(String awal){
+		this.NamaJalur = NamaJalur;
 	}
 
-	public String getAwal(){
-		return awal;
+	public String getNamaJalur(){
+		return NamaJalur;
 	}
 
 	public void setTrayekId(String trayekId){
@@ -68,13 +65,6 @@ public class JalurItem implements Parcelable {
 		return trayekId;
 	}
 
-	public void setAkhir(String akhir){
-		this.akhir = akhir;
-	}
-
-	public String getAkhir(){
-		return akhir;
-	}
 
 	@Override
  	public String toString(){
@@ -83,9 +73,8 @@ public class JalurItem implements Parcelable {
 			"jalur_id = '" + jalurId + '\'' + 
 			",halte = '" + halte + '\'' + 
 			",urut = '" + urut + '\'' + 
-			",awal = '" + awal + '\'' + 
-			",trayek_id = '" + trayekId + '\'' + 
-			",akhir = '" + akhir + '\'' + 
+			",NamaJalur = '" + NamaJalur + '\'' +
+			",trayek_id = '" + trayekId + '\'' +
 			"}";
 		}
 
@@ -100,9 +89,8 @@ public class JalurItem implements Parcelable {
 		dest.writeString(this.jalurId);
 		dest.writeList(this.halte);
 		dest.writeInt(this.urut);
-		dest.writeString(this.awal);
+		dest.writeString(this.NamaJalur);
 		dest.writeString(this.trayekId);
-		dest.writeString(this.akhir);
 	}
 
 	public JalurItem() {
@@ -113,9 +101,8 @@ public class JalurItem implements Parcelable {
 		this.halte = new ArrayList<HalteItem>();
 		in.readList(this.halte, HalteItem.class.getClassLoader());
 		this.urut = in.readInt();
-		this.awal = in.readString();
+		this.NamaJalur = in.readString();
 		this.trayekId = in.readString();
-		this.akhir = in.readString();
 	}
 
 	public static final Parcelable.Creator<JalurItem> CREATOR = new Parcelable.Creator<JalurItem>() {

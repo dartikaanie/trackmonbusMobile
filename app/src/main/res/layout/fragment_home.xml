@@ -59,8 +59,8 @@
             tools:layout_editor_absoluteY="203dp">
 
             <LinearLayout
-                android:layout_width="60dp"
-                android:layout_height="wrap_content"
+                android:layout_width="50dp"
+                android:layout_height="85dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:layout_weight="1"
@@ -109,15 +109,24 @@
                     android:id="@+id/TextView_pesan"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Pesan Saya"
+                    android:text="Saran &amp; Kritik"
                     android:textColor="#172646"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/textView8"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Saya"
+                    android:textAlignment="center"
+                    android:textColor="@android:color/black"
                     android:textSize="14sp" />
 
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="60dp"
-                android:layout_height="wrap_content"
+                android:layout_width="52dp"
+                android:layout_height="89dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:layout_weight="1"
@@ -136,7 +145,7 @@
                     android:id="@+id/btnTextView_lokasi"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Cek Durasi"
+                    android:text="Cek Peta"
                     android:textColor="#172646"
                     android:textSize="14sp" />
 

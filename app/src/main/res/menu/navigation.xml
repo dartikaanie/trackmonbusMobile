@@ -6,10 +6,10 @@
             android:icon="@drawable/ic_home_black_24dp"
             android:title="@string/beranda" />
 
-        <item
-            android:id="@+id/navigation_trayek"
-            android:icon="@drawable/ic_dashboard_black_24dp"
-            android:title="Trayek" />
+        <!--<item-->
+            <!--android:id="@+id/navigation_trayek"-->
+            <!--android:icon="@drawable/ic_dashboard_black_24dp"-->
+            <!--android:title="Trayek" />-->
 
         <item
             android:id="@+id/navigation_keluar"

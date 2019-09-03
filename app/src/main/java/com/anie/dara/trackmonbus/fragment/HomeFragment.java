@@ -32,6 +32,7 @@ import com.anie.dara.trackmonbus.MypesanActivity;
 import com.anie.dara.trackmonbus.PesanActivity;
 import com.anie.dara.trackmonbus.PilihJalurActivity;
 import com.anie.dara.trackmonbus.R;
+import com.anie.dara.trackmonbus.TrayekActivity;
 import com.anie.dara.trackmonbus.adapter.pesanAdapter;
 import com.anie.dara.trackmonbus.model.Pesan;
 import com.anie.dara.trackmonbus.rest.ApiClient;
@@ -149,7 +150,7 @@ public class HomeFragment extends Fragment implements pesanAdapter.OnItemClicked
                         Toast.makeText(activity, "Maaf, Tidak ada data", Toast.LENGTH_SHORT).show();
                     }
                     else{
-                        Toast.makeText(activity, "Pesan berhasil diload", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity, "Data berhasil diload", Toast.LENGTH_SHORT).show();
                         pesanAdapter.setDataPesan(new ArrayList<Pesan>(listPesanItem));
                         BtnlihatAll.setVisibility(View.VISIBLE);
                     }
@@ -170,7 +171,7 @@ public class HomeFragment extends Fragment implements pesanAdapter.OnItemClicked
 
     @Override
     public void ItemClicked(Pesan pesan) {
-        Toast.makeText(activity, "Item yang diklik adalah : " + pesan.getKeluhan_id(), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(activity, "Item yang diklik adalah : " + pesan.getKeluhan_id(), Toast.LENGTH_SHORT).show();
         Intent detailIntent = new Intent(activity, DetailPesanActivity.class);
         detailIntent.putExtra("key_pesan_parcelable", pesan);
         startActivity(detailIntent);
@@ -180,7 +181,7 @@ public class HomeFragment extends Fragment implements pesanAdapter.OnItemClicked
     public void deletePesan(final Pesan pesan) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
         alertDialogBuilder
-                .setMessage("Apakah Anda yakin untuk Menghapus pesan ini ?")
+                .setMessage("Apakah Anda yakin untuk Menghapus Data ini ?")
                 .setIcon(R.drawable.trans)
                 .setCancelable(false)
                 .setPositiveButton("Iya", new DialogInterface.OnClickListener() {
@@ -197,7 +198,7 @@ public class HomeFragment extends Fragment implements pesanAdapter.OnItemClicked
                             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                                 ResponseBody result = response.body();
                                 if(result != null){
-                                    Toast.makeText(getContext(), "Pesan dihapus", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getContext(), "Data dihapus", Toast.LENGTH_SHORT).show();
                                     dialog123.dismiss();
                                     getPesan();
                                 }
@@ -228,7 +229,7 @@ public class HomeFragment extends Fragment implements pesanAdapter.OnItemClicked
                 break;
 
             case R.id.BtnLokasi:
-                startActivity(new Intent(getActivity(), PilihJalurActivity.class));
+                startActivity(new Intent(getActivity(), TrayekActivity.class));
                 break;
 
             case R.id.BtnlihatAll :

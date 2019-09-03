@@ -233,7 +233,7 @@ public class PesanFormActivity extends AppCompatActivity implements View.OnClick
 
     private void addFormPesan(final String et_isi_keluhan, String et_perihal, String et_nobus) {
         final ProgressDialog dialog123 = new ProgressDialog(this);
-        dialog123.setMessage("Menyimpan Data Pesan. . .");
+        dialog123.setMessage("Menyimpan Data data. . .");
         dialog123.show();
 
         Date date = new Date();

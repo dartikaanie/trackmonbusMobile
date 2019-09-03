@@ -20,7 +20,7 @@ public class Trayeks implements Parcelable {
 	private String trayek;
 
 	@SerializedName("trayek_id")
-	private int trayekId;
+	private String trayekId;
 
 	public void setJalur(List<JalurItem> jalur) {
 		this.jalur = jalur;
@@ -46,11 +46,11 @@ public class Trayeks implements Parcelable {
 		return trayek;
 	}
 
-	public void setTrayekId(int trayekId) {
+	public void setTrayekId(String trayekId) {
 		this.trayekId = trayekId;
 	}
 
-	public int getTrayekId() {
+	public String getTrayekId() {
 		return trayekId;
 	}
 
@@ -78,7 +78,7 @@ public class Trayeks implements Parcelable {
 		dest.writeList(this.jalur);
 		dest.writeValue(this.kmRit);
 		dest.writeString(this.trayek);
-		dest.writeInt(this.trayekId);
+		dest.writeString(this.trayekId);
 	}
 
 	public Trayeks() {
@@ -89,7 +89,7 @@ public class Trayeks implements Parcelable {
 		in.readList(this.jalur, JalurItem.class.getClassLoader());
 		this.kmRit = (Float) in.readValue(Float.class.getClassLoader());
 		this.trayek = in.readString();
-		this.trayekId = in.readInt();
+		this.trayekId = in.readString();
 	}
 
 	public static final Creator<Trayeks> CREATOR = new Creator<Trayeks>() {
