@@ -32,6 +32,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -39,6 +40,7 @@ import android.widget.Toast;
 
 import com.anie.dara.trackmonbus.adapter.HalteAdapter;
 import com.anie.dara.trackmonbus.model.Bus;
+import com.anie.dara.trackmonbus.model.Halte;
 import com.anie.dara.trackmonbus.model.Posisi;
 import com.anie.dara.trackmonbus.model.Trayeks.HalteItem;
 import com.anie.dara.trackmonbus.model.Trayeks.JalurItem;
@@ -77,13 +79,13 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallback, HalteAdapter.OnHalteListener {
+public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallback, HalteAdapter.OnHalteListener, View.OnClickListener {
 
     GoogleMap map;
     MapView mMapView;
 
     DatabaseReference mDatabase;
-    TextView textView4;
+    TextView textView4, namaHalteTerdekat;
     JalurItem jalur;
     HashMap hashMapMarker = new HashMap<>();
     Marker marker, markerBus;
@@ -93,6 +95,9 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
     HashMap HalteMarkers = new HashMap<>();
     Posisi noBusMinPosisi = null;
     ProgressDialog dialog ;
+    Button btnCekHalte;
+    Double currLat, currLng;
+    CardView cv_halteTerdekat;
 
     CardView cardBus;
     TextView no_bus, no_tnkb, kapasitas, Tvdurasi;
@@ -136,6 +141,10 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
         no_bus = findViewById(R.id.no_bus);
         no_tnkb = findViewById(R.id.no_tnkb);
         kapasitas = findViewById(R.id.kapasitas);
+        namaHalteTerdekat = findViewById(R.id.namaHalteTerdekat);
+        cv_halteTerdekat = findViewById(R.id.cv_halteTerdekat);
+        btnCekHalte = findViewById(R.id.btn_halte_dekat);
+        btnCekHalte.setOnClickListener(this);
         dialog = new ProgressDialog(LokasiActivity.this);
 
         swLayout = (SwipeRefreshLayout) findViewById(R.id.swlayout);
@@ -226,40 +235,9 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
             initMarker(ListHalte);
         }
 
-        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                getDataPosisiBus(dataSnapshot);
-                Log.e("get mdatabase", String.valueOf(dataSnapshot));
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e("error", databaseError.toString());
-
-            }
-        });
+        getCurrentPosisi();
 
         dataMarker();
-
-        //map ke lokasi terkini
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-            buildAlertMessageNoGPS();
-        }
-        else
-        {
-//            getLocation();
-            getCurrentPosisi();
-        }
-
-
-
-
-
 
     }
 
@@ -272,8 +250,9 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//                Log.e("bus change", String.valueOf(dataSnapshot));
                 getDataAksi(dataSnapshot);
-                Log.e("bus change", s);
+
             }
 
             @Override
@@ -296,26 +275,36 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
 
 
     public void getCurrentPosisi(){
+        Double latitude = 0.0, longitude;
+        LocationManager mlocManager = null;
+        LocationListener mlocListener;
+        mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        mlocListener = new loclistener(this);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-        if((ActivityCompat.checkSelfPermission(LokasiActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED )
-                &&
-                (ActivityCompat.checkSelfPermission(LokasiActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED)){
-            ActivityCompat.requestPermissions((Activity) LokasiActivity.this, new String [] {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
-            Toast.makeText(LokasiActivity.this,"Aktifkan GPS anda", Toast.LENGTH_SHORT).show();
+            return;
         }
-        else {
-            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if (location != null) {
-                Double lat = location.getLatitude();
-                Double lng = location.getLongitude();
-                LatLng currentPosisi = new LatLng(lat, lng);
+        mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mlocListener);
+        if (mlocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+
+            latitude = loclistener.latitude;
+            longitude = loclistener.longitude;
+            Toast.makeText(getApplicationContext(), latitude.toString(), Toast.LENGTH_LONG).show();
+            if (latitude == 0.0) {
+                Toast.makeText(getApplicationContext(), "GPS tidak bisa mendeteksi lokasi anda", Toast.LENGTH_LONG).show();
+            }else{
+                currLng = longitude;
+                currLat = latitude;
+                LatLng currentPosisi = new LatLng(latitude, longitude);
                 map.addMarker(new MarkerOptions()
                         .position(currentPosisi)
                         .title("Anda")).showInfoWindow();
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 16.0f));
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 16.0f));
             }
+
+        } else {
+            buildAlertMessageNoGPS();
+            Toast.makeText(getApplicationContext(), "GPS Anda mati. Silakan Aktifkan GPS Anda.", Toast.LENGTH_LONG).show();
         }
 
     }
@@ -342,12 +331,12 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
         BitmapDrawable bitmapdraw= (BitmapDrawable) getResources().getDrawable(R.drawable.halte);
         if(listData.size() > 0 ){
             for (int i=0; i<listData.size(); i++){
-                LatLng location = new LatLng(Double.parseDouble(listData.get(i).getLat()), Double.parseDouble(listData.get(i).getLng()));
+                LatLng location = new LatLng(listData.get(i).getLat(), listData.get(i).getLng());
 
                 marker =  map.addMarker(new MarkerOptions().position(location).title(listData.get(i).getNama()).icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 100,80))));
                 HalteMarkers.put(listData.get(i).getHalteId(),marker);
             }
-            LatLng latLng = new LatLng(Double.parseDouble(listData.get(0).getLat()), Double.parseDouble(listData.get(0).getLng()));
+            LatLng latLng = new LatLng(listData.get(0).getLat(), listData.get(0).getLng());
             map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
             map.animateCamera(CameraUpdateFactory.zoomTo(16));
         }
@@ -366,8 +355,8 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
         cardBus.setVisibility(View.INVISIBLE);
         marker = (Marker) HalteMarkers.get(halteItem.getHalteId());
         marker.showInfoWindow();
-        LatLng latLng = new LatLng(Double.parseDouble(halteItem.getLat()), Double.parseDouble(halteItem.getLng()));
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude,latLng.longitude), 14.0f));
+        LatLng latLng = new LatLng(halteItem.getLat(),halteItem.getLng());
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14.0f));
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(LokasiActivity.this);
         alertDialogBuilder
@@ -646,5 +635,88 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
                 activeNetwork.isConnectedOrConnecting();
 
         return konek;
+    }
+
+    public void cekHalteTerdekat(Double currLat, Double currLng){
+        if(ListHalte.size() >0){
+            dialog.setMessage("Memuat Data . . .");
+            dialog.show();
+            ArrayList<String> daftarPosisiHalte = new ArrayList<>();;
+            for(HalteItem itemHalte : ListHalte){
+                String posisiHalte = itemHalte.getLat() + "," + itemHalte.getLng();
+                daftarPosisiHalte.add(posisiHalte);
+            }
+            String posisiUser = currLat +","+ currLng;
+            Call<DistanceMatrix> call = distanceApi.getDistanceInfo(posisiUser,convertToString(daftarPosisiHalte), "AIzaSyDZ-N9it_JFpboG3R3LfxakMiAkUdF12bU");
+            call.enqueue(new Callback<DistanceMatrix>() {
+                @Override
+                public void onResponse(Call<DistanceMatrix> call, Response<DistanceMatrix> response) {
+                    DistanceMatrix data = response.body();
+                    Log.e("cekdata", data.toString());
+                    if(data.getRows().get(0).getElements().size() > 0){
+                        List<ElementsItem> row = data.getRows().get(0).getElements();
+                        int jarakMin = 0;
+                        int jarak;
+                        HalteItem halteMin = null;
+                        int n=0;
+                        for(ElementsItem item : row){
+                            if(item.getDistance() != null){
+                                if(n==0){
+                                    jarak= item.getDistance().getValue();
+                                    jarakMin=jarak;
+                                    halteMin = ListHalte.get(n);
+                                    n++;
+                                }else{
+                                    jarak= item.getDistance().getValue();
+                                    if(jarak  < jarakMin){
+                                        jarakMin = jarak;
+                                        halteMin = ListHalte.get(n);
+                                    }
+                                    n++;
+                                }   
+                            }
+                        }
+                        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(halteMin.getLat(), halteMin.getLng()), 16.0f));
+                        namaHalteTerdekat.setText(halteMin.getNama());
+                        cv_halteTerdekat.setVisibility(View.VISIBLE);
+                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(LokasiActivity.this);
+                        final HalteItem finalHalteMin = halteMin;
+                        alertDialogBuilder
+                                .setMessage("Hitung waktu kedatangan bus dari halte "+ halteMin.getNama() +" ? ")
+                                .setIcon(R.drawable.trans)
+                                .setCancelable(false)
+                                .setPositiveButton("Iya", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        getDurasi(finalHalteMin, jalur.getJalurId());
+                                        dialog.dismiss();
+
+                                    }
+                                }).setNegativeButton("Batal", null);
+                        dialog.dismiss();
+                        AlertDialog alertDialog = alertDialogBuilder.create();
+                        alertDialog.show();
+
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<DistanceMatrix> call, Throwable t) {
+                    Log.e("ggl", String.valueOf(t));
+                    dialog.dismiss();
+                }
+            });
+        }
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_halte_dekat:
+                getCurrentPosisi();
+                cekHalteTerdekat(currLat, currLng);
+                break;
+        }
     }
 }

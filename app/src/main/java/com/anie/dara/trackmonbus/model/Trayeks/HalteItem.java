@@ -14,13 +14,13 @@ public class HalteItem implements Parcelable {
 	private String nama;
 
 	@SerializedName("lng")
-	private String lng;
+	private Double lng;
 
 	@SerializedName("urut")
 	private int urut;
 
 	@SerializedName("lat")
-	private String lat;
+	private Double lat;
 
 	public void setHalteId(String halteId){
 		this.halteId = halteId;
@@ -38,11 +38,11 @@ public class HalteItem implements Parcelable {
 		return nama;
 	}
 
-	public void setLng(String lng){
+	public void setLng(Double lng){
 		this.lng = lng;
 	}
 
-	public String getLng(){
+	public Double getLng(){
 		return lng;
 	}
 
@@ -54,11 +54,11 @@ public class HalteItem implements Parcelable {
 		return urut;
 	}
 
-	public void setLat(String lat){
+	public void setLat(Double lat){
 		this.lat = lat;
 	}
 
-	public String getLat(){
+	public Double getLat(){
 		return lat;
 	}
 
@@ -84,9 +84,9 @@ public class HalteItem implements Parcelable {
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeString(this.halteId);
 		dest.writeString(this.nama);
-		dest.writeString(this.lng);
+		dest.writeDouble(this.lng);
 		dest.writeInt(this.urut);
-		dest.writeString(this.lat);
+		dest.writeDouble(this.lat);
 	}
 
 	public HalteItem() {
@@ -95,9 +95,9 @@ public class HalteItem implements Parcelable {
 	protected HalteItem(Parcel in) {
 		this.halteId = in.readString();
 		this.nama = in.readString();
-		this.lng = in.readString();
+		this.lng = in.readDouble();
 		this.urut = in.readInt();
-		this.lat = in.readString();
+		this.lat = in.readDouble();
 	}
 
 	public static final Parcelable.Creator<HalteItem> CREATOR = new Parcelable.Creator<HalteItem>() {

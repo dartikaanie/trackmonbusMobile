@@ -90,7 +90,7 @@ public class HalteActivity extends AppCompatActivity  implements OnMapReadyCallb
             public void HalteClickItem(HalteItem halte) {
                 marker = (Marker) HalteMarkers.get(halte.getHalteId());
                 marker.showInfoWindow();
-                LatLng latLng = new LatLng(Double.parseDouble(halte.getLat()), Double.parseDouble(halte.getLng()));
+                LatLng latLng = new LatLng(halte.getLat(),halte.getLng());
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude,latLng.longitude), 16.0f));
             }
         });
@@ -120,12 +120,12 @@ public class HalteActivity extends AppCompatActivity  implements OnMapReadyCallb
         BitmapDrawable bitmapdraw= (BitmapDrawable) getResources().getDrawable(R.drawable.halte);
         if(listData.size() > 0 ){
             for (int i=0; i<listData.size(); i++){
-                LatLng location = new LatLng(Double.parseDouble(listData.get(i).getLat()), Double.parseDouble(listData.get(i).getLng()));
+                LatLng location = new LatLng(listData.get(i).getLat(), listData.get(i).getLng());
 
                 marker =  map.addMarker(new MarkerOptions().position(location).title(listData.get(i).getNama()).icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 100,80))));
                 HalteMarkers.put(listData.get(i).getHalteId(),marker);
             }
-            LatLng latLng = new LatLng(Double.parseDouble(listData.get(0).getLat()), Double.parseDouble(listData.get(0).getLng()));
+            LatLng latLng = new LatLng(listData.get(0).getLat(), listData.get(0).getLng());
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude,latLng.longitude), 14.0f));
         }else{
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-0.924654, 100.361908), 15.0f));
