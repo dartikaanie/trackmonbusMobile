@@ -91,7 +91,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
     RecyclerView rvDaftarHalte;
     ArrayList<HalteItem> ListHalte;
     HashMap HalteMarkers = new HashMap<>();
-
+    Posisi noBusMinPosisi = null;
     ProgressDialog dialog ;
 
     CardView cardBus;
@@ -386,6 +386,8 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
         alertDialog.show();
     }
 
+
+
     public void getDurasi(final HalteItem halteItem, String jalurId){
 
         dialog.setMessage("Memuat Data . . .");
@@ -496,7 +498,6 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
                    int durasiMin=0, durasiInt=0;
                     String durasi = null;
                     int n=0;
-                    Posisi noBusMinPosisi = null;
                     for(ElementsItem item : row){
                         if(n==0){
                             durasiInt= item.getDuration().getValue();
@@ -538,6 +539,28 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
             }
         });
     }
+
+//    public void getJarakHalteBus(){
+//        String PosisiBus = noBusMinPosisi.getLat() + "," + noBusMinPosisi.getLng();
+//        for(HalteItem halte : ListHalte){
+//            String PosisiHalte = halte.getLat()+ "," + halte.getLng();
+//            Call<DistanceMatrix> call = distanceApi.getDistanceInfo(PosisiHalte,PosisiBus, "AIzaSyDZ-N9it_JFpboG3R3LfxakMiAkUdF12bU");
+//            call.enqueue(new Callback<DistanceMatrix>() {
+//                @Override
+//                public void onResponse(Call<DistanceMatrix> call, Response<DistanceMatrix> response) {
+//                    DistanceMatrix data = response.body();
+//
+//                }
+//
+//                @Override
+//                public void onFailure(Call<DistanceMatrix> call, Throwable t) {
+//                    Log.e("ggl", String.valueOf("ggl"));
+//                }
+//            });
+//        }
+//
+//
+//    }
 
 
     private void ShowDurasi(String durasi, String noBus){
