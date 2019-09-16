@@ -7,6 +7,9 @@ public class ElementsItem{
 	@SerializedName("duration")
 	private Duration duration;
 
+	@SerializedName("duration_in_traffic")
+	private DurationInTraffic duration_in_traffic;
+
 	@SerializedName("distance")
 	private Distance distance;
 
@@ -19,6 +22,14 @@ public class ElementsItem{
 
 	public Duration getDuration(){
 		return duration;
+	}
+
+	public void setDurationInTraffic(DurationInTraffic duration_in_traffic){
+		this.duration_in_traffic = duration_in_traffic;
+	}
+
+	public DurationInTraffic getDurationInTraffic(){
+		return duration_in_traffic;
 	}
 
 	public void setDistance(Distance distance){
@@ -41,8 +52,9 @@ public class ElementsItem{
  	public String toString(){
 		return 
 			"ElementsItem{" + 
-			"duration = '" + duration + '\'' + 
-			",distance = '" + distance + '\'' + 
+			"duration = '" + duration + '\'' +
+			"duration_in_traffic = '" + duration_in_traffic + '\'' +
+			",distance = '" + distance + '\'' +
 			",status = '" + status + '\'' + 
 			"}";
 		}

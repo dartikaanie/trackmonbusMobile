@@ -11,6 +11,10 @@ public interface DistanceApiServices {
     Call<DistanceMatrix> getDistanceInfo(
             @Query("origins") String origins,
             @Query("destinations") String destinations,
+            @Query("departure_time") String departure_time,
+            @Query("durationInTraffic") String durationInTraffic,
             @Query("key") String key
     );
+
+//    Call<DistanceMatrix> getDistanceInfo(String posisiUser, String s, String s1);
 }
