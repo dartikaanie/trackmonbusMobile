@@ -1,12 +1,15 @@
 package com.anie.dara.trackmonbus;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -153,10 +156,23 @@ public class PilihJalurActivity extends AppCompatActivity implements JalurAdapte
         return konek;
     }
 
+    public boolean checkLocationPermission()
+    {
+        String permission = "android.permission.ACCESS_FINE_LOCATION";
+        int res = this.checkCallingOrSelfPermission(permission);
+        return (res == PackageManager.PERMISSION_GRANTED);
+    }
+
     @Override
     public void OnKlikJalur(JalurItem jalurItem) {
-        Intent moveActivity = new Intent(PilihJalurActivity.this, LokasiActivity.class);
-        moveActivity.putExtra("jalur", jalurItem);
-        startActivity(moveActivity);
+       if(checkLocationPermission() == false){
+           Toast.makeText(PilihJalurActivity.this , "Berikan Akses Lokasi terlebih dahulu", Toast.LENGTH_SHORT).show();
+
+           ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        }else {
+            Intent moveActivity = new Intent(PilihJalurActivity.this, LokasiActivity.class);
+            moveActivity.putExtra("jalur", jalurItem);
+            startActivity(moveActivity);
+        }
     }
 }

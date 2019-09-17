@@ -244,7 +244,7 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
+                getDataAksiHapus(dataSnapshot);
             }
 
             @Override
@@ -257,6 +257,15 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
 
             }
         });
+    }
+
+    public void getDataAksiHapus(DataSnapshot dataSnapshot){
+        String nomorBus = dataSnapshot.getKey().toString();
+        marker = (Marker) hashMapMarker.get(nomorBus);
+        if(marker != null){
+            marker.remove();
+            hashMapMarker.remove(nomorBus);
+        }
     }
 
     public void getDataAksi(DataSnapshot dataSnapshot){

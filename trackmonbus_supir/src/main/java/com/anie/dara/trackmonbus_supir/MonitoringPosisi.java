@@ -171,13 +171,21 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
     public void getDataPosisiBus(DataSnapshot dataSnapshot){
 
         LatLng posisi = null;
-        BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.trans);
+        BitmapDrawable bitmapdraw;
+
+
 
         for (DataSnapshot child : dataSnapshot.getChildren()) {
 
             String lat = child.child("lat").getValue().toString();
             String lng = child.child("lng").getValue().toString();
             String nomorBus = child.getKey().toString();
+
+            if(nomorBus.equals(no_bus)){
+                bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.transsupir);
+            }else{
+                bitmapdraw= (BitmapDrawable) getResources().getDrawable(R.drawable.trans);
+            }
 
             double location_lat = Double.parseDouble(lat);
             double location_lng = Double.parseDouble(lng);
@@ -215,18 +223,18 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
             getCurrentPosisi();
         }
 
-        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                getDataPosisiBus(dataSnapshot);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e("error", databaseError.toString());
-
-            }
-        });
+//        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                getDataPosisiBus(dataSnapshot);
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//                Log.e("error", databaseError.toString());
+//
+//            }
+//        });
 
         dataMarker();
 
@@ -234,14 +242,29 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
     }
 
 
+    public void getDataAksiHapus(DataSnapshot dataSnapshot){
+        String nomorBus = dataSnapshot.getKey().toString();
+        marker = (Marker) hashMapMarker.get(nomorBus);
+        if(marker != null){
+            marker.remove();
+            hashMapMarker.remove(nomorBus);
+        }
+    }
+
     public void getDataAksi(DataSnapshot dataSnapshot){
         LatLng point = null;
-        BitmapDrawable bitmapdraw= (BitmapDrawable) getResources().getDrawable(R.drawable.trans);
+        BitmapDrawable bitmapdraw;
 
         String lat = dataSnapshot.child("lat").getValue().toString();
         String lng = dataSnapshot.child("lng").getValue().toString();
         String nomorBus = dataSnapshot.getKey().toString();
 
+        if(nomorBus.equals(no_bus)){
+            bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.transsupir);
+
+        }else{
+            bitmapdraw= (BitmapDrawable) getResources().getDrawable(R.drawable.trans);
+        }
         double location_lat = Double.parseDouble(lat);
         double location_lng = Double.parseDouble(lng);
         point = new LatLng(location_lat, location_lng);
@@ -273,7 +296,8 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
+                Toast.makeText(MonitoringPosisi.this , "ada bus selesai berkendara", Toast.LENGTH_SHORT).show();
+                getDataAksiHapus(dataSnapshot);
             }
 
             @Override
@@ -649,6 +673,22 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
         running = false;
         handler.removeCallbacks(runTrack);
         btnCheck.setEnabled(!btnCheck.isEnabled());
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot data: dataSnapshot.getChildren()) {
+                     if(data.getKey().equals(no_bus)) {
+                         data.getRef().removeValue();
+                     }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         Intent intent = new Intent(MonitoringPosisi.this, MainActivity.class);
         intent.putExtra("jadwal", jadwal);
         startActivity(intent);

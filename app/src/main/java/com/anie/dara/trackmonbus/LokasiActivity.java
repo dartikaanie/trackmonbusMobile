@@ -24,6 +24,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -94,7 +95,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
     ArrayList<HalteItem> ListHalte;
     HashMap HalteMarkers = new HashMap<>();
     Posisi noBusMinPosisi = null;
-    ProgressDialog dialog ;
+    ProgressDialog dialog;
     Button btnCekHalte;
     Double currLat, currLng;
     CardView cv_halteTerdekat;
@@ -102,7 +103,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
     CardView cardBus;
     TextView no_bus, no_tnkb, kapasitas, Tvdurasi;
 
-    private static  final  int REQUEST_LOCATION =1;
+    private static final int REQUEST_LOCATION = 1;
     private LocationManager locationManager;
     Toolbar toolbar;
     ImageView toolbarTitle;
@@ -162,7 +163,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
         mDatabase = FirebaseDatabase.getInstance().getReference().child(tgl_skrg);
 
 
-        swLayout.setColorSchemeResources(R.color.colorAccent,R.color.colorYellow, R.color.colorRed);
+        swLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorYellow, R.color.colorRed);
 
         swLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -170,7 +171,8 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
 
                 // Handler untuk menjalankan jeda selama 5 detik
                 new Handler().postDelayed(new Runnable() {
-                    @Override public void run() {
+                    @Override
+                    public void run() {
 
                         // Berhenti berputar/refreshing
                         swLayout.setRefreshing(false);
@@ -190,7 +192,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
         mMapView = (MapView) findViewById(R.id.map_monitor);
 //        dataMarker();
 
-        if(mMapView !=null){
+        if (mMapView != null) {
             mMapView.onCreate(null);
             mMapView.onResume();
             mMapView.getMapAsync(this);
@@ -200,11 +202,10 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
 
-
-    public void getDataPosisiBus(DataSnapshot dataSnapshot){
+    public void getDataPosisiBus(DataSnapshot dataSnapshot) {
 
         LatLng posisi = null;
-        BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.trans);
+        BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.trans);
 
         for (DataSnapshot child : dataSnapshot.getChildren()) {
 
@@ -219,8 +220,8 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
             markerBus = map.addMarker(new MarkerOptions()
                     .position(posisi)
                     .title(nomorBus)
-                    .icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 60,120))));
-            hashMapMarker.put(nomorBus,markerBus);
+                    .icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 60, 120))));
+            hashMapMarker.put(nomorBus, markerBus);
 
             Log.e("noBus", nomorBus);
         }
@@ -231,21 +232,25 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
     public void onMapReady(GoogleMap googleMap) {
         MapsInitializer.initialize(this);
         map = googleMap;
-        if(ListHalte.size() >0){
+        if (ListHalte.size() > 0) {
             initMarker(ListHalte);
         }
+        if (checkLocationPermission() == false) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
 
-        getCurrentPosisi();
+        } else {
+            getCurrentPosisi();
+        }
 
         dataMarker();
 
     }
 
-    public void dataMarker(){
+    public void dataMarker() {
         mDatabase.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                 getDataAksi(dataSnapshot);
+                getDataAksi(dataSnapshot);
             }
 
             @Override
@@ -257,7 +262,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
+                getDataAksiHapus(dataSnapshot);
             }
 
             @Override
@@ -272,41 +277,53 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
         });
     }
 
+    public void getDataAksiHapus(DataSnapshot dataSnapshot){
+        String nomorBus = dataSnapshot.getKey().toString();
+        marker = (Marker) hashMapMarker.get(nomorBus);
+        if(marker != null){
+            marker.remove();
+            hashMapMarker.remove(nomorBus);
+        }
+    }
 
+    public boolean checkLocationPermission() {
+        String permission = "android.permission.ACCESS_FINE_LOCATION";
+        int res = this.checkCallingOrSelfPermission(permission);
+        return (res == PackageManager.PERMISSION_GRANTED);
+    }
 
-    public void getCurrentPosisi(){
+    public void getCurrentPosisi() {
         Double latitude = 0.0, longitude;
-        LocationManager mlocManager = null;
-        LocationListener mlocListener;
-        mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        mlocListener = new loclistener(this);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        LocationListener mlocListener = new loclistener(this);
 
-            return;
-        }
-        mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mlocListener);
-        if (mlocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (locationManager != null) {
 
-            latitude = loclistener.latitude;
-            longitude = loclistener.longitude;
-            Toast.makeText(getApplicationContext(), latitude.toString(), Toast.LENGTH_LONG).show();
-            if (latitude == 0.0) {
-                Toast.makeText(getApplicationContext(), "GPS tidak bisa mendeteksi lokasi anda", Toast.LENGTH_LONG).show();
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
             }else{
-                currLng = longitude;
-                currLat = latitude;
-                LatLng currentPosisi = new LatLng(latitude, longitude);
-                map.addMarker(new MarkerOptions()
-                        .position(currentPosisi)
-                        .title("Anda")).showInfoWindow();
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 16.0f));
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mlocListener);
+                if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    latitude = loclistener.latitude;
+                    longitude = loclistener.longitude;
+                    if (latitude == 0.0) {
+                        Toast.makeText(getApplicationContext(), "GPS tidak bisa mendeteksi lokasi anda", Toast.LENGTH_LONG).show();
+                    } else {
+                        currLng = longitude;
+                        currLat = latitude;
+                        LatLng currentPosisi = new LatLng(latitude, longitude);
+                        map.addMarker(new MarkerOptions()
+                                .position(currentPosisi)
+                                .title("Anda")).showInfoWindow();
+                        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 16.0f));
+                    }
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "GPS Anda mati. Silakan Aktifkan GPS Anda.", Toast.LENGTH_LONG).show();
+                    buildAlertMessageNoGPS();
+                }
             }
-
-        } else {
-            buildAlertMessageNoGPS();
-            Toast.makeText(getApplicationContext(), "GPS Anda mati. Silakan Aktifkan GPS Anda.", Toast.LENGTH_LONG).show();
         }
-
     }
 
     protected void buildAlertMessageNoGPS(){
@@ -481,7 +498,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
         dialog.setMessage("Memuat Data . . .");
         dialog.show();
         Log.e("cekmarker", posisiBusCek);
-        Call<DistanceMatrix> call = distanceApi.getDistanceInfo(posisiHalte,posisiBusCek, "now","true","AIzaSyDZ-N9it_JFpboG3R3LfxakMiAkUdF12bU");
+        Call<DistanceMatrix> call = distanceApi.getDistanceInfo(posisiBusCek, posisiHalte,"driving","now","true","AIzaSyDZ-N9it_JFpboG3R3LfxakMiAkUdF12bU");
         call.enqueue(new Callback<DistanceMatrix>() {
             @Override
             public void onResponse(Call<DistanceMatrix> call, Response<DistanceMatrix> response) {
@@ -500,7 +517,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
                             durasiMin=durasiInt;
                             n++;
                         }else{
-                            durasiInt= item.getDuration().getValue();
+                            durasiInt= item.getDurationInTraffic().getValue();
 
                             if(durasiInt  < durasiMin){
                                 durasiMin = durasiInt;
@@ -653,12 +670,11 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
                 daftarPosisiHalte.add(posisiHalte);
             }
             String posisiUser = currLat +","+ currLng;
-            Call<DistanceMatrix> call = distanceApi.getDistanceInfo(posisiUser,convertToString(daftarPosisiHalte), "DRIVING", "true","AIzaSyDZ-N9it_JFpboG3R3LfxakMiAkUdF12bU");
+            Call<DistanceMatrix> call = distanceApi.getDistanceInfo(posisiUser,convertToString(daftarPosisiHalte), "walking","now", "true","AIzaSyDZ-N9it_JFpboG3R3LfxakMiAkUdF12bU");
             call.enqueue(new Callback<DistanceMatrix>() {
                 @Override
                 public void onResponse(Call<DistanceMatrix> call, Response<DistanceMatrix> response) {
                     DistanceMatrix data = response.body();
-                    Log.e("cekdata", data.toString());
                     if(data.getRows().get(0).getElements().size() > 0){
                         List<ElementsItem> row = data.getRows().get(0).getElements();
                         int jarakMin = 0;

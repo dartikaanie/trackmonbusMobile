@@ -27,9 +27,9 @@ public class loclistener implements LocationListener {
         try {
             locationManager = (LocationManager) ctx.getSystemService(LOCATION_SERVICE);
             isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            Toast.makeText(ctx, "GPS Enable " + isGPSEnabled, Toast.LENGTH_LONG).show();
+//            Toast.makeText(ctx, "GPS Enable " + isGPSEnabled, Toast.LENGTH_LONG).show();
             isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-            Toast.makeText(ctx, "Network Enable " + isNetworkEnabled, Toast.LENGTH_LONG).show();
+//            Toast.makeText(ctx, "Network Enable " + isNetworkEnabled, Toast.LENGTH_LONG).show();
 
             if ( Build.VERSION.SDK_INT >= 23 && ContextCompat.checkSelfPermission
                     ( ctx, android.Manifest.permission.ACCESS_FINE_LOCATION )
