@@ -2,7 +2,6 @@ package com.anie.dara.trackmonbus;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -11,7 +10,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
@@ -24,7 +22,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -41,12 +38,12 @@ import android.widget.Toast;
 
 import com.anie.dara.trackmonbus.adapter.HalteAdapter;
 import com.anie.dara.trackmonbus.model.Bus;
-import com.anie.dara.trackmonbus.model.Halte;
 import com.anie.dara.trackmonbus.model.Posisi;
 import com.anie.dara.trackmonbus.model.Trayeks.HalteItem;
 import com.anie.dara.trackmonbus.model.Trayeks.JalurItem;
 import com.anie.dara.trackmonbus.model.distanceMatrix.DistanceMatrix;
 import com.anie.dara.trackmonbus.model.distanceMatrix.ElementsItem;
+import com.anie.dara.trackmonbus.model.distanceMatrix.RowsItem;
 import com.anie.dara.trackmonbus.model.noBus;
 import com.anie.dara.trackmonbus.rest.ApiClient;
 import com.anie.dara.trackmonbus.rest.DistanceApiServices;
@@ -57,7 +54,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -94,7 +90,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
     RecyclerView rvDaftarHalte;
     ArrayList<HalteItem> ListHalte;
     HashMap HalteMarkers = new HashMap<>();
-    Posisi noBusMinPosisi = null;
+
     ProgressDialog dialog;
     Button btnCekHalte;
     Double currLat, currLng;
@@ -190,15 +186,13 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
             }
         });
         mMapView = (MapView) findViewById(R.id.map_monitor);
-//        dataMarker();
-
         if (mMapView != null) {
             mMapView.onCreate(null);
             mMapView.onResume();
             mMapView.getMapAsync(this);
         }
 
-//        getLocation();
+//        getBusSearah();
     }
 
 
@@ -285,6 +279,8 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
             hashMapMarker.remove(nomorBus);
         }
     }
+
+
 
     public boolean checkLocationPermission() {
         String permission = "android.permission.ACCESS_FINE_LOCATION";
@@ -396,6 +392,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
 
     public void getDurasi(final HalteItem halteItem, String jalurId){
 
+
         dialog.setMessage("Memuat Data . . .");
         dialog.show();
         listBusSearah = new ArrayList<>();
@@ -425,8 +422,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
 
                                             String noBuscek = child.getKey().toString();
                                             Posisi dataBus = new Posisi(location_lat,location_lng,noBuscek);
-                                            posisiBus.add(n,dataBus);
-                                            n++;
+                                            posisiBus.add(n++,dataBus);
 
                                             String posisiBusCek = location_lat + "," + location_lng;
                                             posisiDestination.add(posisiBusCek);
@@ -466,7 +462,9 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
             }
         });
 
+
     }
+
 
     static String convertToString(ArrayList<String> strings) {
         StringBuilder builder = new StringBuilder();
@@ -495,51 +493,54 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
     private void actionRoute(final String posisiHalte , String posisiBusCek, final ArrayList<Posisi> busPosisi) {
+
+        final Posisi[] noBusMinPosisi = {null};
         dialog.setMessage("Memuat Data . . .");
         dialog.show();
         Log.e("cekmarker", posisiBusCek);
+        Log.e("cekmarker", posisiHalte);
         Call<DistanceMatrix> call = distanceApi.getDistanceInfo(posisiBusCek, posisiHalte,"driving","now","true","AIzaSyDZ-N9it_JFpboG3R3LfxakMiAkUdF12bU");
         call.enqueue(new Callback<DistanceMatrix>() {
             @Override
             public void onResponse(Call<DistanceMatrix> call, Response<DistanceMatrix> response) {
                 DistanceMatrix data = response.body();
                 if(data.getRows().get(0).getElements().size() > 0){
-                    List<ElementsItem> row = data.getRows().get(0).getElements();
-                   int durasiMin=0, durasiInt=0;
+                    List<RowsItem> row = data.getRows();
+                    int durasiMin=0, durasiInt=0;
                     String durasi = null;
                     int n=0;
                     Log.e("durasi min", posisiHalte);
-                    for(ElementsItem item : row){
+                    for(RowsItem item : row){
                         if(n==0){
-                            durasiInt= item.getDurationInTraffic().getValue();
-                            durasi = item.getDurationInTraffic().getText();
-                            noBusMinPosisi = new Posisi(busPosisi.get(n).getLat(), busPosisi.get(n).getLng(),busPosisi.get(n).getNo_bus());
+                            durasiInt= item.getElements().get(0).getDurationInTraffic().getValue();
+                            durasi = item.getElements().get(0).getDurationInTraffic().getText();
+                            noBusMinPosisi[0] = new Posisi(busPosisi.get(n).getLat(), busPosisi.get(n).getLng(),busPosisi.get(n).getNo_bus());
                             durasiMin=durasiInt;
                             n++;
                         }else{
-                            durasiInt= item.getDurationInTraffic().getValue();
+                            durasiInt= item.getElements().get(0).getDurationInTraffic().getValue();
 
                             if(durasiInt  < durasiMin){
                                 durasiMin = durasiInt;
-                                durasi = item.getDurationInTraffic().getText();
-                                noBusMinPosisi = new Posisi(busPosisi.get(n).getLat(), busPosisi.get(n).getLng(),busPosisi.get(n).getNo_bus());
+                                durasi = item.getElements().get(0).getDurationInTraffic().getText();
+
+                                noBusMinPosisi[0] = new Posisi(busPosisi.get(n).getLat(), busPosisi.get(n).getLng(),busPosisi.get(n).getNo_bus());
                             }
                             n++;
                         }
                     }
-                    if(noBusMinPosisi != null){
+                    if(noBusMinPosisi[0] != null){
                         if(alertDialog != null){
                             alertDialog.dismiss();
                         }
                         dialog.dismiss();
-                        marker = (Marker) hashMapMarker.get(noBusMinPosisi.getNo_bus());
-                        Log.e("cekmarker", String.valueOf(hashMapMarker.get(noBusMinPosisi.getNo_bus())));
+                        marker = (Marker) hashMapMarker.get(noBusMinPosisi[0].getNo_bus());
                         if(marker != null){
                             marker.showInfoWindow();
                         }
-                        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(noBusMinPosisi.getLat(), noBusMinPosisi.getLng()), 16.0f));
+                        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(noBusMinPosisi[0].getLat(), noBusMinPosisi[0].getLng()), 16.0f));
 
-                        ShowDurasi(durasi, noBusMinPosisi.getNo_bus());
+                        ShowDurasi(durasi, noBusMinPosisi[0].getNo_bus());
                     }
                 }
 
@@ -626,28 +627,52 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
 
-    public void getDataAksi(DataSnapshot dataSnapshot){
-        LatLng point = null;
-        BitmapDrawable bitmapdraw= (BitmapDrawable) getResources().getDrawable(R.drawable.trans);
+    public void getDataAksi(final DataSnapshot dataSnapshot){
 
-        String lat = dataSnapshot.child("lat").getValue().toString();
-        String lng = dataSnapshot.child("lng").getValue().toString();
-        String nomorBus = dataSnapshot.getKey().toString();
+        final ArrayList<noBus> listBusJalur = new ArrayList<>();
+        Call<List<noBus>> call = client.getBusSearah(jalur.getJalurId());
+        call.enqueue(new Callback<List<noBus>>() {
+            @Override
+            public void onResponse(Call<List<noBus>> call, Response<List<noBus>> response) {
+                List<noBus> result = response.body();
+                listBusJalur.addAll(result);
 
-        double location_lat = Double.parseDouble(lat);
-        double location_lng = Double.parseDouble(lng);
-        point = new LatLng(location_lat, location_lng);
-        marker = (Marker) hashMapMarker.get(nomorBus);
-        if(marker != null){
-            marker.remove();
-            hashMapMarker.remove(nomorBus);
-        }
+                String nomorBus = dataSnapshot.getKey().toString();
+                Log.e("listBusSerah", String.valueOf(listBusJalur.contains(nomorBus)));
+                for (noBus item : listBusJalur){
+                    if(item.getNo_bus().equals(nomorBus)){
+                        LatLng point = null;
+                        BitmapDrawable bitmapdraw= (BitmapDrawable) getResources().getDrawable(R.drawable.trans);
 
-        marker = map.addMarker(new MarkerOptions()
-                .position(point)
-                .title(nomorBus)
-                .icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 60,120))));
-        hashMapMarker.put(nomorBus,marker);
+                        String lat = dataSnapshot.child("lat").getValue().toString();
+                        String lng = dataSnapshot.child("lng").getValue().toString();
+                        double location_lat = Double.parseDouble(lat);
+                        double location_lng = Double.parseDouble(lng);
+                        point = new LatLng(location_lat, location_lng);
+                        marker = (Marker) hashMapMarker.get(nomorBus);
+                        if(marker != null){
+                            marker.remove();
+                            hashMapMarker.remove(nomorBus);
+                        }
+
+                        marker = map.addMarker(new MarkerOptions()
+                                .position(point)
+                                .title(nomorBus)
+                                .icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 60,120))));
+                        hashMapMarker.put(nomorBus,marker);
+                    }
+                }
+
+
+            }
+
+            @Override
+            public void onFailure(Call<List<noBus>> call, Throwable t) {
+
+            }
+        });
+
+
     }
     public Boolean konekkah(){
         ConnectivityManager cm =
