@@ -38,6 +38,7 @@ import com.anie.dara.trackmonbus_supir.distanceMatrix.DistanceMatrix;
 import com.anie.dara.trackmonbus_supir.distanceMatrix.ElementsItem;
 import com.anie.dara.trackmonbus_supir.model.Halte;
 import com.anie.dara.trackmonbus_supir.model.Posisi;
+import com.anie.dara.trackmonbus_supir.model.Rit;
 import com.anie.dara.trackmonbus_supir.model.jadwal.JadwalDetail;
 import com.anie.dara.trackmonbus_supir.model.noBus;
 import com.anie.dara.trackmonbus_supir.rest.ApiClient;
@@ -78,7 +79,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
 
 
     JadwalDetail jadwal;
-    TextView NoBus, no_tnkb, kapasitas, namaHalte, namaSupir, namaTrayek, hari_tgl, namaPramugara;
+    TextView NoBus, no_tnkb, kapasitas, namaJalur, namaSupir, namaTrayek, hari_tgl, namaPramugara;
     Button btnCheck, btnDetail, btnUbah, btnSelesai;
     GoogleMap map;
     MapView mMapView;
@@ -121,7 +122,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
         NoBus = findViewById(R.id.NoBus);
         no_tnkb = findViewById(R.id.no_tnkb);
         kapasitas = findViewById(R.id.kapasitas);
-        namaHalte = findViewById(R.id.namaJalur);
+        namaJalur = findViewById(R.id.namaJalur);
         namaSupir = findViewById(R.id.namaSupir);
         hari_tgl = findViewById(R.id.tgl);
         namaTrayek = findViewById(R.id.namaTrayek2);
@@ -147,7 +148,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
             NoBus.setText(jadwal.getJadwal().getBuses().getNoBus());
             no_tnkb.setText(jadwal.getJadwal().getBuses().getNoTnkb());
             kapasitas.setText(Integer.toString(jadwal.getJadwal().getBuses().getKapasitas()));
-            namaHalte.setText(jadwal.getJadwal().getDetailTrayeks().getJalurs().getNamaJalur());
+            namaJalur.setText(jadwal.getJadwal().getDetailTrayeks().getJalurs().getNamaJalur());
             namaSupir.setText(jadwal.getUsers().getName() + " - "+ jadwal.getPramugaras().getNamaPramugara() );
             namaTrayek.setText(jadwal.getJadwal().getDetailTrayeks().getTrayeks().getTrayek());
             no_bus =jadwal.getJadwal().getBuses().getNoBus();
@@ -370,16 +371,17 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
     public void checkpoint(String no_bus, String tgl){
         if(konekkah()){
             client = ApiClient.getClient().create(dbClient.class);
-            Call<ResponseBody> call = client.updateRit(no_bus, tgl);
-            call.enqueue(new Callback<ResponseBody>() {
+            Call<Rit> call = client.updateRit(no_bus, tgl);
+            call.enqueue(new Callback<Rit>() {
                 @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    ResponseBody s = response.body();
+                public void onResponse(Call<Rit> call, Response<Rit> response) {
+                    Rit rit = response.body();
+                    namaJalur.setText(rit.getDetailTrayeks().getJalurs().getNamaJalur());
                     Toast.makeText(MonitoringPosisi.this, "Checkpoint berhasil disimpan", Toast.LENGTH_LONG).show();
                 }
 
                 @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                public void onFailure(Call<Rit> call, Throwable t) {
                     Toast.makeText(MonitoringPosisi.this, "Checkpoint gagal disimpan", Toast.LENGTH_LONG).show();
 
                 }

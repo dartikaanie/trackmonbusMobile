@@ -189,7 +189,7 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
             @Override
             public void onResponse(Call<JadwalDetail> call, Response<JadwalDetail> response) {
                 JadwalDetail jadwal = response.body();
-                Log.e("jadwal", String.valueOf(jadwal.getJadwal()));
+                Log.e("jadwal", String.valueOf(response.body()));
                 if(jadwal!=null){
                     cvChechkin.setVisibility(View.VISIBLE);
                     noBus.setText(jadwal.getJadwal().getNoBus());
@@ -217,6 +217,7 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
                 cvChechkin.setVisibility(View.INVISIBLE);
                 cvTidakJadwal.setVisibility(View.VISIBLE);
                 dialog.dismiss();
+                Log.e("errorJadwal", t.toString());
                 Toast.makeText(getContext()," Tidak ada Jadwal", Toast.LENGTH_SHORT).show();
             }
         });
@@ -522,7 +523,6 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
                 break;
 
             case R.id.cvTidakJadwal:
-
                 cekJadwalKerja();
                 dataMarker();
                 break;

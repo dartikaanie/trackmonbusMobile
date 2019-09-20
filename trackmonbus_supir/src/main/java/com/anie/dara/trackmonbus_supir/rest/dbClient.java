@@ -51,7 +51,7 @@ public interface dbClient {
 
     @FormUrlEncoded
     @POST("api/updateRit")
-    Call<ResponseBody> updateRit(
+    Call<Rit> updateRit(
             @Field("no_bus") String no_bus,
             @Field("tgl") String tgl
     );

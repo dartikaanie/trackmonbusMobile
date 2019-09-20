@@ -235,17 +235,17 @@ public class DetailTransActivity extends AppCompatActivity implements View.OnCli
     public void checkpoint(String no_bus, String tgl){
         if(konekkah()){
             client = ApiClient.getClient().create(dbClient.class);
-            Call<ResponseBody> call = client.updateRit(no_bus, tgl);
-            call.enqueue(new Callback<ResponseBody>() {
+            Call<Rit> call = client.updateRit(no_bus, tgl);
+            call.enqueue(new Callback<Rit>() {
                 @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    ResponseBody s = response.body();
-                    Log.e("update", String.valueOf(s));
+                public void onResponse(Call<Rit> call, Response<Rit> response) {
+                    Rit rit = response.body();
+                    namaJalur.setText(rit.getDetailTrayeks().getJalurs().getNamaJalur());
                     Toast.makeText(DetailTransActivity.this, "Checkpoint berhasil disimpan", Toast.LENGTH_LONG).show();
                 }
 
                 @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                public void onFailure(Call<Rit> call, Throwable t) {
                     Toast.makeText(DetailTransActivity.this, "Checkpoint gagal disimpan", Toast.LENGTH_LONG).show();
 
                 }

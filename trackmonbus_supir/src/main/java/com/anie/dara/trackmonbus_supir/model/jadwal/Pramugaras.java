@@ -9,10 +9,10 @@ import com.google.gson.annotations.SerializedName;
 
 public class Pramugaras implements Parcelable {
 
-	@SerializedName("pramugara_nik")
+	@SerializedName("user_id")
 	private String pramugaraNik;
 
-	@SerializedName("nama_pramugara")
+	@SerializedName("name")
 	private String namaPramugara;
 
 	protected Pramugaras(Parcel in) {
@@ -52,7 +52,7 @@ public class Pramugaras implements Parcelable {
  	public String toString(){
 		return 
 			"Pramugaras{" + 
-			"pramugara_nik = '" + pramugaraNik + '\'' + 
+			"user_id = '" + pramugaraNik + '\'' +
 			",nama_pramugara = '" + namaPramugara + '\'' + 
 			"}";
 		}

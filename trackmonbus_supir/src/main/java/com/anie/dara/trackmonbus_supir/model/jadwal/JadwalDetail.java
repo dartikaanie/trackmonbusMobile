@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class JadwalDetail implements Parcelable {
 
-	@SerializedName("pramugara_nik")
+	@SerializedName("user_id_pramugara")
 	private String pramugaraNik;
 
 	@SerializedName("user_id_supir")
@@ -30,7 +30,7 @@ public class JadwalDetail implements Parcelable {
 	@SerializedName("shifts")
 	private Shifts shifts;
 
-	@SerializedName("users")
+	@SerializedName("supirs")
 	private Users users;
 
 	@SerializedName("no_bus")
