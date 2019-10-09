@@ -34,4 +34,12 @@ public class Posisi {
     public void setLng(Double lng) {
         this.lng = lng;
     }
+
+    @Override
+    public String toString(){
+        return
+                "Bus{" +
+                        "noBus = '" + no_bus +  "}";
+    }
+
 }
