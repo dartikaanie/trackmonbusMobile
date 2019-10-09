@@ -217,7 +217,6 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
                     .icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 60, 120))));
             hashMapMarker.put(nomorBus, markerBus);
 
-            Log.e("noBus", nomorBus);
         }
     }
 
@@ -400,7 +399,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
         }
         final String posisiHalteUtama = String.valueOf(halteUtama.getLat()) + "," + String.valueOf(halteUtama.getLng());
 
-        Call<DistanceMatrix> call = distanceApi.getDistanceInfo(posisiHalte, posisiHalteUtama,"driving","now","true","AIzaSyDZ-N9it_JFpboG3R3LfxakMiAkUdF12bU");
+        Call<DistanceMatrix> call = distanceApi.getDistanceInfo(posisiHalteUtama,posisiHalte,"driving","now","true","AIzaSyDZ-N9it_JFpboG3R3LfxakMiAkUdF12bU");
         call.enqueue(new Callback<DistanceMatrix>() {
             @Override
             public void onResponse(Call<DistanceMatrix> call, Response<DistanceMatrix> response) {
@@ -508,17 +507,17 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
         final Posisi[] noBusMinPosisi = {null};
         final ArrayList<String> posisiBusFinal = new ArrayList<>();
         final ArrayList<Posisi> DataBus = new ArrayList<>();
-        Call<DistanceMatrix> call = distanceApi.getDistanceInfo(posisiBusCek, posisiHalteUtama,"driving","now","true","AIzaSyDZ-N9it_JFpboG3R3LfxakMiAkUdF12bU");
+        Call<DistanceMatrix> call = distanceApi.getDistanceInfo(posisiHalteUtama,posisiBusCek,"driving","now","true","AIzaSyDZ-N9it_JFpboG3R3LfxakMiAkUdF12bU");
         call.enqueue(new Callback<DistanceMatrix>() {
             @Override
             public void onResponse(Call<DistanceMatrix> call, Response<DistanceMatrix> response) {
                 DistanceMatrix data = response.body();
                 if (data.getRows().size() > 0) {
 //                    Log.e("data", data.getRows().toString());
-                    List<RowsItem> row = data.getRows();
+                    List<ElementsItem> row = data.getRows().get(0).getElements();
                     int n=0, m=0;
-                    for (RowsItem item : row) {
-                         if (jarakHalteUtama > item.getElements().get(0).getDistance().getValue()) {
+                    for (ElementsItem item : row) {
+                        if (jarakHalteUtama > item.getDistance().getValue()) {
                             Posisi dataBus= new Posisi(busPosisi.get(n).getLat(), busPosisi.get(n).getLng(), busPosisi.get(n).getNo_bus());
                             String posisiBusCek = busPosisi.get(n).getLat() + "," +  busPosisi.get(n).getLng();
                             DataBus.add(m++,dataBus);
@@ -527,7 +526,12 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
                         n++;
                     }
                 }
-                actionRoute(posisiHalte, convertToString(posisiBusFinal),DataBus);
+                if(posisiBusFinal.size()>0){
+                    actionRoute(posisiHalte, convertToString(posisiBusFinal),DataBus);
+                }else{
+                    showAlert("Belum ada bus yang berkendara ke halte ini");
+                }
+
 
             }
 
@@ -550,6 +554,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
     public void showAlert(String msg){
+        alertDialog.dismiss();
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(LokasiActivity.this);
         alertDialogBuilder
                 .setMessage(msg)
@@ -570,8 +575,6 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
         final Posisi[] noBusMinPosisi = {null};
         dialog.setMessage("Memuat Data . . .");
         dialog.show();
-        Log.e("bus", busPosisi.toString());
-//        Log.e("cekmarker", posisiHalte);
         Call<DistanceMatrix> call = distanceApi.getDistanceInfo(posisiBusCek, posisiHalte,"driving","now","true","AIzaSyDZ-N9it_JFpboG3R3LfxakMiAkUdF12bU");
         call.enqueue(new Callback<DistanceMatrix>() {
             @Override
@@ -584,12 +587,12 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
                     int n=0;
                     for(RowsItem item : row){
                         if (n == 0) {
-                            durasiInt = item.getElements().get(0).getDurationInTraffic().getValue();
+                            durasiInt = item.getElements().get(0).getDuration().getValue();
                             durasi = item.getElements().get(0).getDurationInTraffic().getText();
                             noBusMinPosisi[0] = new Posisi(busPosisi.get(n).getLat(), busPosisi.get(n).getLng(), busPosisi.get(n).getNo_bus());
                             durasiMin = durasiInt;
                         } else {
-                            durasiInt = item.getElements().get(0).getDurationInTraffic().getValue();
+                            durasiInt = item.getElements().get(0).getDuration().getValue();
 
                             if (durasiInt < durasiMin) {
                                 durasiMin = durasiInt;
@@ -665,7 +668,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(LokasiActivity.this);
         alertDialogBuilder
-                .setMessage("Waktu tunggu kedatangan bus : " + durasi)
+                .setMessage("Waktu tunggu kedatangan bus : +- " + durasi)
                 .setIcon(R.mipmap.ic_launcher)
                 .setCancelable(false)
                 .setNeutralButton("Ok", new DialogInterface.OnClickListener() {
@@ -681,11 +684,12 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
         dialog.show();
 
         Tvdurasi.setText(durasi);
+        if(konekkah()){
         Call<Bus> call = client.getDataBus(noBus);
         call.enqueue(new Callback<Bus>() {
             @Override
             public void onResponse(Call<Bus> call, Response<Bus> response) {
-                if(konekkah()){
+
                     Bus dataBus = response.body();
                     if(dataBus != null) {
                         no_bus.setText(dataBus.getNo_bus());
@@ -695,18 +699,16 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
                     }else{
                         Toast.makeText(LokasiActivity.this, "Maaf Ada kesalahan", Toast.LENGTH_SHORT).show();
                     }
-                }else{
-                    Snackbar snackbar = Snackbar.make(coordinatorLayout, "Aktifkan Jaringan Internet Anda", Snackbar.LENGTH_LONG);
-                    snackbar.show();
                 }
-
-            }
 
             @Override
             public void onFailure(Call<Bus> call, Throwable t) {
                Log.e("error get data bus", t.toString());
             }
         });
+       } else{
+            Toast.makeText(LokasiActivity.this, "Aktifkan Internet Anda", Toast.LENGTH_SHORT).show();
+        }
 
         dialog.dismiss();
     }
@@ -723,7 +725,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
                 listBusJalur.addAll(result);
 
                 String nomorBus = dataSnapshot.getKey().toString();
-                Log.e("listBusSerah", String.valueOf(listBusJalur));
+
                 for (noBus item : listBusJalur){
                     if(item.getNo_bus().equals(nomorBus)){
                         LatLng point = null;
