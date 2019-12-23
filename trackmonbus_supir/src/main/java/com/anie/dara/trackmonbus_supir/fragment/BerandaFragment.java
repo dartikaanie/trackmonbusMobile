@@ -199,7 +199,6 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
                     namaTrayek.setText(jadwal.getJadwal().getDetailTrayeks().getTrayeks().getTrayek());
                     km_awal = Double.valueOf(jadwal.getJadwal().getKmAwal());
                     namaSupir.setText(jadwal.getUsers().getName() + " - "+ jadwal.getPramugaras().getNamaPramugara());
-
                     jadwalSupir = jadwal;
                     cvTidakJadwal.setVisibility(View.INVISIBLE);
 
@@ -565,7 +564,7 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
             latitude = loclistener.latitude;
             longitude = loclistener.longitude;
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude,longitude), 16.0f));
-            Toast.makeText(getContext().getApplicationContext(), latitude.toString(), Toast.LENGTH_LONG).show();
+//            Toast.makeText(getContext().getApplicationContext(), latitude.toString(), Toast.LENGTH_LONG).show();
             if (latitude == 0.0) {
                 Toast.makeText(getContext().getApplicationContext(), "Currently gps has not found your location....", Toast.LENGTH_LONG).show();
             }

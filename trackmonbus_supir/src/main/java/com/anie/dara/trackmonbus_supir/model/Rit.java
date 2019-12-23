@@ -18,7 +18,7 @@ public class Rit{
 	private DetailTrayeks detailTrayeks;
 
 	@SerializedName("waktu_datang")
-	private Object waktuDatang;
+	private String waktuDatang;
 
 	@SerializedName("trayek_id")
 	private String trayekId;
@@ -61,11 +61,11 @@ public class Rit{
 		return detailTrayeks;
 	}
 
-	public void setWaktuDatang(Object waktuDatang){
+	public void setWaktuDatang(String waktuDatang){
 		this.waktuDatang = waktuDatang;
 	}
 
-	public Object getWaktuDatang(){
+	public String getWaktuDatang(){
 		return waktuDatang;
 	}
 

@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName;
 public class Trayeks implements Parcelable {
 
 	@SerializedName("km_rit")
-	private int kmRit;
+	private String kmRit;
 
 	@SerializedName("trayek")
 	private String trayek;
@@ -18,7 +18,7 @@ public class Trayeks implements Parcelable {
 	private String trayekId;
 
 	protected Trayeks(Parcel in) {
-		kmRit = in.readInt();
+		kmRit = in.readString();
 		trayek = in.readString();
 		trayekId = in.readString();
 	}
@@ -35,11 +35,11 @@ public class Trayeks implements Parcelable {
 		}
 	};
 
-	public void setKmRit(int kmRit){
+	public void setKmRit(String kmRit){
 		this.kmRit = kmRit;
 	}
 
-	public int getKmRit(){
+	public String getKmRit(){
 		return kmRit;
 	}
 
@@ -76,7 +76,7 @@ public class Trayeks implements Parcelable {
 
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
-		dest.writeInt(kmRit);
+		dest.writeString(kmRit);
 		dest.writeString(trayek);
 		dest.writeString(trayekId);
 	}

@@ -376,6 +376,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                 @Override
                 public void onResponse(Call<Rit> call, Response<Rit> response) {
                     Rit rit = response.body();
+                    Log.e("rit", response.body().toString());
                     namaJalur.setText(rit.getDetailTrayeks().getJalurs().getNamaJalur());
                     Toast.makeText(MonitoringPosisi.this, "Checkpoint berhasil disimpan", Toast.LENGTH_LONG).show();
                 }
@@ -430,7 +431,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                         @Override
                         public void onResponse(Call<List<noBus>> call, Response<List<noBus>> response) {
                             List<noBus> result = response.body();
-                            if(result.size() > 0){
+                            if(result != null){
                                 for(noBus item : result){
                                     listBusSearah.add(new noBus(item.getNo_bus()));
                                     Log.e("listBus cek item", listBusSearah.toString());

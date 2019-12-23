@@ -159,24 +159,24 @@ public class DetailTransActivity extends AppCompatActivity implements View.OnCli
         call.enqueue(new Callback<JadwalDetail>() {
             @Override
             public void onResponse(Call<JadwalDetail> call, Response<JadwalDetail> response) {
-                JadwalDetail jadwal = response.body();
-                Log.e("jadwal", String.valueOf(jadwal.getJadwal()));
-                if(jadwal!=null){
-                    NoBus.setText(jadwal.getJadwal().getBuses().getNoBus());
-                    no_tnkb.setText(jadwal.getJadwal().getBuses().getNoTnkb());
-                    kapasitas.setText(Integer.toString(jadwal.getJadwal().getBuses().getKapasitas()));
-                    namaJalur.setText(jadwal.getJadwal().getDetailTrayeks().getJalurs().getNamaJalur());
-                    namaSupir.setText(jadwal.getUsers().getName() + " - "+ jadwal.getPramugaras().getNamaPramugara() );
-                    namaTrayek.setText(jadwal.getJadwal().getDetailTrayeks().getTrayeks().getTrayek());
-                    no_bus =jadwal.getJadwal().getBuses().getNoBus();
+                JadwalDetail getJadwal = response.body();
+                if(getJadwal!=null){
+                    NoBus.setText(getJadwal.getJadwal().getBuses().getNoBus());
+                    no_tnkb.setText(getJadwal.getJadwal().getBuses().getNoTnkb());
+                    kapasitas.setText(Integer.toString(getJadwal.getJadwal().getBuses().getKapasitas()));
+                    namaJalur.setText(getJadwal.getJadwal().getDetailTrayeks().getJalurs().getNamaJalur());
+                    namaSupir.setText(getJadwal.getUsers().getName() + " - "+ getJadwal.getPramugaras().getNamaPramugara() );
+                    namaTrayek.setText(getJadwal.getJadwal().getDetailTrayeks().getTrayeks().getTrayek());
+                    no_bus =getJadwal.getJadwal().getBuses().getNoBus();
 
-                    hari_tgl.setText(substring(jadwal.getTgl(),0,10));
-                    km_akhir.setText(Float.toString(jadwal.getJadwal().getKmAkhir()));
-                    km_awal.setText(Float.toString(jadwal.getJadwal().getKmAwal()));
-                    keterangan.setText(jadwal.getJadwal().getKeterangan());
+                    hari_tgl.setText(substring(getJadwal.getTgl(),0,10));
+                    km_akhir.setText(Float.toString(getJadwal.getJadwal().getKmAkhir()));
+                    km_awal.setText(Float.toString(getJadwal.getJadwal().getKmAwal()));
+                    keterangan.setText(getJadwal.getJadwal().getKeterangan());
 
-                    no_bus =jadwal.getJadwal().getBuses().getNoBus();
-                    tgl = jadwal.getTgl();
+                    no_bus =getJadwal.getJadwal().getBuses().getNoBus();
+                    tgl = getJadwal.getTgl();
+                    jadwal = getJadwal;
                 }
                 dialog.dismiss();
             }

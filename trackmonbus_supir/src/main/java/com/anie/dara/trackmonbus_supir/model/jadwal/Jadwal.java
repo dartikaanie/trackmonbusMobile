@@ -11,7 +11,7 @@ public class Jadwal implements Parcelable {
 	@SerializedName("jalur_awal_id")
 	private String jalurAwalId;
 
-	@SerializedName("km_akhir")
+		@SerializedName("km_akhir")
 	private float kmAkhir;
 
 	@SerializedName("keterangan")

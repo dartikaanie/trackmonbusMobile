@@ -131,8 +131,7 @@ public class JadwalFragment extends Fragment {
                 public void onResponse(Call<List<JadwalDetail>> call, Response<List<JadwalDetail>> response) {
                     rvDaftarJadwal.setVisibility(View.VISIBLE);
                     List<JadwalDetail> listItem = response.body();
-
-                    Toast.makeText(getContext() , "Jadwal berhasil diload", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getContext() , "Jadwal berhasil diload", Toast.LENGTH_SHORT).show();
                     jadwalAdapter.setData(new ArrayList<JadwalDetail>(listItem));
                     dialog.dismiss();
                 }
