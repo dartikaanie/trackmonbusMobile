@@ -189,7 +189,6 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
             @Override
             public void onResponse(Call<JadwalDetail> call, Response<JadwalDetail> response) {
                 JadwalDetail jadwal = response.body();
-                Log.e("jadwal", String.valueOf(response.body()));
                 if(jadwal!=null){
                     cvChechkin.setVisibility(View.VISIBLE);
                     noBus.setText(jadwal.getJadwal().getNoBus());
@@ -216,8 +215,11 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
                 cvChechkin.setVisibility(View.INVISIBLE);
                 cvTidakJadwal.setVisibility(View.VISIBLE);
                 dialog.dismiss();
+
+                waiting.setVisibility(View.INVISIBLE);
+                load.setVisibility(View.INVISIBLE);
                 Log.e("errorJadwal", t.toString());
-                Toast.makeText(getContext()," Tidak ada Jadwal", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext()," Ada Kesalahan", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -314,16 +316,21 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
 
             }
         });
+        try{
+            locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+            if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+                buildAlertMessageNoGPS();
+            }
+            else
+            {  getLocation();
+                getCurrentlocation();
 
-        locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
-        if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-            buildAlertMessageNoGPS();
+            }
+        }catch(Exception $ex){
+            Toast.makeText(getContext()," Ada Kesalahan", Toast.LENGTH_SHORT).show();
         }
-        else
-        {  getLocation();
-            getCurrentlocation();
 
-        }
+
 
         dataMarker();
         load.setText("Memuat Data");
@@ -425,7 +432,7 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
 
                 @Override
                 public void onFailure(Call<List<Halte>> call, Throwable t) {
-                    Toast.makeText(getContext() , t.toString(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext() ,"Ada Kesalahan", Toast.LENGTH_SHORT).show();
 
                 }
             });

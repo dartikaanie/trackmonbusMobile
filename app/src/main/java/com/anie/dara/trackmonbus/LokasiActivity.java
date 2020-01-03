@@ -554,7 +554,9 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
     public void showAlert(String msg){
-        alertDialog.dismiss();
+        if(alertDialog!=null){
+            alertDialog.dismiss();
+        }
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(LokasiActivity.this);
         alertDialogBuilder
                 .setMessage(msg)

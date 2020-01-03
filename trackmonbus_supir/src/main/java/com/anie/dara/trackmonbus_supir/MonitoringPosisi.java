@@ -637,18 +637,20 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
 
     @Override
     public void onClick(View v) {
+        JadwalDetail jadwalSupir =   getIntent().getExtras().getParcelable("jadwal");
         switch(v.getId()){
             case R.id.btnCheckpoint:
                 checkpoint(no_bus, tgl);
                 break;
             case R.id.btnDetail:
+
                 Intent intent =  new Intent(MonitoringPosisi.this, DetailTransActivity.class);
-                intent.putExtra("jadwal", jadwal);
+                intent.putExtra("jadwal", jadwalSupir);
                 startActivity(intent);
                 break;
             case R.id.btnUbah:
                 Intent intentUbah =  new Intent(MonitoringPosisi.this, UbahTransActivity.class);
-                intentUbah.putExtra("jadwal", jadwal);
+                intentUbah.putExtra("jadwal", jadwalSupir);
                 startActivity(intentUbah);
                 break;
             case R.id.btn_selesai:

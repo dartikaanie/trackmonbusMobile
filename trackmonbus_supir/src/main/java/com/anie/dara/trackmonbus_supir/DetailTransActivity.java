@@ -92,7 +92,7 @@ public class DetailTransActivity extends AppCompatActivity implements View.OnCli
             no_tnkb.setText(jadwal.getJadwal().getBuses().getNoTnkb());
             kapasitas.setText(Integer.toString(jadwal.getJadwal().getBuses().getKapasitas()));
             namaJalur.setText(jadwal.getJadwal().getDetailTrayeks().getJalurs().getNamaJalur());
-            namaSupir.setText(jadwal.getUsers().getName() + " - "+ jadwal.getPramugaras().getNamaPramugara() );
+//            namaSupir.setText(jadwal.getUsers().getName() + " - "+ jadwal.getPramugaras().getNamaPramugara() );
             namaTrayek.setText(jadwal.getJadwal().getDetailTrayeks().getTrayeks().getTrayek());
             no_bus =jadwal.getJadwal().getBuses().getNoBus();
 
@@ -165,7 +165,7 @@ public class DetailTransActivity extends AppCompatActivity implements View.OnCli
                     no_tnkb.setText(getJadwal.getJadwal().getBuses().getNoTnkb());
                     kapasitas.setText(Integer.toString(getJadwal.getJadwal().getBuses().getKapasitas()));
                     namaJalur.setText(getJadwal.getJadwal().getDetailTrayeks().getJalurs().getNamaJalur());
-                    namaSupir.setText(getJadwal.getUsers().getName() + " - "+ getJadwal.getPramugaras().getNamaPramugara() );
+//                    namaSupir.setText(getJadwal.getUsers().getName() + " - "+ getJadwal.getPramugaras().getNamaPramugara() );
                     namaTrayek.setText(getJadwal.getJadwal().getDetailTrayeks().getTrayeks().getTrayek());
                     no_bus =getJadwal.getJadwal().getBuses().getNoBus();
 

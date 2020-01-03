@@ -123,6 +123,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<User> call, Throwable t) {
                 dialog.dismiss();
+                Log.e("error Login", t.toString());
                 Toast.makeText(LoginActivity.this,"Error. Ulangi lagi", Toast.LENGTH_SHORT).show();
             }
         });
