@@ -272,27 +272,30 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
 
     public void getDataAksi(DataSnapshot dataSnapshot){
         LatLng point = null;
+        Log.e("datasnap", dataSnapshot.getKey());
         BitmapDrawable bitmapdraw= (BitmapDrawable) ((MainActivity)activity).getResources().getDrawable(R.drawable.trans);
+        for(DataSnapshot data : dataSnapshot.getChildren()){
+            if(!data.getKey().equals("status")) {
+                String lat = data.child("lat").getValue().toString();
+                String lng = data.child("lng").getValue().toString();
+                String nomorBus = dataSnapshot.getKey().toString();
 
-        String lat = dataSnapshot.child("lat").getValue().toString();
-        String lng = dataSnapshot.child("lng").getValue().toString();
-        String nomorBus = dataSnapshot.getKey().toString();
-
-        double location_lat = Double.parseDouble(lat);
-        double location_lng = Double.parseDouble(lng);
-        point = new LatLng(location_lat, location_lng);
-        marker = (Marker) hashMapMarker.get(nomorBus);
-        if(marker != null){
-            marker.remove();
-            hashMapMarker.remove(nomorBus);
-        }
-
-        if(map != null){
-            marker = map.addMarker(new MarkerOptions()
-                    .position(point)
-                    .title(nomorBus)
-                    .icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 60,120))));
-            hashMapMarker.put(nomorBus,marker);
+                double location_lat = Double.parseDouble(lat);
+                double location_lng = Double.parseDouble(lng);
+                point = new LatLng(location_lat, location_lng);
+                marker = (Marker) hashMapMarker.get(nomorBus);
+                if (marker != null) {
+                    marker.remove();
+                    hashMapMarker.remove(nomorBus);
+                }
+                if (map != null) {
+                    marker = map.addMarker(new MarkerOptions()
+                            .position(point)
+                            .title(nomorBus)
+                            .icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 60, 120))));
+                    hashMapMarker.put(nomorBus, marker);
+                }
+            }
         }
 
     }
@@ -342,22 +345,33 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
 
         LatLng posisi = null;
         BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.trans);
+        for (DataSnapshot noBus : dataSnapshot.getChildren()) {
+                for (DataSnapshot child : noBus.getChildren()) {
+                    if(!child.getKey().equals("status")) {
+                        Log.e("daaChange", String.valueOf(child.getValue()));
+                        String lat = child.child("lat").getValue().toString();
+                        String lng = child.child("lng").getValue().toString();
+                        String nomorBus = noBus.getKey().toString();
 
-        for (DataSnapshot child : dataSnapshot.getChildren()) {
+                        double location_lat = Double.parseDouble(lat);
+                        double location_lng = Double.parseDouble(lng);
+                        posisi = new LatLng(location_lat, location_lng);
 
-            String lat = child.child("lat").getValue().toString();
-            String lng = child.child("lng").getValue().toString();
-            String nomorBus = child.getKey().toString();
+                        marker = (Marker) hashMapMarker.get(nomorBus);
+                        if (marker != null) {
+                            marker.remove();
+                            hashMapMarker.remove(nomorBus);
+                        }
+                        if (map != null) {
+                            marker = map.addMarker(new MarkerOptions()
+                                    .position(posisi)
+                                    .title(nomorBus)
+                                    .icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 60, 120))));
+                            hashMapMarker.put(nomorBus, marker);
+                        }
+                    }
+                }
 
-            double location_lat = Double.parseDouble(lat);
-            double location_lng = Double.parseDouble(lng);
-            posisi = new LatLng(location_lat, location_lng);
-
-            marker = map.addMarker(new MarkerOptions()
-                    .position(posisi)
-                    .title(nomorBus)
-                    .icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 60,120))));
-            hashMapMarker.put(nomorBus,marker);
         }
     }
 
