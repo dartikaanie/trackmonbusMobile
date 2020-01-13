@@ -274,8 +274,7 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
         LatLng point = null;
         Log.e("datasnap", dataSnapshot.getKey());
         BitmapDrawable bitmapdraw= (BitmapDrawable) ((MainActivity)activity).getResources().getDrawable(R.drawable.trans);
-        for(DataSnapshot data : dataSnapshot.getChildren()){
-            if(!data.getKey().equals("status")) {
+        for(DataSnapshot data : dataSnapshot.child("log").getChildren()){
                 String lat = data.child("lat").getValue().toString();
                 String lng = data.child("lng").getValue().toString();
                 String nomorBus = dataSnapshot.getKey().toString();
@@ -295,7 +294,6 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
                             .icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 60, 120))));
                     hashMapMarker.put(nomorBus, marker);
                 }
-            }
         }
 
     }
@@ -346,7 +344,7 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
         LatLng posisi = null;
         BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.trans);
         for (DataSnapshot noBus : dataSnapshot.getChildren()) {
-                for (DataSnapshot child : noBus.getChildren()) {
+                for (DataSnapshot child : noBus.child("log").getChildren()) {
                     if(!child.getKey().equals("status")) {
                         Log.e("daaChange", String.valueOf(child.getValue()));
                         String lat = child.child("lat").getValue().toString();

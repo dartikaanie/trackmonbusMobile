@@ -9,14 +9,14 @@ import com.google.gson.annotations.SerializedName;
 
 public class JadwalDetail implements Parcelable {
 
-	@SerializedName("user_id_pramugara")
-	private String pramugaraNik;
-
 	@SerializedName("user_id_supir")
 	private String userIdSupir;
 
 	@SerializedName("jadwal")
 	private Jadwal jadwal;
+
+	@SerializedName("user_id_pramugara")
+	private String pramugaraNik;
 
 	@SerializedName("shift_id")
 	private String shiftId;

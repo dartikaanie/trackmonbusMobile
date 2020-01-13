@@ -3,7 +3,9 @@ package com.anie.dara.trackmonbus_supir;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -17,11 +19,14 @@ import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -34,6 +39,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.anie.dara.trackmonbus_supir.alarm.AlarmBroadcastReceiver;
+import com.anie.dara.trackmonbus_supir.alarm.AlarmService;
 import com.anie.dara.trackmonbus_supir.distanceMatrix.DistanceMatrix;
 import com.anie.dara.trackmonbus_supir.distanceMatrix.ElementsItem;
 import com.anie.dara.trackmonbus_supir.model.Halte;
@@ -52,6 +59,7 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.ChildEventListener;
@@ -64,19 +72,23 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import okhttp3.ResponseBody;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
 
 import static android.text.TextUtils.substring;
 
 public class MonitoringPosisi extends AppCompatActivity implements  View.OnClickListener, OnMapReadyCallback {
 
+    private AlarmManager alarmMgr;
+    private PendingIntent alarmIntent;
 
     JadwalDetail jadwal;
     TextView NoBus, no_tnkb, kapasitas, namaJalur, namaSupir, namaTrayek, hari_tgl, namaPramugara;
@@ -99,6 +111,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
     private SQLiteDatabaseHandler db;
 
     private Handler handler = new Handler();
+    private int mInterval = 1000;
     public boolean running = true;
     Toolbar toolbar;
     ImageView toolbarTitle;
@@ -156,6 +169,20 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
             hari_tgl.setText(substring(jadwal.getTgl(),0,10));
         }
 
+//        Intent ii = new Intent(getApplicationContext(), AlarmService.class);
+//        PendingIntent pii = PendingIntent.getService(getApplicationContext(), 2222, ii, PendingIntent.FLAG_CANCEL_CURRENT);
+//        Calendar cal = Calendar.getInstance();
+//        Date tgl = new Date();
+//        DateFormat dateFormat2 = new SimpleDateFormat("ss");
+//        String time =  dateFormat2.format(tgl);
+//        Log.e("datetime Now", String.valueOf(cal.getTime()));
+
+////        cal.add(Calendar.SECOND, 1);
+//        Log.e("log alarm", "set Alarm" + cal.getTime());
+//        AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+//        am.setInexactRepeating(AlarmManager.RTC,cal.getTimeInMillis(), 1000 * 5,pii);
+
+
         mMapView = (MapView) findViewById(R.id.map_monitor);
 //        dataMarker();
 
@@ -165,9 +192,22 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
             mMapView.getMapAsync(this);
         }
 
-        handler.postDelayed(runTrack, 5000);
+        Date tgl = new Date();
+        DateFormat detik = new SimpleDateFormat("ss");
+        DateFormat miliDetik = new SimpleDateFormat("SSS");
+        String time =  detik.format(tgl);
+        int mili =  Integer.valueOf(miliDetik.format(tgl));
+        int detikSekarang = Integer.valueOf(time);
+        if( detikSekarang%10 != 0){
+            mInterval = (10 - detikSekarang%10)*1000;
+        }else{
+            mInterval =0;
+        }
+        handler.postDelayed(runTrack, mInterval);
         mDatabase.child(no_bus).child("status").setValue(0);
         getLocation();
+
+
     }
 
     public void getDataPosisiBus(DataSnapshot dataSnapshot){
@@ -204,11 +244,12 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
     @Override
     public void onMapReady(GoogleMap googleMap) {
         MapsInitializer.initialize(this);
+       googleMap.setMapStyle(new MapStyleOptions(getResources()
+                .getString(R.string.style_json)));
         map = googleMap;
         List<Halte> listHalte = db.allHaltes();
 
         if (listHalte != null) {
-            Log.e("data db halte", listHalte.toString());
                 initMarker(listHalte);
         }else{
             getAllHalte();
@@ -261,8 +302,8 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
         }else{
              bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.trans);
         }
-         for (DataSnapshot data : dataSnapshot.getChildren()) {
-             if(!data.getKey().equals("status")) {
+         for (DataSnapshot data : dataSnapshot.child("log").getChildren()) {
+//             if(!data.getKey().equals("status")) {
                 String lat = data.child("lat").getValue().toString();
                 String lng = data.child("lng").getValue().toString();
                 String nomorBus = dataSnapshot.getKey().toString();
@@ -282,7 +323,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                             .icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 60, 120))));
                     hashMapMarker.put(nomorBus, marker);
                 }
-            }
+//            }
 
         }
     }
@@ -381,7 +422,6 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                 @Override
                 public void onResponse(Call<Rit> call, Response<Rit> response) {
                     Rit rit = response.body();
-                    Log.e("rit", response.body().toString());
                     namaJalur.setText(rit.getDetailTrayeks().getJalurs().getNamaJalur());
                     Toast.makeText(MonitoringPosisi.this, "Checkpoint berhasil disimpan", Toast.LENGTH_LONG).show();
                 }
@@ -409,11 +449,25 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                 }
                 else
                 {
-                    getCurrentPosisi();
-                    getJarak(currentPosisi, currentLocation);
-                }
+                    Date tgl = new Date();
+                    DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+                    String time =  dateFormat.format(tgl);
+                    DateFormat detik = new SimpleDateFormat("ss");
 
-                handler.postDelayed(this, 10000);
+                    int detikSekarang = Integer.valueOf(detik.format(tgl));
+                    if( detikSekarang%10 != 0){
+                        mInterval = (10 - detikSekarang%10)*1000;
+                        time = time.substring(0,1) +"0";
+
+                    }else{
+                        mInterval =0;
+                    }
+                    getCurrentPosisi();
+                    getJarak(currentPosisi, currentLocation, time);
+                }
+                Log.e("interval", String.valueOf(mInterval));
+
+                handler.postDelayed(this, mInterval);
             }
         }
     };
@@ -428,7 +482,6 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
             @Override
             public void onResponse(Call<String> call2, Response<String> response) {
                 String jalurGet = response.body();
-                Log.e("cek cekJrak", jalurGet.toString());
                 if(jalurGet != null){
                     listBusSearah = new ArrayList<>();
                     Call<List<noBus>> call = client.getBusSearah(jalurGet);
@@ -444,16 +497,17 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                             ArrayList<String> posisiDestination = new ArrayList<>();
                                             ArrayList<Posisi> posisiBus = new ArrayList<>();
-                                            Log.e("datasnap in jarak", String.valueOf(dataSnapshot.getValue()));
                                             String posisi1 = lokasiBus.getLatitude() + "," + lokasiBus.getLongitude();
                                             int n=0;
                                             for (DataSnapshot datachild : dataSnapshot.getChildren()) {
                                                 for(noBus busSearah : listBusSearah){
-                                                    if(datachild.getKey().equals(busSearah.getNo_bus()) && (!datachild.getKey().equals(no_bus))) {
-                                                        for (DataSnapshot child : datachild.getChildren()) {
-                                                            double location_lat = Double.parseDouble(child.child("lat").getValue().toString());
-                                                            double location_lng = Double.parseDouble(child.child("lng").getValue().toString());
-
+                                                    if(datachild.getKey().equals(busSearah.getNo_bus()) && (!datachild.getKey().equals(no_bus)) && (datachild.child("status").getValue().toString().equals(0))) {
+                                                        double location_lat = 0, location_lng = 0;
+                                                        for (DataSnapshot child : datachild.child("log").getChildren()) {
+                                                            location_lat = Double.parseDouble(child.child("lat").getValue().toString());
+                                                            location_lng = Double.parseDouble(child.child("lng").getValue().toString());
+                                                        }
+                                                        if((location_lat!=0) && (location_lng!=0) ) {
                                                             String no_bus2 = datachild.getKey().toString();
                                                             Posisi dataBus = new Posisi(location_lat, location_lng, no_bus2);
                                                             posisiBus.add(n, dataBus);
@@ -467,10 +521,8 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                                                     }
                                                 }
                                             }
-                                            Log.e("posisiDestination",posisiDestination.toString());
-                                            if(posisiDestination.size()>0){
-                                                Log.e("posisiString",convertToString(posisiDestination));
-                                                if(alertDialog != null){
+                                           if(posisiDestination.size()>0){
+                                               if(alertDialog != null){
                                                     alertDialog.dismiss();
                                                 }
                                                 actionRoute(posisi1, convertToString(posisiDestination),posisiBus );
@@ -568,7 +620,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
         }
         else {
             Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            Log.e("currentPosisi", String.valueOf(location.getLatitude()+ " - "+ location.getLongitude()));
+//            Log.e("currentPosisi", String.valueOf(location.getLatitude()+ " - "+ location.getLongitude()));
             if (location != null) {
                 Double lat = location.getLatitude();
                 Double lng = location.getLongitude();
@@ -580,21 +632,13 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
 
     }
 
-    public void getJarak(Posisi posisi, Location location){
+    public void getJarak(Posisi posisi, Location location, String time){
         if(posisi == null){
             Toast.makeText(MonitoringPosisi.this,"Ada KESALAHAN. LOKASINYA TIDAK TAMPIL", Toast.LENGTH_SHORT).show();
         }
         else{
-//            Log.e("posisi_update lokasi", String.valueOf(posisi.getLat()+ " - "+ posisi.getLng()));
-            Date tgl = new Date();
-            DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-            String time =  dateFormat.format(tgl);
-            Log.e("datetime", String.valueOf(time));
-//            Toast.makeText(MonitoringPosisi.this, String.valueOf(time), Toast.LENGTH_LONG).show();
-            mDatabase.child(no_bus).child(time).setValue(posisi);
-            Log.e("posisi_update", posisi.toString());
-                    Toast.makeText(MonitoringPosisi.this, "Update Posisi", Toast.LENGTH_LONG).show();
-
+            mDatabase.child(no_bus).child("log").child(time).setValue(posisi);
+            Toast.makeText(MonitoringPosisi.this, "Update Posisi", Toast.LENGTH_LONG).show();
             cekJarak(location, no_bus);
         }
     }
@@ -756,5 +800,10 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
         } else {
             Toast.makeText(getApplicationContext(), "GPS is currently off...", Toast.LENGTH_LONG).show();
         }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void createAlar(){
+
     }
 }
