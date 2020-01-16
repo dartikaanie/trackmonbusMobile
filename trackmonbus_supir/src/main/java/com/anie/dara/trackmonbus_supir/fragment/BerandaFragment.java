@@ -48,9 +48,11 @@ import com.anie.dara.trackmonbus_supir.rest.dbClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.ChildEventListener;
@@ -303,6 +305,8 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        googleMap.setMapStyle(new MapStyleOptions(getResources()
+                .getString(R.string.style_json)));
         map = googleMap;
         getAllHalte();
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -346,7 +350,6 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
         for (DataSnapshot noBus : dataSnapshot.getChildren()) {
                 for (DataSnapshot child : noBus.child("log").getChildren()) {
                     if(!child.getKey().equals("status")) {
-                        Log.e("daaChange", String.valueOf(child.getValue()));
                         String lat = child.child("lat").getValue().toString();
                         String lng = child.child("lng").getValue().toString();
                         String nomorBus = noBus.getKey().toString();

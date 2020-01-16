@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="style_json">
+        [ { \"featureType\": \"administrative\", \"elementType\": \"geometry\", \"stylers\": [ { \"visibility\": \"off\" } ] }, { \"featureType\": \"landscape.man_made\", \"elementType\": \"geometry.fill\", \"stylers\": [ { \"visibility\": \"simplified\" } ] }, { \"featureType\": \"landscape.man_made\", \"elementType\": \"geometry.stroke\", \"stylers\": [ { \"color\": \"#eeeeee\" }, { \"visibility\": \"on\" } ] }, { \"featureType\": \"poi\", \"stylers\": [ { \"visibility\": \"off\" } ] }, { \"featureType\": \"road\", \"elementType\": \"labels.icon\", \"stylers\": [ { \"visibility\": \"off\" } ] }, { \"featureType\": \"road.local\", \"elementType\": \"geometry.fill\", \"stylers\": [ { \"visibility\": \"off\" } ] }, { \"featureType\": \"road.local\", \"elementType\": \"geometry.stroke\", \"stylers\": [ { \"weight\": 1 } ] }, { \"featureType\": \"transit\", \"stylers\": [ { \"visibility\": \"off\" } ] } ];
+
+    </string>
+
+
+</resources>

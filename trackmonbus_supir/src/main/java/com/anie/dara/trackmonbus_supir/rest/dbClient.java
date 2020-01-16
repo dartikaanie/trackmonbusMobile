@@ -87,4 +87,26 @@ public interface dbClient {
             @Field("keterangan") String keterangan
     );
 
+    @GET("api/getContain")
+    Call<String> getContain(@Query("posisi") String posisi,@Query("trayek_id") String trayek_id );
+
+    @GET("api/outArea")
+    Call<ResponseBody> pushOutArea(
+            @Query("tgl") String tgl,
+            @Query("no_bus") String no_bus,
+            @Query("shift_id") String shift_id,
+            @Query("waktu") String waktu,
+            @Query("lat") String lat,
+            @Query("lng") String lng );
+
+    @GET("api/stopTime")
+    Call<ResponseBody> stopTime(
+            @Query("tgl") String tgl,
+            @Query("no_bus") String no_bus,
+            @Query("shift_id") String shift_id,
+            @Query("waktu_mulai") String waktu_mulai,
+            @Query("waktu_akhir") String waktu_akhir,
+            @Query("lat") String lat,
+            @Query("lng") String lng );
+
 }

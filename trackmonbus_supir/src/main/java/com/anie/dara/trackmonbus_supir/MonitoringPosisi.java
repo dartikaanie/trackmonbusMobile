@@ -22,13 +22,11 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -39,12 +37,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.anie.dara.trackmonbus_supir.alarm.AlarmBroadcastReceiver;
-import com.anie.dara.trackmonbus_supir.alarm.AlarmService;
 import com.anie.dara.trackmonbus_supir.distanceMatrix.DistanceMatrix;
 import com.anie.dara.trackmonbus_supir.distanceMatrix.ElementsItem;
 import com.anie.dara.trackmonbus_supir.model.Halte;
 import com.anie.dara.trackmonbus_supir.model.Posisi;
+import com.anie.dara.trackmonbus_supir.model.PosisiTime;
 import com.anie.dara.trackmonbus_supir.model.Rit;
 import com.anie.dara.trackmonbus_supir.model.jadwal.JadwalDetail;
 import com.anie.dara.trackmonbus_supir.model.noBus;
@@ -72,12 +69,12 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -92,7 +89,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
 
     JadwalDetail jadwal;
     TextView NoBus, no_tnkb, kapasitas, namaJalur, namaSupir, namaTrayek, hari_tgl, namaPramugara;
-    Button btnCheck, btnDetail, btnUbah, btnSelesai;
+    Button btnCheck, btnDetail, btnCekHalte, btnSelesai;
     GoogleMap map;
     MapView mMapView;
     HashMap hashMapMarker = new HashMap<>();
@@ -106,6 +103,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
 //    LocationManager locationManager;
     Location currentLocation;
     Posisi currentPosisi;
+    PosisiTime posisiAwal = null, startStopTime = null,endStopTime;
     AlertDialog alertDialog = null;
     private static  final  int REQUEST_LOCATION =1;
     private SQLiteDatabaseHandler db;
@@ -115,6 +113,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
     public boolean running = true;
     Toolbar toolbar;
     ImageView toolbarTitle;
+    String tgl_skrg;
 
     private LocationManager locationManager;
 
@@ -144,8 +143,8 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
         btnCheck.setOnClickListener(this);
         btnDetail = findViewById(R.id.btnDetail);
         btnDetail.setOnClickListener(this);
-        btnUbah = findViewById(R.id.btnUbah);
-        btnUbah.setOnClickListener(this);
+        btnCekHalte = findViewById(R.id.btnCekHalte);
+        btnCekHalte.setOnClickListener(this);
         btnSelesai = findViewById(R.id.btn_selesai);
         btnSelesai.setOnClickListener(this);
 
@@ -154,7 +153,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
 
         Date date = new Date();
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String tgl_skrg = dateFormat.format(date);
+        tgl_skrg = dateFormat.format(date);
         mDatabase = FirebaseDatabase.getInstance().getReference().child(tgl_skrg);
         jadwal =   getIntent().getExtras().getParcelable("jadwal");
         if(jadwal != null){
@@ -457,12 +456,26 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                     int detikSekarang = Integer.valueOf(detik.format(tgl));
                     if( detikSekarang%10 != 0){
                         mInterval = (10 - detikSekarang%10)*1000;
-                        time = time.substring(0,1) +"0";
+                        time = time.substring(0,7) +"0";
 
                     }else{
                         mInterval =0;
                     }
                     getCurrentPosisi();
+                    if(posisiAwal == null){
+                        posisiAwal = new PosisiTime(currentPosisi.getLat(), currentPosisi.getLng(), time);
+                        startStopTime =  new PosisiTime(currentPosisi.getLat(), currentPosisi.getLng(), time);
+                        endStopTime =  new PosisiTime(currentPosisi.getLat(), currentPosisi.getLng(), time);
+
+                    }else{
+                        Log.e("startStopTime", String.valueOf(startStopTime.getTime()));
+                        if(posisiAwal.cek(currentPosisi.getLat(), currentPosisi.getLng())) {
+                            cekBerhenti(posisiAwal, currentPosisi, time);
+                        }else{
+                            startStopTime = null;
+                        }
+                    }
+
                     getJarak(currentPosisi, currentLocation, time);
                 }
                 Log.e("interval", String.valueOf(mInterval));
@@ -474,6 +487,28 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
 
 //    public void getBusSearah
 
+    public void cekBerhenti(PosisiTime awal, Posisi current, String time){
+        awal.setLat(current.getLat());
+        awal.setLng(current.getLng());
+        awal.setTime(time);
+        endStopTime = awal;
+
+        Call<ResponseBody> callPush = client.stopTime(tgl_skrg,no_bus,jadwal.getShiftId(), startStopTime.getTime(), endStopTime.getTime(),String.valueOf(startStopTime.getLat()),String.valueOf(startStopTime.getLng()));
+        callPush.enqueue(new Callback<ResponseBody>() {
+
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Log.e("push stopTime ", startStopTime.getTime());
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e("error push stopTime", t.toString());
+            }
+        });
+
+
+    }
 
     public void cekJarak(final Location lokasiBus, final String no_bus){
 
@@ -632,14 +667,46 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
 
     }
 
-    public void getJarak(Posisi posisi, Location location, String time){
+    public void getJarak(final Posisi posisi, Location location, final String time){
+        final String useTime = time;
         if(posisi == null){
             Toast.makeText(MonitoringPosisi.this,"Ada KESALAHAN. LOKASINYA TIDAK TAMPIL", Toast.LENGTH_SHORT).show();
         }
         else{
-            mDatabase.child(no_bus).child("log").child(time).setValue(posisi);
+            mDatabase.child(no_bus).child("log").child(useTime).setValue(posisi);
             Toast.makeText(MonitoringPosisi.this, "Update Posisi", Toast.LENGTH_LONG).show();
             cekJarak(location, no_bus);
+            final String posisiCek = posisi.getLng() +","+ posisi.getLat();
+            Call<String> callContain = client.getContain(posisiCek,jadwal.getJadwal().getTrayekId());
+            Log.e("push out", jadwal.getShiftId());
+            callContain.enqueue(new Callback<String>() {
+
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    String contain = response.body();
+                    mDatabase.child(no_bus).child("log").child(useTime).child("inArea").setValue(contain);
+                    if(Integer.valueOf(contain)!=1){
+                        Call<ResponseBody> callPush = client.pushOutArea(tgl_skrg,no_bus,jadwal.getShiftId(), useTime, String.valueOf(posisi.getLat()),String.valueOf(posisi.getLng()));
+                        callPush.enqueue(new Callback<ResponseBody>() {
+
+                            @Override
+                            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                Log.d("pushOutArea", String.valueOf(response.body()));
+                            }
+
+                            @Override
+                            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                Log.e("error pushOutArea", t.toString());
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+                    Log.e("error contain",t.toString());
+                }
+            });
         }
     }
 
@@ -691,6 +758,10 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
         });
     }
 
+    public void checkpointHalte(){
+        getCurrentPosisi();
+    }
+
     @Override
     public void onClick(View v) {
         JadwalDetail jadwalSupir =   getIntent().getExtras().getParcelable("jadwal");
@@ -704,10 +775,11 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                 intent.putExtra("jadwal", jadwalSupir);
                 startActivity(intent);
                 break;
-            case R.id.btnUbah:
-                Intent intentUbah =  new Intent(MonitoringPosisi.this, UbahTransActivity.class);
-                intentUbah.putExtra("jadwal", jadwalSupir);
-                startActivity(intentUbah);
+            case R.id.btnCekHalte:
+//                Intent intentUbah =  new Intent(MonitoringPosisi.this, UbahTransActivity.class);
+//                intentUbah.putExtra("jadwal", jadwalSupir);
+//                startActivity(intentUbah);
+                checkpointHalte();
                 break;
             case R.id.btn_selesai:
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
