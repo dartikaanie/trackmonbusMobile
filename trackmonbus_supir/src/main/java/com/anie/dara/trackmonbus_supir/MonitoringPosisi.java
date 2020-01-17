@@ -473,6 +473,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                             cekBerhenti(posisiAwal, currentPosisi, time);
                         }else{
                             startStopTime = null;
+                            posisiAwal = null;
                         }
                     }
 
@@ -662,6 +663,8 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                 currentPosisi = new Posisi(lat,lng, no_bus);
                 currentLocation = location;
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentPosisi.getLat(), currentPosisi.getLng()), 16.0f));
+            }else{
+                Toast.makeText(MonitoringPosisi.this,"Lokasi tidak tersimpan", Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -704,6 +707,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
+                    mDatabase.child(no_bus).child("log").child(useTime).child("inArea").setValue(0);
                     Log.e("error contain",t.toString());
                 }
             });
@@ -760,6 +764,21 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
 
     public void checkpointHalte(){
         getCurrentPosisi();
+        Date tgl2 = new Date();
+        DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+        String time2 =  dateFormat.format(tgl2);
+        Call<ResponseBody> calCheckpointHalte = client.checkpointHalte(tgl,no_bus,jadwal.getShiftId(),time2, String.valueOf(currentPosisi.getLat()),String.valueOf(currentPosisi.getLng()));
+        calCheckpointHalte.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Toast.makeText(MonitoringPosisi.this, "Sukses" , Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(MonitoringPosisi.this, "Gagal" , Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     @Override
@@ -770,7 +789,6 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                 checkpoint(no_bus, tgl);
                 break;
             case R.id.btnDetail:
-
                 Intent intent =  new Intent(MonitoringPosisi.this, DetailTransActivity.class);
                 intent.putExtra("jadwal", jadwalSupir);
                 startActivity(intent);

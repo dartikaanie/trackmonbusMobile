@@ -263,14 +263,14 @@
                         android:textColor="@android:color/black" />
 
                     <Button
-                        android:id="@+id/btnUbah"
-                        android:layout_width="65dp"
+                        android:id="@+id/btnCekHalte"
+                        android:layout_width="wrap_content"
                         android:layout_height="33dp"
                         android:layout_margin="5dp"
                         android:layout_weight="1"
-                        android:background="@color/cardview_light_background"
-                        android:text="Ubah"
-                        android:textColor="@android:color/black" />
+                        android:background="@color/colorYellow"
+                        android:text="Halte"
+                        android:textColor="#111010" />
 
                     <Button
                         android:id="@+id/btnCheckpoint"
