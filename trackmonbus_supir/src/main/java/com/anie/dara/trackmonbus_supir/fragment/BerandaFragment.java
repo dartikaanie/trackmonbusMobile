@@ -274,7 +274,6 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
 
     public void getDataAksi(DataSnapshot dataSnapshot){
         LatLng point = null;
-        Log.e("datasnap", dataSnapshot.getKey());
         BitmapDrawable bitmapdraw= (BitmapDrawable) ((MainActivity)activity).getResources().getDrawable(R.drawable.trans);
         for(DataSnapshot data : dataSnapshot.child("log").getChildren()){
                 String lat = data.child("lat").getValue().toString();
@@ -305,40 +304,42 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        googleMap.setMapStyle(new MapStyleOptions(getResources()
-                .getString(R.string.style_json)));
-        map = googleMap;
-        getAllHalte();
-        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                getDataPosisiBus(dataSnapshot);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e("error", databaseError.toString());
-
-            }
-        });
         try{
-            locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
-            if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-                buildAlertMessageNoGPS();
-            }
-            else
-            {  getLocation();
-                getCurrentlocation();
+            googleMap.setMapStyle(new MapStyleOptions(getResources()
+                    .getString(R.string.style_json)));
+            map = googleMap;
+            getAllHalte();
+            mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    getDataPosisiBus(dataSnapshot);
+                }
 
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.e("error", databaseError.toString());
+
+                }
+            });
+            try{
+                locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+                if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+                    buildAlertMessageNoGPS();
+                }
+                else
+                {  getLocation();
+                    getCurrentlocation();
+
+                }
+            }catch(Exception $ex){
+                Toast.makeText(getContext()," Ada Kesalahan", Toast.LENGTH_SHORT).show();
             }
-        }catch(Exception $ex){
-            Toast.makeText(getContext()," Ada Kesalahan", Toast.LENGTH_SHORT).show();
+
+            dataMarker();
+            load.setText("Memuat Data");
+        }catch (Exception ex){
+            load.setText("Ada Kesalahan, Silakan Refresh Halaman ini");
         }
-
-
-
-        dataMarker();
-        load.setText("Memuat Data");
 
     }
 

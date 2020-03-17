@@ -41,7 +41,7 @@ public class JadwalAdapter extends  RecyclerView.Adapter<JadwalAdapter.JadwalHol
     @Override
     public void onBindViewHolder(@NonNull JadwalAdapter.JadwalHolder holder, int position) {
         JadwalDetail jadwal = dataJadwal.get(position);
-        holder.NoBus.setText(jadwal.getJadwal().getNoBus());
+            holder.NoBus.setText(jadwal.getJadwal().getNoBus());
         holder.tgl.setText(jadwal.getTgl());
         holder.kapasitas.setText(Integer.toString(jadwal.getJadwal().getBuses().getKapasitas()) + " orang");
         holder.no_tnkb.setText(jadwal.getJadwal().getBuses().getNoTnkb());

@@ -9,7 +9,7 @@ public class Rit{
 	private String jalurId;
 
 	@SerializedName("waktu_berangkat")
-	private String waktuBerangkat;
+	private String waktu_berangkat;
 
 	@SerializedName("tgl")
 	private String tgl;
@@ -18,7 +18,7 @@ public class Rit{
 	private DetailTrayeks detailTrayeks;
 
 	@SerializedName("waktu_datang")
-	private String waktuDatang;
+	private String waktu_datang;
 
 	@SerializedName("trayek_id")
 	private String trayekId;
@@ -29,7 +29,10 @@ public class Rit{
 	@SerializedName("no_bus")
 	private String noBus;
 
-	public void setJalurId(String jalurId){
+    public Rit() {
+    }
+
+    public void setJalurId(String jalurId){
 		this.jalurId = jalurId;
 	}
 
@@ -37,12 +40,12 @@ public class Rit{
 		return jalurId;
 	}
 
-	public void setWaktuBerangkat(String waktuBerangkat){
-		this.waktuBerangkat = waktuBerangkat;
+	public void setWaktuBerangkat(String waktu_berangkat){
+		this.waktu_berangkat = waktu_berangkat;
 	}
 
 	public String getWaktuBerangkat(){
-		return waktuBerangkat;
+		return waktu_berangkat;
 	}
 
 	public void setTgl(String tgl){
@@ -61,12 +64,12 @@ public class Rit{
 		return detailTrayeks;
 	}
 
-	public void setWaktuDatang(String waktuDatang){
-		this.waktuDatang = waktuDatang;
+	public void setWaktuDatang(String waktu_datang){
+		this.waktu_datang = waktu_datang;
 	}
 
 	public String getWaktuDatang(){
-		return waktuDatang;
+		return waktu_datang;
 	}
 
 	public void setTrayekId(String trayekId){
@@ -98,10 +101,10 @@ public class Rit{
 		return 
 			"Rit{" + 
 			"jalur_id = '" + jalurId + '\'' + 
-			",waktu_berangkat = '" + waktuBerangkat + '\'' + 
+			",waktu_berangkat = '" + waktu_berangkat + '\'' + 
 			",tgl = '" + tgl + '\'' + 
 			",detail_trayeks = '" + detailTrayeks + '\'' + 
-			",waktu_datang = '" + waktuDatang + '\'' + 
+			",waktu_datang = '" + waktu_datang + '\'' + 
 			",trayek_id = '" + trayekId + '\'' + 
 			",rits_id = '" + ritsId + '\'' + 
 			",no_bus = '" + noBus + '\'' + 

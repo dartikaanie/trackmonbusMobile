@@ -10,6 +10,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -40,6 +41,7 @@ import android.widget.Toast;
 import com.anie.dara.trackmonbus_supir.distanceMatrix.DistanceMatrix;
 import com.anie.dara.trackmonbus_supir.distanceMatrix.ElementsItem;
 import com.anie.dara.trackmonbus_supir.model.Halte;
+import com.anie.dara.trackmonbus_supir.model.LogPotition;
 import com.anie.dara.trackmonbus_supir.model.Posisi;
 import com.anie.dara.trackmonbus_supir.model.PosisiTime;
 import com.anie.dara.trackmonbus_supir.model.Rit;
@@ -59,6 +61,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -114,7 +117,10 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
     Toolbar toolbar;
     ImageView toolbarTitle;
     String tgl_skrg;
-
+    public static  final String DEFAULT ="tidak aktif";
+    int DEFAULT_NUM_RIT = 0, DEFAULT_STATE_RIT = 1, STATE_DEPARTURE = 2, STATE_ARRIVE = 1;
+    String currentJalur;
+    int currNoRit = DEFAULT_NUM_RIT, stateOfRit = DEFAULT_STATE_RIT;
     private LocationManager locationManager;
 
     @Override
@@ -168,18 +174,15 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
             hari_tgl.setText(substring(jadwal.getTgl(),0,10));
         }
 
-//        Intent ii = new Intent(getApplicationContext(), AlarmService.class);
-//        PendingIntent pii = PendingIntent.getService(getApplicationContext(), 2222, ii, PendingIntent.FLAG_CANCEL_CURRENT);
-//        Calendar cal = Calendar.getInstance();
-//        Date tgl = new Date();
-//        DateFormat dateFormat2 = new SimpleDateFormat("ss");
-//        String time =  dateFormat2.format(tgl);
-//        Log.e("datetime Now", String.valueOf(cal.getTime()));
-
-////        cal.add(Calendar.SECOND, 1);
-//        Log.e("log alarm", "set Alarm" + cal.getTime());
-//        AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
-//        am.setInexactRepeating(AlarmManager.RTC,cal.getTimeInMillis(), 1000 * 5,pii);
+        //cek bus line
+        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+        currentJalur = sharedPreferences.getString("jalur_id", DEFAULT);
+        if(currentJalur.equals(DEFAULT)){
+            // save bus line
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("jalur_id", jadwal.getJadwal().getJalurAwalId());
+            editor.commit();
+        }
 
 
         mMapView = (MapView) findViewById(R.id.map_monitor);
@@ -203,18 +206,63 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
             mInterval =0;
         }
         handler.postDelayed(runTrack, mInterval);
-        mDatabase.child(no_bus).child("status").setValue(0);
         getLocation();
 
+        getCurrentRit();
 
+
+    }
+
+
+    public void getCurrentRit(){
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            for (DataSnapshot datachild : dataSnapshot.getChildren()) {
+                //cek is it the same number
+                if((datachild.getKey().equals(jadwal.getNoBus()))){
+                    //cek nomor RIT saat ini
+                    for (DataSnapshot dataRit : datachild.child("RIT").getChildren()) {
+                     currNoRit = Integer.parseInt(dataRit.getKey());
+                    }
+
+                    Log.e("curr no rit", String.valueOf(currNoRit));
+                    //cek Jalur saat ini
+                    if(currNoRit!=DEFAULT_NUM_RIT){
+                        for (DataSnapshot dataChildRit : datachild.child("RIT").child(String.valueOf(currNoRit)).getChildren()) {
+                            currentJalur = dataChildRit.getKey();
+                            if(dataChildRit.child("waktu_datang").equals("00:00:00")){
+                                stateOfRit = STATE_DEPARTURE;
+                            }else{
+                                stateOfRit = STATE_ARRIVE;
+                            }
+
+                        }
+                        //cek status rit
+                         //DEFAULT_STATE_RIT == 0
+                        //Set nomor Rit saat ini
+                    }else{
+                        currNoRit =1;
+                    }
+
+                }
+            }
+            Log.e("curr stateOfRit", String.valueOf(stateOfRit));
+
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+            Log.e("error", databaseError.toString());
+
+        }
+        });
     }
 
     public void getDataPosisiBus(DataSnapshot dataSnapshot){
 
         LatLng posisi = null;
         BitmapDrawable bitmapdraw;
-
-
 
         for (DataSnapshot child : dataSnapshot.getChildren()) {
 
@@ -332,6 +380,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 Toast.makeText(MonitoringPosisi.this , "ada bus yang baru berkendara", Toast.LENGTH_SHORT).show();
+                Log.e("bus baru", dataSnapshot.getValue().toString());
                 getDataAksi(dataSnapshot);
             }
 
@@ -413,30 +462,66 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
         return Icon;
     }
 
-    public void checkpoint(String no_bus, String tgl){
+    public void checkpointRIT (String no_bus){
         if(konekkah()){
-            client = ApiClient.getClient().create(dbClient.class);
-            Call<Rit> call = client.updateRit(no_bus, tgl);
-            call.enqueue(new Callback<Rit>() {
-                @Override
-                public void onResponse(Call<Rit> call, Response<Rit> response) {
-                    Rit rit = response.body();
-                    namaJalur.setText(rit.getDetailTrayeks().getJalurs().getNamaJalur());
-                    Toast.makeText(MonitoringPosisi.this, "Checkpoint berhasil disimpan", Toast.LENGTH_LONG).show();
-                }
+            Date date = new Date();
+            DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+            String timeNow =  dateFormat.format(date);
 
-                @Override
-                public void onFailure(Call<Rit> call, Throwable t) {
-                    Toast.makeText(MonitoringPosisi.this, "Checkpoint gagal disimpan", Toast.LENGTH_LONG).show();
+            SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+//            currNoRit = sharedPreferences.getInt("numberOfRit", DEFAULT_NUM_RIT);
+//            stateOfRit = sharedPreferences.getInt("stateOfRit", DEFAULT_STATE_RIT);
 
-                }
-            });
+            Log.e("state rit add", String.valueOf(STATE_DEPARTURE));
 
-        }else{
-            Toast.makeText(MonitoringPosisi.this , "Hidupkan Koneksi Internet", Toast.LENGTH_SHORT).show();
+            //kondisikan untuk menambah waktu datang / waktu berangkat
+            if((stateOfRit == DEFAULT_STATE_RIT) || (stateOfRit == STATE_ARRIVE)){ //berangkat
+                Rit addRit = new Rit();
+                addRit.setWaktuBerangkat(timeNow);
+                addRit.setWaktuDatang("00:00:00");
+                //get specified database part and save
+                mDatabase.child(no_bus).child("RIT").child(String.valueOf(currNoRit)).child(currentJalur).setValue(addRit);
+                stateOfRit = STATE_DEPARTURE;
+            }else if(stateOfRit == STATE_DEPARTURE){
+                Log.e("STATE_DEPARTURE", String.valueOf(stateOfRit));
+                //get specified database part and save
+                mDatabase.child(no_bus).child("RIT").child(String.valueOf(currNoRit)).child(currentJalur).child("waktuDatang").setValue(timeNow);
+                stateOfRit = STATE_ARRIVE;
+                currNoRit++;
+            }
+            Log.e("state rit added", String.valueOf(stateOfRit));
+
+            // save number and state of rit
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putInt("numberOfRit", currNoRit).commit();
+            editor.putInt("stateOfRit", stateOfRit).commit();
+            editor.commit();
         }
-
     }
+//    public void checkpoint(String no_bus, String tgl){
+//        if(konekkah()){
+//            client = ApiClient.getClient().create(dbClient.class);
+//            Call<Rit> call = client.updateRit(no_bus, tgl);
+//            call.enqueue(new Callback<Rit>() {
+//                @Override
+//                public void onResponse(Call<Rit> call, Response<Rit> response) {
+//                    Rit rit = response.body();
+//                    namaJalur.setText(rit.getDetailTrayeks().getJalurs().getNamaJalur());
+//                    Toast.makeText(MonitoringPosisi.this, "Checkpoint berhasil disimpan", Toast.LENGTH_LONG).show();
+//                }
+//
+//                @Override
+//                public void onFailure(Call<Rit> call, Throwable t) {
+//                    Toast.makeText(MonitoringPosisi.this, "Checkpoint gagal disimpan", Toast.LENGTH_LONG).show();
+//
+//                }
+//            });
+//
+//        }else{
+//            Toast.makeText(MonitoringPosisi.this , "Hidupkan Koneksi Internet", Toast.LENGTH_SHORT).show();
+//        }
+//
+//    }
 
     private Runnable runTrack = new Runnable() {
         @Override
@@ -459,7 +544,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                         time = time.substring(0,7) +"0";
 
                     }else{
-                        mInterval =0;
+                        mInterval =9000;
                     }
                     getCurrentPosisi();
                     if(posisiAwal == null){
@@ -468,7 +553,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                         endStopTime =  new PosisiTime(currentPosisi.getLat(), currentPosisi.getLng(), time);
 
                     }else{
-                        Log.e("startStopTime", String.valueOf(startStopTime.getTime()));
+                        //cek if current bus stop
                         if(posisiAwal.cek(currentPosisi.getLat(), currentPosisi.getLng())) {
                             cekBerhenti(posisiAwal, currentPosisi, time);
                         }else{
@@ -477,10 +562,10 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                         }
                     }
 
-                    getJarak(currentPosisi, currentLocation, time);
+                    addPosisi(currentPosisi, currentLocation, time);
                 }
-                Log.e("interval", String.valueOf(mInterval));
-
+//                Log.e("interval", String.valueOf(mInterval));
+                mDatabase.child(no_bus).child("status").setValue(1);
                 handler.postDelayed(this, mInterval);
             }
         }
@@ -493,103 +578,153 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
         awal.setLng(current.getLng());
         awal.setTime(time);
         endStopTime = awal;
+        Toast.makeText(MonitoringPosisi.this, "Bus Berhenti", Toast.LENGTH_LONG).show();
 
-        Call<ResponseBody> callPush = client.stopTime(tgl_skrg,no_bus,jadwal.getShiftId(), startStopTime.getTime(), endStopTime.getTime(),String.valueOf(startStopTime.getLat()),String.valueOf(startStopTime.getLng()));
-        callPush.enqueue(new Callback<ResponseBody>() {
-
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                Log.e("push stopTime ", startStopTime.getTime());
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e("error push stopTime", t.toString());
-            }
-        });
-
+        //Give action if bus stop
 
     }
 
-    public void cekJarak(final Location lokasiBus, final String no_bus){
-
-        Call<String> call2 = client.getCurrentJalur(no_bus,tgl);
-        call2.enqueue(new Callback<String>() {
+    public void getListBusInLine(final Location lokasiBus, final String no_bus){
+        //get bus sejalur
+        listBusSearah = new ArrayList<>();
+        final ArrayList<String> posisiDestination = new ArrayList<>();
+        final ArrayList<Posisi> posisiBus = new ArrayList<>();
+        final String posisi1 = lokasiBus.getLatitude() + "," + lokasiBus.getLongitude(); //potiton of current bus
+        final int n=0;
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onResponse(Call<String> call2, Response<String> response) {
-                String jalurGet = response.body();
-                if(jalurGet != null){
-                    listBusSearah = new ArrayList<>();
-                    Call<List<noBus>> call = client.getBusSearah(jalurGet);
-                    call.enqueue(new Callback<List<noBus>>() {
-                        @Override
-                        public void onResponse(Call<List<noBus>> call, Response<List<noBus>> response) {
-                            List<noBus> result = response.body();
-                            if(result != null){
-                                for(noBus item : result){
-                                    listBusSearah.add(new noBus(item.getNo_bus()));
-                                    mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            ArrayList<String> posisiDestination = new ArrayList<>();
-                                            ArrayList<Posisi> posisiBus = new ArrayList<>();
-                                            String posisi1 = lokasiBus.getLatitude() + "," + lokasiBus.getLongitude();
-                                            int n=0;
-                                            for (DataSnapshot datachild : dataSnapshot.getChildren()) {
-                                                for(noBus busSearah : listBusSearah){
-                                                    if(datachild.getKey().equals(busSearah.getNo_bus()) && (!datachild.getKey().equals(no_bus)) && (datachild.child("status").getValue().toString().equals(0))) {
-                                                        double location_lat = 0, location_lng = 0;
-                                                        for (DataSnapshot child : datachild.child("log").getChildren()) {
-                                                            location_lat = Double.parseDouble(child.child("lat").getValue().toString());
-                                                            location_lng = Double.parseDouble(child.child("lng").getValue().toString());
-                                                        }
-                                                        if((location_lat!=0) && (location_lng!=0) ) {
-                                                            String no_bus2 = datachild.getKey().toString();
-                                                            Posisi dataBus = new Posisi(location_lat, location_lng, no_bus2);
-                                                            posisiBus.add(n, dataBus);
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot datachild : dataSnapshot.getChildren()) {
+                    //cek is it the same line and status active (1)
+                    if((datachild.child("jalur").getValue().toString().equals(currentJalur))
+                            &&  (datachild.child("status").getValue().toString().equals("1"))
+                            &&  (!datachild.getKey().equals(jadwal.getNoBus()))
+                      ){
+                        listBusSearah.add(new noBus(datachild.getKey()));
+                        double location_lat = 0, location_lng = 0;
 
-                                                            Location lokasi2 = new Location("posisi 2");
-                                                            lokasi2.setLatitude(location_lat);
-                                                            lokasi2.setLongitude(location_lng);
-                                                            String posisi2 = lokasi2.getLatitude() + "," + lokasi2.getLongitude();
-                                                            posisiDestination.add(posisi2);
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                           if(posisiDestination.size()>0){
-                                               if(alertDialog != null){
-                                                    alertDialog.dismiss();
-                                                }
-                                                actionRoute(posisi1, convertToString(posisiDestination),posisiBus );
-                                            }
-
-                                            map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lokasiBus.getLatitude(), lokasiBus.getLongitude()), 16.0f));
-                                        }
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                        }
-                                    });
-                                }
-                            }else{
-                                Log.e("listBus", "DAta tidak ada");
-                            }
+                        //get potition of other bus
+                        for (DataSnapshot child : datachild.child("log").getChildren()) {
+                            location_lat = Double.parseDouble(child.child("lat").getValue().toString());
+                            location_lng = Double.parseDouble(child.child("lng").getValue().toString());
                         }
-                        @Override
-                        public void onFailure(Call<List<noBus>> call, Throwable t) {
-                            Log.e("error listBus", t.toString());
+
+                        //if potition exist
+                        if((location_lat!=0) && (location_lng!=0) ) {
+                            String no_bus2 = datachild.getKey();
+                            Posisi dataOtherBus = new Posisi(location_lat, location_lng, no_bus2);
+                            posisiBus.add(n, dataOtherBus);
+
+                            //made matrix from potition of buses
+                            Location lokasi2 = new Location("posisi 2");
+                            lokasi2.setLatitude(location_lat);
+                            lokasi2.setLongitude(location_lng);
+                            String posisi2 = lokasi2.getLatitude() + "," + lokasi2.getLongitude();
+                            posisiDestination.add(posisi2);
                         }
-                    });
+                    }
                 }
+
+                //if data exist
+                if(posisiDestination.size()>0){
+                    if(alertDialog != null){
+                        alertDialog.dismiss();
+                    }
+                    calculateDistance(posisi1, convertToString(posisiDestination),posisiBus );
+                }
+
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lokasiBus.getLatitude(), lokasiBus.getLongitude()), 16.0f));
+
+                Log.e("listbus",listBusSearah.toString());
+
             }
 
             @Override
-            public void onFailure(Call<String> call, Throwable t) {
-                Log.e("error jalur", t.toString());
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
         });
+
     }
+
+//    public void getListBusInLine2(final Location lokasiBus, final String no_bus){
+//        Call<String> call2 = client.getCurrentJalur(no_bus,tgl);
+//        call2.enqueue(new Callback<String>() {
+//            @Override
+//            public void onResponse(Call<String> call2, Response<String> response) {
+//                String jalurGet = response.body();
+//                if(jalurGet != null){
+//                    listBusSearah = new ArrayList<>();
+//                    Call<List<noBus>> call = client.getBusSearah(jalurGet);
+//                    call.enqueue(new Callback<List<noBus>>() {
+//                        @Override
+//                        public void onResponse(Call<List<noBus>> call, Response<List<noBus>> response) {
+//                            List<noBus> result = response.body();
+//                            if(result != null){
+//                                for(noBus item : result){
+//                                    listBusSearah.add(new noBus(item.getNo_bus()));
+//                                    mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+//                                        @Override
+//                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                                            ArrayList<String> posisiDestination = new ArrayList<>();
+//                                            ArrayList<Posisi> posisiBus = new ArrayList<>();
+//                                            String posisi1 = lokasiBus.getLatitude() + "," + lokasiBus.getLongitude();
+//                                            int n=0;
+//                                            for (DataSnapshot datachild : dataSnapshot.getChildren()) {
+//                                                for(noBus busSearah : listBusSearah){
+//                                                    if(datachild.getKey().equals(busSearah.getNo_bus()) && (!datachild.getKey().equals(no_bus)) && (datachild.child("status").getValue().toString().equals(0))) {
+//                                                        double location_lat = 0, location_lng = 0;
+//                                                        for (DataSnapshot child : datachild.child("log").getChildren()) {
+//                                                            location_lat = Double.parseDouble(child.child("lat").getValue().toString());
+//                                                            location_lng = Double.parseDouble(child.child("lng").getValue().toString());
+//                                                        }
+//                                                        if((location_lat!=0) && (location_lng!=0) ) {
+//                                                            String no_bus2 = datachild.getKey().toString();
+//                                                            Posisi dataBus = new Posisi(location_lat, location_lng, no_bus2);
+//                                                            posisiBus.add(n, dataBus);
+//
+//                                                            Location lokasi2 = new Location("posisi 2");
+//                                                            lokasi2.setLatitude(location_lat);
+//                                                            lokasi2.setLongitude(location_lng);
+//                                                            String posisi2 = lokasi2.getLatitude() + "," + lokasi2.getLongitude();
+//                                                            posisiDestination.add(posisi2);
+//                                                        }
+//                                                    }
+//                                                }
+//                                            }
+//                                           if(posisiDestination.size()>0){
+//                                               if(alertDialog != null){
+//                                                    alertDialog.dismiss();
+//                                                }
+//                                                actionRoute(posisi1, convertToString(posisiDestination),posisiBus );
+//                                            }
+//
+//                                            map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lokasiBus.getLatitude(), lokasiBus.getLongitude()), 16.0f));
+//                                        }
+//                                        @Override
+//                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                                        }
+//                                    });
+//                                }
+//                            }else{
+//                                Log.e("listBus", "DAta tidak ada");
+//                            }
+//                        }
+//                        @Override
+//                        public void onFailure(Call<List<noBus>> call, Throwable t) {
+//                            Log.e("error listBus", t.toString());
+//                        }
+//                    });
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<String> call, Throwable t) {
+//                Log.e("error jalur", t.toString());
+//            }
+//        });
+//    }
 
     static String convertToString(ArrayList<String> strings) {
         StringBuilder builder = new StringBuilder();
@@ -625,7 +760,6 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
         alertDialog.show();
     }
 
-
     protected void buildAlertMessageNoGPS(){
         final AlertDialog.Builder builder = new AlertDialog.Builder(MonitoringPosisi.this);
         builder.setMessage("Hidupkan GPS mu")
@@ -645,7 +779,6 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
     }
 
     public void getCurrentPosisi(){
-
         if((ActivityCompat.checkSelfPermission(MonitoringPosisi.this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED )
                 &&
@@ -670,51 +803,43 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
 
     }
 
-    public void getJarak(final Posisi posisi, Location location, final String time){
+    public void addPosisi(final Posisi posisi, Location location, final String time){
         final String useTime = time;
         if(posisi == null){
             Toast.makeText(MonitoringPosisi.this,"Ada KESALAHAN. LOKASINYA TIDAK TAMPIL", Toast.LENGTH_SHORT).show();
         }
         else{
-            mDatabase.child(no_bus).child("log").child(useTime).setValue(posisi);
-            Toast.makeText(MonitoringPosisi.this, "Update Posisi", Toast.LENGTH_LONG).show();
-            cekJarak(location, no_bus);
+            //get bus serah utk menhitung jarak
+            getListBusInLine(location, no_bus);
             final String posisiCek = posisi.getLng() +","+ posisi.getLat();
-            Call<String> callContain = client.getContain(posisiCek,jadwal.getJadwal().getTrayekId());
-            Log.e("push out", jadwal.getShiftId());
+           //CEK if the point contain of  area
+            Call<String> callContain = client.getContain(tgl.substring(0,10),no_bus,jadwal.getShiftId(),time, posisiCek,String.valueOf(currentPosisi.getLat()),String.valueOf(currentPosisi.getLng()), jadwal.getJadwal().getTrayekId());
             callContain.enqueue(new Callback<String>() {
-
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
                     String contain = response.body();
-                    mDatabase.child(no_bus).child("log").child(useTime).child("inArea").setValue(contain);
-                    if(Integer.valueOf(contain)!=1){
-                        Call<ResponseBody> callPush = client.pushOutArea(tgl_skrg,no_bus,jadwal.getShiftId(), useTime, String.valueOf(posisi.getLat()),String.valueOf(posisi.getLng()));
-                        callPush.enqueue(new Callback<ResponseBody>() {
-
-                            @Override
-                            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                                Log.d("pushOutArea", String.valueOf(response.body()));
-                            }
-
-                            @Override
-                            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                Log.e("error pushOutArea", t.toString());
-                            }
-                        });
+                    if(contain.equals(1)){
+                        Toast.makeText(MonitoringPosisi.this, "Keluar dari Trayek", Toast.LENGTH_LONG).show();
                     }
+                    LogPotition logPosisi = new LogPotition(posisi.getLat(), posisi.getLng(), contain, jadwal.getUserIdSupir() );
+                    mDatabase.child(no_bus).child("log").child(useTime).setValue(logPosisi);
+                    mDatabase.child(no_bus).child("status").setValue(1);
+                    mDatabase.child(no_bus).child("jalur").setValue(currentJalur);
+                    Toast.makeText(MonitoringPosisi.this, "Update Posisi", Toast.LENGTH_LONG).show();
+
                 }
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
-                    mDatabase.child(no_bus).child("log").child(useTime).child("inArea").setValue(0);
                     Log.e("error contain",t.toString());
+//                    mDatabase.child(no_bus).child("log").child(useTime).child("inArea").setValue(0);
+
                 }
             });
         }
     }
 
-    private void actionRoute(String posisi1 , String posisi2, final ArrayList<Posisi> busPosisi) {
+    private void calculateDistance(String posisi1 , String posisi2, final ArrayList<Posisi> busPosisi) {
             Call<DistanceMatrix> call = distanceApi.getDistanceInfo(posisi1,posisi2,"AIzaSyDZ-N9it_JFpboG3R3LfxakMiAkUdF12bU");
             call.enqueue(new Callback<DistanceMatrix>() {
             @Override
@@ -726,6 +851,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                    int n=0;
                    Posisi bus;
                    String listBusDekat="";
+                   //cek jarak each other
                     for(ElementsItem item : row){
                         try{
                             jarak = Double.parseDouble(String.valueOf(item.getDistance().getValue()));
@@ -746,9 +872,9 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                             Log.e("error jarak", ex.toString());
                             Toast.makeText(MonitoringPosisi.this, "Ada yang error" , Toast.LENGTH_LONG).show();
                         }
-
                     }
 
+                    //if there is bus near
                     if(!listBusDekat.equals("")){
                         showDialog(listBusDekat);
                     }
@@ -757,7 +883,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
 
             @Override
             public void onFailure(Call<DistanceMatrix> call, Throwable t) {
-
+                Log.e("error api dmatrix", t.toString());
             }
         });
     }
@@ -767,7 +893,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
         Date tgl2 = new Date();
         DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
         String time2 =  dateFormat.format(tgl2);
-        Call<ResponseBody> calCheckpointHalte = client.checkpointHalte(tgl,no_bus,jadwal.getShiftId(),time2, String.valueOf(currentPosisi.getLat()),String.valueOf(currentPosisi.getLng()));
+        Call<ResponseBody> calCheckpointHalte = client.checkpointHalte(tgl.substring(0,10),no_bus,jadwal.getShiftId(),time2, String.valueOf(currentPosisi.getLat()),String.valueOf(currentPosisi.getLng()));
         calCheckpointHalte.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -786,7 +912,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
         JadwalDetail jadwalSupir =   getIntent().getExtras().getParcelable("jadwal");
         switch(v.getId()){
             case R.id.btnCheckpoint:
-                checkpoint(no_bus, tgl);
+                checkpointRIT(no_bus);
                 break;
             case R.id.btnDetail:
                 Intent intent =  new Intent(MonitoringPosisi.this, DetailTransActivity.class);
@@ -824,7 +950,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
         running = false;
         handler.removeCallbacks(runTrack);
         btnCheck.setEnabled(!btnCheck.isEnabled());
-        mDatabase.child(no_bus).child("status").setValue(1);
+        mDatabase.child(no_bus).child("status").setValue(0);
 //        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
 //            @Override
 //            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

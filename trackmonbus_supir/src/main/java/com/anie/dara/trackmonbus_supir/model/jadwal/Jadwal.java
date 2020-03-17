@@ -6,6 +6,8 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class Jadwal implements Parcelable {
 
 	@SerializedName("jalur_awal_id")

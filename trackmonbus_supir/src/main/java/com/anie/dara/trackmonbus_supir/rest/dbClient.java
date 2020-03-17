@@ -88,7 +88,15 @@ public interface dbClient {
     );
 
     @GET("api/getContain")
-    Call<String> getContain(@Query("posisi") String posisi,@Query("trayek_id") String trayek_id );
+    Call<String> getContain(
+            @Query("tgl") String tgl,
+            @Query("no_bus") String no_bus,
+            @Query("shift_id") String shift_id,
+            @Query("waktu") String waktu,
+            @Query("posisi") String posisi,
+            @Query("lat") String lat,
+            @Query("lng") String lng,
+            @Query("trayek_id") String trayek_id );
 
     @GET("api/outArea")
     Call<ResponseBody> pushOutArea(
@@ -100,12 +108,21 @@ public interface dbClient {
             @Query("lng") String lng );
 
     @GET("api/stopTime")
-    Call<ResponseBody> stopTime(
+    Call<String> stopTime(
             @Query("tgl") String tgl,
             @Query("no_bus") String no_bus,
             @Query("shift_id") String shift_id,
             @Query("waktu_mulai") String waktu_mulai,
             @Query("waktu_akhir") String waktu_akhir,
+            @Query("lat") String lat,
+            @Query("lng") String lng );
+
+    @GET("api/checkpointHalte")
+    Call<ResponseBody> checkpointHalte(
+            @Query("tgl") String tgl,
+            @Query("no_bus") String no_bus,
+            @Query("shift_id") String shift_id,
+            @Query("waktu") String waktu,
             @Query("lat") String lat,
             @Query("lng") String lng );
 

@@ -6,6 +6,8 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 
 public class JadwalDetail implements Parcelable {
 
@@ -35,6 +37,17 @@ public class JadwalDetail implements Parcelable {
 
 	@SerializedName("no_bus")
 	private String noBus;
+
+	@SerializedName("jalur")
+	private List<ListJalur> jalur;
+
+	public void setJalur(List<ListJalur> jalur){
+		this.jalur = jalur;
+	}
+
+	public List<ListJalur> getJalur(){
+		return jalur;
+	}
 
 	public void setPramugaraNik(String pramugaraNik){
 		this.pramugaraNik = pramugaraNik;
