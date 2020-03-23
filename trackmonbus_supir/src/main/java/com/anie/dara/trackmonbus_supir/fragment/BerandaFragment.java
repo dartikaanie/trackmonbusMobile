@@ -202,6 +202,7 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
                     namaSupir.setText(jadwal.getUsers().getName() + " - "+ jadwal.getPramugaras().getNamaPramugara());
                     jadwalSupir = jadwal;
                     cvTidakJadwal.setVisibility(View.INVISIBLE);
+                    Log.e("jadwal cek", jadwal.getJalur().toString());
 
                 }else{
                     cvChechkin.setVisibility(View.INVISIBLE);

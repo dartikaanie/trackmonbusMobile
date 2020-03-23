@@ -123,6 +123,11 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
     int currNoRit = DEFAULT_NUM_RIT, stateOfRit = DEFAULT_STATE_RIT;
     private LocationManager locationManager;
 
+    String[] praListJalur = null;
+    ArrayList<String> listJalur;
+    boolean first= true;
+    int iteratorRitJalur=1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -172,16 +177,22 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
             no_bus =jadwal.getJadwal().getBuses().getNoBus();
             tgl = jadwal.getTgl();
             hari_tgl.setText(substring(jadwal.getTgl(),0,10));
+            String s = jadwal.getJalur();
+            praListJalur = s.split("-");
+            listJalur = new ArrayList<>();
+            for (String ss : praListJalur){
+                listJalur.add(ss);
+            }
         }
-
         //cek bus line
         SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
         currentJalur = sharedPreferences.getString("jalur_id", DEFAULT);
         if(currentJalur.equals(DEFAULT)){
-            // save bus line
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString("jalur_id", jadwal.getJadwal().getJalurAwalId());
-            editor.commit();
+            currentJalur = jadwal.getJadwal().getJalurAwalId();
+//            // save bus line
+//            SharedPreferences.Editor editor = sharedPreferences.edit();
+//            editor.putString("jalur_id", jadwal.getJadwal().getJalurAwalId());
+//            editor.commit();
         }
 
 
@@ -224,6 +235,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                     //cek nomor RIT saat ini
                     for (DataSnapshot dataRit : datachild.child("RIT").getChildren()) {
                      currNoRit = Integer.parseInt(dataRit.getKey());
+
                     }
 
                     Log.e("curr no rit", String.valueOf(currNoRit));
@@ -236,13 +248,15 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                             }else{
                                 stateOfRit = STATE_ARRIVE;
                             }
-
+                            iteratorRitJalur++;
                         }
                         //cek status rit
                          //DEFAULT_STATE_RIT == 0
                         //Set nomor Rit saat ini
+                        first = false;
                     }else{
                         currNoRit =1;
+                        Log.e("cuurRit get Data", String.valueOf(currNoRit));
                     }
 
                 }
@@ -479,22 +493,55 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                 Rit addRit = new Rit();
                 addRit.setWaktuBerangkat(timeNow);
                 addRit.setWaktuDatang("00:00:00");
+                //change jalur
+                if((currentJalur.equals(jadwal.getJadwal().getJalurAwalId())) && (first)){
+                    currentJalur = jadwal.getJadwal().getJalurAwalId();
+                    first = false;
+                    Log.e("cek first", String.valueOf(first));
+
+                }else{
+                    String tempJalur = null;
+                    boolean cekJalur = false;
+                    for ( String ss: listJalur) {
+                        if(cekJalur){
+                            tempJalur = ss;
+                            cekJalur = false;
+                        }
+
+                        if(ss.equals(currentJalur)){
+                            cekJalur = true;
+                        }
+                    }
+
+                    if(tempJalur != null){
+                       currentJalur = tempJalur;
+                    }else{
+                      //list awal
+                      currentJalur = listJalur.get(0);
+                    }
+                 }
+
+                //cek jalur has been crossed
+                if(iteratorRitJalur>=listJalur.size()){
+                    currNoRit++;
+                    iteratorRitJalur=1;
+                }else{
+                    iteratorRitJalur++;
+                }
                 //get specified database part and save
                 mDatabase.child(no_bus).child("RIT").child(String.valueOf(currNoRit)).child(currentJalur).setValue(addRit);
                 stateOfRit = STATE_DEPARTURE;
             }else if(stateOfRit == STATE_DEPARTURE){
-                Log.e("STATE_DEPARTURE", String.valueOf(stateOfRit));
                 //get specified database part and save
                 mDatabase.child(no_bus).child("RIT").child(String.valueOf(currNoRit)).child(currentJalur).child("waktuDatang").setValue(timeNow);
                 stateOfRit = STATE_ARRIVE;
-                currNoRit++;
             }
-            Log.e("state rit added", String.valueOf(stateOfRit));
 
             // save number and state of rit
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putInt("numberOfRit", currNoRit).commit();
             editor.putInt("stateOfRit", stateOfRit).commit();
+            editor.putString("jalur_id", currentJalur).commit();
             editor.commit();
         }
     }

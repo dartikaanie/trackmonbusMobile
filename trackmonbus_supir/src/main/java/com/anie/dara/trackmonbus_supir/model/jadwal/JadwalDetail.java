@@ -39,13 +39,13 @@ public class JadwalDetail implements Parcelable {
 	private String noBus;
 
 	@SerializedName("jalur")
-	private List<ListJalur> jalur;
+	private String jalur;
 
-	public void setJalur(List<ListJalur> jalur){
+	public void setJalur(String jalur){
 		this.jalur = jalur;
 	}
 
-	public List<ListJalur> getJalur(){
+	public String getJalur(){
 		return jalur;
 	}
 
@@ -130,8 +130,9 @@ public class JadwalDetail implements Parcelable {
 			",jadwal = '" + jadwal + '\'' + 
 			",shift_id = '" + shiftId + '\'' + 
 			",pramugaras = '" + pramugaras + '\'' + 
-			",tgl = '" + tgl + '\'' + 
-			",shifts = '" + shifts + '\'' + 
+			",tgl = '" + tgl + '\'' +
+			",jalur = '" + jalur + '\'' +
+			",shifts = '" + shifts + '\'' +
 			",users = '" + users + '\'' + 
 			",no_bus = '" + noBus + '\'' + 
 			"}";
@@ -154,6 +155,7 @@ public class JadwalDetail implements Parcelable {
 		dest.writeParcelable(this.shifts, flags);
 		dest.writeParcelable(this.users, flags);
 		dest.writeString(this.noBus);
+		dest.writeString(this.jalur);
 	}
 
 	public JadwalDetail() {
@@ -169,6 +171,7 @@ public class JadwalDetail implements Parcelable {
 		this.shifts = in.readParcelable(Shifts.class.getClassLoader());
 		this.users = in.readParcelable(Users.class.getClassLoader());
 		this.noBus = in.readString();
+		this.jalur = in.readString();
 	}
 
 	public static final Parcelable.Creator<JadwalDetail> CREATOR = new Parcelable.Creator<JadwalDetail>() {
