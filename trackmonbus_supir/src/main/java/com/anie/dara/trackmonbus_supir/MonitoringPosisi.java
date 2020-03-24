@@ -126,7 +126,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
     String[] praListJalur = null;
     ArrayList<String> listJalur;
     boolean first= true;
-    int iteratorRitJalur=1;
+    int iteratorRitJalur;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -183,6 +183,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
             for (String ss : praListJalur){
                 listJalur.add(ss);
             }
+            iteratorRitJalur = listJalur.size();
         }
         //cek bus line
         SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
@@ -222,6 +223,8 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
         getCurrentRit();
 
 
+
+
     }
 
 
@@ -241,14 +244,15 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                     Log.e("curr no rit", String.valueOf(currNoRit));
                     //cek Jalur saat ini
                     if(currNoRit!=DEFAULT_NUM_RIT){
+                        iteratorRitJalur = listJalur.size();
                         for (DataSnapshot dataChildRit : datachild.child("RIT").child(String.valueOf(currNoRit)).getChildren()) {
                             currentJalur = dataChildRit.getKey();
-                            if(dataChildRit.child("waktu_datang").equals("00:00:00")){
+                            if(dataChildRit.child("waktuDatang").getValue() == null){
                                 stateOfRit = STATE_DEPARTURE;
                             }else{
                                 stateOfRit = STATE_ARRIVE;
                             }
-                            iteratorRitJalur++;
+                            iteratorRitJalur--;
                         }
                         //cek status rit
                          //DEFAULT_STATE_RIT == 0
@@ -490,7 +494,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
             if((stateOfRit == DEFAULT_STATE_RIT) || (stateOfRit == STATE_ARRIVE)){ //berangkat
                 Rit addRit = new Rit();
                 addRit.setWaktuBerangkat(timeNow);
-                addRit.setWaktuDatang("00:00:00");
+                addRit.setWaktuDatang(null);
                 //change jalur
                 if(first){
                     currentJalur = jadwal.getJadwal().getJalurAwalId();
@@ -509,7 +513,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                             cekJalur = true;
                         }
                     }
-                    Log.e("tempJalur", String.valueOf(tempJalur));
+
                     if(tempJalur != null){
                        currentJalur = tempJalur;
                     }else{
@@ -519,11 +523,14 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                  }
 
                 //get no rit
-                if(iteratorRitJalur<listJalur.size()){
-                    iteratorRitJalur++;
+                Log.e("iteratorRitJalur", String.valueOf(iteratorRitJalur));
+                Log.e("cek iteratorRitJalur", String.valueOf(iteratorRitJalur<listJalur.size()));
+
+                if(iteratorRitJalur!=0){
+                    iteratorRitJalur--;
                 }else{
                     currNoRit++;
-                    iteratorRitJalur=1;
+                    iteratorRitJalur =listJalur.size()-1;
                 }
 
                 //cek jalur has been crossed
