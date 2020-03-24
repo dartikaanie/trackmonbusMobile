@@ -486,20 +486,17 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
 //            currNoRit = sharedPreferences.getInt("numberOfRit", DEFAULT_NUM_RIT);
 //            stateOfRit = sharedPreferences.getInt("stateOfRit", DEFAULT_STATE_RIT);
 
-            Log.e("state rit add", String.valueOf(STATE_DEPARTURE));
-
             //kondisikan untuk menambah waktu datang / waktu berangkat
             if((stateOfRit == DEFAULT_STATE_RIT) || (stateOfRit == STATE_ARRIVE)){ //berangkat
                 Rit addRit = new Rit();
                 addRit.setWaktuBerangkat(timeNow);
                 addRit.setWaktuDatang("00:00:00");
                 //change jalur
-                if((currentJalur.equals(jadwal.getJadwal().getJalurAwalId())) && (first)){
+                if(first){
                     currentJalur = jadwal.getJadwal().getJalurAwalId();
                     first = false;
-                    Log.e("cek first", String.valueOf(first));
-
                 }else{
+                    //get next jalur
                     String tempJalur = null;
                     boolean cekJalur = false;
                     for ( String ss: listJalur) {
@@ -512,7 +509,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                             cekJalur = true;
                         }
                     }
-
+                    Log.e("tempJalur", String.valueOf(tempJalur));
                     if(tempJalur != null){
                        currentJalur = tempJalur;
                     }else{
@@ -521,13 +518,20 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                     }
                  }
 
-                //cek jalur has been crossed
-                if(iteratorRitJalur>=listJalur.size()){
+                //get no rit
+                if(iteratorRitJalur<listJalur.size()){
+                    iteratorRitJalur++;
+                }else{
                     currNoRit++;
                     iteratorRitJalur=1;
-                }else{
-                    iteratorRitJalur++;
                 }
+
+                //cek jalur has been crossed
+                Log.e("stateOfRIt", String.valueOf(stateOfRit));
+                Log.e("currentJalur", String.valueOf(currentJalur));
+                Log.e("currNoRit", String.valueOf(currNoRit));
+                Log.e("iteratorRitJalur", String.valueOf(iteratorRitJalur));
+
                 //get specified database part and save
                 mDatabase.child(no_bus).child("RIT").child(String.valueOf(currNoRit)).child(currentJalur).setValue(addRit);
                 stateOfRit = STATE_DEPARTURE;
