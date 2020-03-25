@@ -67,8 +67,10 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -480,19 +482,17 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
         return Icon;
     }
 
-    public void checkpointRIT (String no_bus){
+    public void checkpointRIT (final String no_bus){
         if(konekkah()){
             Date date = new Date();
             DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
             String timeNow =  dateFormat.format(date);
 
             SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-//            currNoRit = sharedPreferences.getInt("numberOfRit", DEFAULT_NUM_RIT);
-//            stateOfRit = sharedPreferences.getInt("stateOfRit", DEFAULT_STATE_RIT);
 
             //kondisikan untuk menambah waktu datang / waktu berangkat
             if((stateOfRit == DEFAULT_STATE_RIT) || (stateOfRit == STATE_ARRIVE)){ //berangkat
-                Rit addRit = new Rit();
+                final Rit addRit = new Rit();
                 addRit.setWaktuBerangkat(timeNow);
                 addRit.setWaktuDatang(null);
                 //change jalur
@@ -526,22 +526,40 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                 Log.e("iteratorRitJalur", String.valueOf(iteratorRitJalur));
                 Log.e("cek iteratorRitJalur", String.valueOf(iteratorRitJalur<listJalur.size()));
 
-                if(iteratorRitJalur!=0){
-                    iteratorRitJalur--;
-                }else{
-                    currNoRit++;
-                    iteratorRitJalur =listJalur.size()-1;
-                }
+                Query query =  mDatabase.child(no_bus).child("RIT").child(String.valueOf(currNoRit));
+                query.addListenerForSingleValueEvent (new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        long count = dataSnapshot.getChildrenCount();
+                        Log.e("child count", String.valueOf(count));
+                        Log.e("child count if", String.valueOf(count == listJalur.size()));
+                        if(count == listJalur.size()){
+                            currNoRit++;
+                        }
 
-                //cek jalur has been crossed
-                Log.e("stateOfRIt", String.valueOf(stateOfRit));
-                Log.e("currentJalur", String.valueOf(currentJalur));
-                Log.e("currNoRit", String.valueOf(currNoRit));
-                Log.e("iteratorRitJalur", String.valueOf(iteratorRitJalur));
+                        //cek jalur has been crossed
+                        Log.e("stateOfRIt", String.valueOf(stateOfRit));
+                        Log.e("currentJalur", String.valueOf(currentJalur));
+                        Log.e("currNoRit", String.valueOf(currNoRit));
+                        Log.e("iteratorRitJalur", String.valueOf(iteratorRitJalur));
 
-                //get specified database part and save
-                mDatabase.child(no_bus).child("RIT").child(String.valueOf(currNoRit)).child(currentJalur).setValue(addRit);
-                stateOfRit = STATE_DEPARTURE;
+                        //get specified database part and save
+                        mDatabase.child(no_bus).child("RIT").child(String.valueOf(currNoRit)).child(currentJalur).setValue(addRit);
+                        stateOfRit = STATE_DEPARTURE;
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {}
+                });
+
+//                if(iteratorRitJalur!=0){
+//                    iteratorRitJalur--;
+//                }else{
+//                    currNoRit++;
+//                    iteratorRitJalur =listJalur.size()-1;
+//                }
+
+
             }else if(stateOfRit == STATE_DEPARTURE){
                 //get specified database part and save
                 mDatabase.child(no_bus).child("RIT").child(String.valueOf(currNoRit)).child(currentJalur).child("waktuDatang").setValue(timeNow);
@@ -637,9 +655,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
         awal.setTime(time);
         endStopTime = awal;
         Toast.makeText(MonitoringPosisi.this, "Bus Berhenti", Toast.LENGTH_LONG).show();
-
         //Give action if bus stop
-
     }
 
     public void getListBusInLine(final Location lokasiBus, final String no_bus){
@@ -950,12 +966,18 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
         getCurrentPosisi();
         Date tgl2 = new Date();
         DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-        String time2 =  dateFormat.format(tgl2);
+        final String time2 =  dateFormat.format(tgl2);
         Call<ResponseBody> calCheckpointHalte = client.checkpointHalte(tgl.substring(0,10),no_bus,jadwal.getShiftId(),time2, String.valueOf(currentPosisi.getLat()),String.valueOf(currentPosisi.getLng()));
         calCheckpointHalte.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                Toast.makeText(MonitoringPosisi.this, "Sukses" , Toast.LENGTH_LONG).show();
+                try {
+                    Log.e("response halte", response.body().string());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+//                PosisiTime posisiTime = PosisiTime(currentPosisi.getLat(), currentPosisi.getLng(), );
+//                mDatabase.child(no_bus).child("checkpoint_halte").child(time2).setValue(logPosisi);
             }
 
             @Override
