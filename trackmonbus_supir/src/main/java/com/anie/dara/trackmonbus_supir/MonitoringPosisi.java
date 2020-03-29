@@ -40,6 +40,7 @@ import android.widget.Toast;
 
 import com.anie.dara.trackmonbus_supir.distanceMatrix.DistanceMatrix;
 import com.anie.dara.trackmonbus_supir.distanceMatrix.ElementsItem;
+import com.anie.dara.trackmonbus_supir.model.CheckpointHalte;
 import com.anie.dara.trackmonbus_supir.model.Halte;
 import com.anie.dara.trackmonbus_supir.model.LogPotition;
 import com.anie.dara.trackmonbus_supir.model.Posisi;
@@ -972,12 +973,14 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 try {
-                    Log.e("response halte", response.body().string());
+                    String halte_id =  response.body().string();
+                    CheckpointHalte checkpointHalte = new CheckpointHalte(currentPosisi.getLat(), currentPosisi.getLng(), halte_id );
+                    mDatabase.child(no_bus).child("checkpoint_halte").child(time2).setValue(checkpointHalte);
                 } catch (IOException e) {
+                    Toast.makeText(MonitoringPosisi.this, "Gagal" , Toast.LENGTH_LONG).show();
                     e.printStackTrace();
                 }
-//                PosisiTime posisiTime = PosisiTime(currentPosisi.getLat(), currentPosisi.getLng(), );
-//                mDatabase.child(no_bus).child("checkpoint_halte").child(time2).setValue(logPosisi);
+
             }
 
             @Override
