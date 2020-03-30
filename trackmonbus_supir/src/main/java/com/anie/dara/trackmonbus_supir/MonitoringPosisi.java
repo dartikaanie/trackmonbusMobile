@@ -240,10 +240,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                     //cek nomor RIT saat ini
                     for (DataSnapshot dataRit : datachild.child("RIT").getChildren()) {
                      currNoRit = Integer.parseInt(dataRit.getKey());
-
                     }
-
-                    Log.e("curr no rit", String.valueOf(currNoRit));
                     //cek Jalur saat ini
                     if(currNoRit!=DEFAULT_NUM_RIT){
                         iteratorRitJalur = listJalur.size();
@@ -263,6 +260,26 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                     }else{
                         currNoRit =1;
                         Log.e("cuurRit get Data", String.valueOf(currNoRit));
+                    }
+
+                    //cek log terakhir
+                    for (DataSnapshot dataRit : datachild.child("log").getChildren()) {
+                        if(posisiAwal == null){
+                            posisiAwal = new PosisiTime((Double)dataRit.child("lat").getValue(), (Double)dataRit.child("lng").getValue(), dataRit.getKey());
+                            startStopTime =  new PosisiTime((Double)dataRit.child("lat").getValue(), (Double)dataRit.child("lng").getValue(), dataRit.getKey());
+                            endStopTime =  new PosisiTime((Double)dataRit.child("lat").getValue(), (Double)dataRit.child("lng").getValue(), dataRit.getKey());
+                        }else{
+                            //cek if current bus stop
+                            Posisi tempPosisi = new Posisi((Double)dataRit.child("lat").getValue(), (Double)dataRit.child("lng").getValue(), datachild.getKey());
+                            if(posisiAwal.cek(tempPosisi.getLat(), tempPosisi.getLng())) {
+                                endStopTime =  new PosisiTime((Double)dataRit.child("lat").getValue(), (Double)dataRit.child("lng").getValue(), dataRit.getKey());
+                            }else{
+                                startStopTime = null;
+                                posisiAwal = null;
+                            }
+                        }
+
+
                     }
 
                 }
@@ -647,7 +664,6 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
         }
     };
 
-//    public void getBusSearah
 
     public void cekBerhenti(PosisiTime awal, Posisi current, String time){
         awal.setLat(current.getLat());
@@ -656,6 +672,22 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
         endStopTime = awal;
         Toast.makeText(MonitoringPosisi.this, "Bus Berhenti", Toast.LENGTH_LONG).show();
         //Give action if bus stop
+        //convert time
+        String[] timeEnd=endStopTime.getTime().split(":");
+        int timeEndInt = Integer.parseInt(timeEnd[2]) + (60 * Integer.parseInt(timeEnd[1])) + (3600 * Integer.parseInt(timeEnd[0]));
+
+        String[] timeStart =startStopTime.getTime().split(":");
+        int timeStartInt = Integer.parseInt(timeStart[2]) + (60 * Integer.parseInt(timeStart[1])) + (3600 * Integer.parseInt(timeStart[0]));
+
+        //give range (50 detik)
+        Log.e("bus berhenti end", String.valueOf(endStopTime.getTime()));
+        Log.e("bus berhenti start", String.valueOf(startStopTime.getTime()));
+        Log.e("bus berhenti 50 s", String.valueOf(timeEndInt - timeStartInt));
+        if (timeEndInt - timeStartInt > 5000){
+           showDialogGeneral("Bus berhenti terlalu lama ");
+        }
+
+
     }
 
     public void getListBusInLine(final Location lokasiBus, final String no_bus){
