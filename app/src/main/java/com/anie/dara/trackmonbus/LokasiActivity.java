@@ -412,7 +412,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
 //                        Log.e("jarak Halte utama", item.toString());
                     }
                 }
-                getDurasi(halteItem, jalur, jarakHalteUtama, posisiHalteUtama );
+                getListBusInLine(halteItem, jalur, jarakHalteUtama, posisiHalteUtama );
                 dialog.dismiss();
             }
 
@@ -434,7 +434,70 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
         return halte;
     }
 
-    public void getDurasi(final HalteItem halteItem, JalurItem jalur, final int jarakHalteUtama, final String posisiHalteUtama){
+    public void getListBusInLine(final HalteItem halteItem, final JalurItem jalur, final int jarakHalteUtama, final String posisiHalteUtama){
+        dialog.setMessage("Memuat Data . . .");
+        dialog.show();
+//        listBusSearah = new ArrayList<>();
+        final ArrayList<String> posisiDestination = new ArrayList<>();
+        final ArrayList<Posisi> posisiBus = new ArrayList<>();
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+
+                String posisiHalte = halteItem.getLat() + "," + halteItem.getLng();
+                int n=0;
+
+                for (DataSnapshot datachild : dataSnapshot.getChildren()) {
+                    //cek is it the same line and status active (1)
+                    if ((datachild.child("jalur").getValue().toString().equals(jalur.getJalurId()))
+                            && (datachild.child("status").getValue().toString().equals("1"))) {
+//                        listBusSearah.add(new noBus(datachild.getKey()));
+                        double location_lat = 0, location_lng = 0;
+
+                        //get potition of other bus
+                        for (DataSnapshot child : datachild.child("log").getChildren()) {
+                            location_lat = Double.parseDouble(child.child("lat").getValue().toString());
+                            location_lng = Double.parseDouble(child.child("lng").getValue().toString());
+                        }
+
+                        //if potition exist
+                        if ((location_lat != 0) && (location_lng != 0)) {
+                            String noBuscek = datachild.getKey();
+                            Posisi dataBus = new Posisi(location_lat,location_lng,noBuscek);
+                            String posisiBusCek = location_lat + "," + location_lng;
+                            posisiBus.add(n++,dataBus);
+                            posisiDestination.add(posisiBusCek);
+
+                            String no_bus2 = datachild.getKey();
+                            Posisi dataOtherBus = new Posisi(location_lat, location_lng, no_bus2);
+                            posisiBus.add(n, dataOtherBus);
+                        }
+                    }
+                }
+
+                if(posisiDestination.size()>0){
+                    if(alertDialog != null){
+                        alertDialog.dismiss();
+                    }
+                    cekBusHalteUtama(posisiHalte, convertToString(posisiDestination),posisiBus , jarakHalteUtama, posisiHalteUtama);
+
+                }else{
+                    showAlert("Tidak ada bus yang berkendara pada jalur ini saat ini");
+                }
+                dialog.dismiss();
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void getListBusInLine2(final HalteItem halteItem, JalurItem jalur, final int jarakHalteUtama, final String posisiHalteUtama){
         dialog.setMessage("Memuat Data . . .");
         dialog.show();
         listBusSearah = new ArrayList<>();
