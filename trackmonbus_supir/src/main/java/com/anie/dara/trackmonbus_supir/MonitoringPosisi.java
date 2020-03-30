@@ -62,7 +62,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -968,28 +967,38 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
         Date tgl2 = new Date();
         DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
         final String time2 =  dateFormat.format(tgl2);
-        Call<ResponseBody> calCheckpointHalte = client.checkpointHalte(tgl.substring(0,10),no_bus,jadwal.getShiftId(),time2, String.valueOf(currentPosisi.getLat()),String.valueOf(currentPosisi.getLng()));
-        calCheckpointHalte.enqueue(new Callback<ResponseBody>() {
+        Call<Halte> calCheckpointHalte = client.checkpointHalte(tgl.substring(0,10),no_bus,currentJalur,time2, String.valueOf(currentPosisi.getLat()),String.valueOf(currentPosisi.getLng()));
+        calCheckpointHalte.enqueue(new Callback<Halte>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                try {
-                    String halte_id =  response.body().string();
-                    CheckpointHalte checkpointHalte = new CheckpointHalte(currentPosisi.getLat(), currentPosisi.getLng(), halte_id );
-                    mDatabase.child(no_bus).child("checkpoint_halte").child(time2).setValue(checkpointHalte);
-                } catch (IOException e) {
-                    Toast.makeText(MonitoringPosisi.this, "Gagal" , Toast.LENGTH_LONG).show();
-                    e.printStackTrace();
-                }
+            public void onResponse(Call<Halte> call, Response<Halte> response) {
+                    Halte halte =  response.body();
+                    CheckpointHalte checkpointHalte = new CheckpointHalte(currentPosisi.getLat(), currentPosisi.getLng(), halte.getHalte_id() );
+                    if(checkpointHalte.getHalte()==null){
+                        showDialogGeneral("Gagal disimpan. Silakan Coba lagi");
+                    }else{
+                        mDatabase.child(no_bus).child("checkpoint_halte").child(time2).setValue(checkpointHalte);
+                        showDialogGeneral( "Checkpoint di "+ halte.getNama() + " Berhasil Disimpan");
+                    }
 
             }
 
             @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
+            public void onFailure(Call<Halte> call, Throwable t) {
                 Toast.makeText(MonitoringPosisi.this, "Gagal" , Toast.LENGTH_LONG).show();
             }
         });
     }
 
+    public void showDialogGeneral (String message){
+        AlertDialog.Builder alert = new AlertDialog.Builder(MonitoringPosisi.this);
+        alert
+                .setMessage(message)
+                .setIcon(R.mipmap.trans)
+                .setCancelable(false)
+                .setNeutralButton("Ok", null);
+        AlertDialog alertDialog = alert.create();
+        alertDialog.show();
+    }
     @Override
     public void onClick(View v) {
         JadwalDetail jadwalSupir =   getIntent().getExtras().getParcelable("jadwal");

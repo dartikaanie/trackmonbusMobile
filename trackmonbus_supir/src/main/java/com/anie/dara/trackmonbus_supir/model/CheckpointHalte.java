@@ -9,4 +9,28 @@ public class CheckpointHalte {
         this.lng = lng;
         this.halte = halte;
     }
+
+    public Double getLat() {
+        return lat;
+    }
+
+    public void setLat(Double lat) {
+        this.lat = lat;
+    }
+
+    public Double getLng() {
+        return lng;
+    }
+
+    public void setLng(Double lng) {
+        this.lng = lng;
+    }
+
+    public String getHalte() {
+        return halte;
+    }
+
+    public void setHalte(String halte) {
+        this.halte = halte;
+    }
 }

@@ -118,10 +118,10 @@ public interface dbClient {
             @Query("lng") String lng );
 
     @GET("api/checkpointHalte")
-    Call<ResponseBody> checkpointHalte(
+    Call<Halte> checkpointHalte(
             @Query("tgl") String tgl,
             @Query("no_bus") String no_bus,
-            @Query("shift_id") String shift_id,
+            @Query("jalur_id") String jalur_id,
             @Query("waktu") String waktu,
             @Query("lat") String lat,
             @Query("lng") String lng );
