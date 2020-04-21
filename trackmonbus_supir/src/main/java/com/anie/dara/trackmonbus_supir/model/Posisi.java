@@ -34,4 +34,13 @@ public class Posisi {
     public void setLng(Double lng) {
         this.lng = lng;
     }
+
+    @Override
+    public String toString() {
+        return "Posisi{" +
+                "lat=" + lat +
+                ", lng=" + lng +
+                ", no_bus='" + no_bus + '\'' +
+                '}';
+    }
 }

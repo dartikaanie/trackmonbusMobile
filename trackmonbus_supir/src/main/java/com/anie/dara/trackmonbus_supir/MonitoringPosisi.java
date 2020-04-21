@@ -179,7 +179,8 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
             namaTrayek.setText(jadwal.getJadwal().getDetailTrayeks().getTrayeks().getTrayek());
             no_bus =jadwal.getJadwal().getBuses().getNoBus();
             tgl = jadwal.getTgl();
-            hari_tgl.setText(substring(jadwal.getTgl(),0,10));
+//            hari_tgl.setText(substring(jadwal.getTgl(),0,10));
+            hari_tgl.setText("2020-03-07");
             String s = jadwal.getJalur();
             praListJalur = s.split("-");
             listJalur = new ArrayList<>();
@@ -189,16 +190,17 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
             iteratorRitJalur = listJalur.size();
         }
         //cek bus line
-        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-        currentJalur = sharedPreferences.getString("jalur_id", DEFAULT);
-        if(currentJalur.equals(DEFAULT)){
-            currentJalur = jadwal.getJadwal().getJalurAwalId();
-//            // save bus line
-//            SharedPreferences.Editor editor = sharedPreferences.edit();
-//            editor.putString("jalur_id", jadwal.getJadwal().getJalurAwalId());
-//            editor.commit();
-        }
+//        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+//        currentJalur = sharedPreferences.getString("jalur_id", DEFAULT);
+//        if(currentJalur.equals(DEFAULT)){
+//            currentJalur = jadwal.getJadwal().getJalurAwalId();
+////            // save bus line
+////            SharedPreferences.Editor editor = sharedPreferences.edit();
+////            editor.putString("jalur_id", jadwal.getJadwal().getJalurAwalId());
+////            editor.commit();
+//        }
 
+        currentJalur = jadwal.getJadwal().getJalurAwalId();
 
         mMapView = (MapView) findViewById(R.id.map_monitor);
 //        dataMarker();
@@ -349,6 +351,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
         else
         {
             getCurrentPosisi();
+
         }
 
 //        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -382,7 +385,10 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
     public void getDataAksi(DataSnapshot dataSnapshot) {
         LatLng point = null;
         BitmapDrawable bitmapdraw;
-        if(dataSnapshot.getKey() == no_bus){
+        Log.e("tes", String.valueOf(dataSnapshot.getKey().equals(no_bus)));
+        Log.e("tes", String.valueOf( no_bus));
+        Log.e("tes", String.valueOf(dataSnapshot.getKey()));
+        if(dataSnapshot.getKey().equals(no_bus)){
              bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.transsupir);
         }else{
              bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.trans);
@@ -396,6 +402,12 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                 double location_lat = Double.parseDouble(lat);
                 double location_lng = Double.parseDouble(lng);
                 point = new LatLng(location_lat, location_lng);
+             if(dataSnapshot.getKey().equals(no_bus)){
+                 bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.transsupir);
+                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location_lat, location_lng), 16.0f));
+                 final String posisi1 = location_lat + "," + location_lng; //potiton of current bus
+                 getListBusInLine(posisi1,no_bus);
+             }
                 marker = (Marker) hashMapMarker.get(nomorBus);
                 if (marker != null) {
                     marker.remove();
@@ -418,8 +430,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 Toast.makeText(MonitoringPosisi.this , "ada bus yang baru berkendara", Toast.LENGTH_SHORT).show();
-                Log.e("bus baru", dataSnapshot.getValue().toString());
-                getDataAksi(dataSnapshot);
+//                getDataAksi(dataSnapshot);
             }
 
             @Override
@@ -585,11 +596,11 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
             }
 
             // save number and state of rit
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putInt("numberOfRit", currNoRit).commit();
-            editor.putInt("stateOfRit", stateOfRit).commit();
-            editor.putString("jalur_id", currentJalur).commit();
-            editor.commit();
+//            SharedPreferences.Editor editor = sharedPreferences.edit();
+//            editor.putInt("numberOfRit", currNoRit).commit();
+//            editor.putInt("stateOfRit", stateOfRit).commit();
+//            editor.putString("jalur_id", currentJalur).commit();
+//            editor.commit();
         }
     }
 //    public void checkpoint(String no_bus, String tgl){
@@ -709,23 +720,24 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
 
     }
 
-    public void getListBusInLine(final Location lokasiBus, final String no_bus){
+    public void getListBusInLine(final String posisi1, final String no_bus){
         //get bus sejalur
-        Log.e("buslistin line", "bus");
         listBusSearah = new ArrayList<>();
         final ArrayList<String> posisiDestination = new ArrayList<>();
         final ArrayList<Posisi> posisiBus = new ArrayList<>();
-        final String posisi1 = lokasiBus.getLatitude() + "," + lokasiBus.getLongitude(); //potiton of current bus
-        final int n=0;
+
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                int n = 0;
                 for (DataSnapshot datachild : dataSnapshot.getChildren()) {
                     //cek is it the same line and status active (1)
+
                     if((datachild.child("jalur").getValue().toString().equals(currentJalur))
                             &&  (datachild.child("status").getValue().toString().equals("1"))
                             &&  (!datachild.getKey().equals(jadwal.getNoBus()))
                       ){
+
                         listBusSearah.add(new noBus(datachild.getKey()));
                         double location_lat = 0, location_lng = 0;
 
@@ -739,7 +751,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                         if((location_lat!=0) && (location_lng!=0) ) {
                             String no_bus2 = datachild.getKey();
                             Posisi dataOtherBus = new Posisi(location_lat, location_lng, no_bus2);
-                            posisiBus.add(n, dataOtherBus);
+                            posisiBus.add(n++, dataOtherBus);
 
                             //made matrix from potition of buses
                             Location lokasi2 = new Location("posisi 2");
@@ -756,12 +768,12 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                     if(alertDialog != null){
                         alertDialog.dismiss();
                     }
-                    calculateDistance(posisi1, convertToString(posisiDestination),posisiBus );
+//                    calculateDistance(posisi1, convertToString(posisiDestination),posisiBus );
                 }
 
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lokasiBus.getLatitude(), lokasiBus.getLongitude()), 16.0f));
+//                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lokasiBus.getLatitude(), lokasiBus.getLongitude()), 16.0f));
 
-                Log.e("listbus",listBusSearah.toString());
+//                Log.e("listbus",listBusSearah.toString());
 
             }
 
@@ -921,7 +933,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                 Double lng = location.getLongitude();
                 currentPosisi = new Posisi(lat,lng, no_bus);
                 currentLocation = location;
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentPosisi.getLat(), currentPosisi.getLng()), 16.0f));
+//                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentPosisi.getLat(), currentPosisi.getLng()), 16.0f));
             }else{
                 Toast.makeText(MonitoringPosisi.this,"Lokasi tidak tersimpan", Toast.LENGTH_SHORT).show();
             }
@@ -936,7 +948,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
         }
         else{
             //get bus serah utk menhitung jarak
-            getListBusInLine(location, no_bus);
+//            getListBusInLine(location, no_bus);
             final String posisiCek = posisi.getLng() +","+ posisi.getLat();
            //CEK if the point contain of  area
             Call<String> callContain = client.getContain(tgl.substring(0,10),no_bus,jadwal.getShiftId(),time, posisiCek,String.valueOf(currentPosisi.getLat()),String.valueOf(currentPosisi.getLng()), jadwal.getJadwal().getTrayekId());
@@ -948,9 +960,9 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                         Toast.makeText(MonitoringPosisi.this, "Keluar dari Trayek", Toast.LENGTH_LONG).show();
                     }
                     LogPotition logPosisi = new LogPotition(posisi.getLat(), posisi.getLng(), contain, jadwal.getUserIdSupir() );
-                    mDatabase.child(no_bus).child("log").child(useTime).setValue(logPosisi);
-                    mDatabase.child(no_bus).child("status").setValue(1);
-                    mDatabase.child(no_bus).child("jalur").setValue(currentJalur);
+//                    mDatabase.child(no_bus).child("log").child(useTime).setValue(logPosisi);
+//                    mDatabase.child(no_bus).child("status").setValue(1);
+//                    mDatabase.child(no_bus).child("jalur").setValue(currentJalur);
                     Toast.makeText(MonitoringPosisi.this, "Update Posisi", Toast.LENGTH_LONG).show();
 
                 }
@@ -981,7 +993,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                     for(ElementsItem item : row){
                         try{
                             jarak = Double.parseDouble(String.valueOf(item.getDistance().getValue()));
-                            Log.e("jarak direction", String.valueOf(jarak));
+                            Log.e("jarak direction", String.valueOf(busPosisi.get(n).getNo_bus() +"  " + jarak));
                             if(jarak  < 500){
                                 bus = busPosisi.get(n);
                                 listBusDekat = listBusDekat +" - "+busPosisi.get(n).getNo_bus();
@@ -991,8 +1003,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                                 marker = (Marker) hashMapMarker.get(bus.getNo_bus());
                                 marker.showInfoWindow();
                                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(bus.getLat(), bus.getLng()), 16.0f));
-
-                        }
+                            }
                             n++;
                         }catch (Exception ex){
                             Log.e("error jarak", ex.toString());
