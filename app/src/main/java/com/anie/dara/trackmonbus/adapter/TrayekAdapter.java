@@ -44,7 +44,7 @@ public class TrayekAdapter extends RecyclerView.Adapter<TrayekAdapter.TrayekHold
     public void onBindViewHolder(@NonNull TrayekAdapter.TrayekHolder holder, int position) {
         Trayeks trayek = dataTrayek.get(position);
         holder.trayek.setText(String.valueOf(trayek.getTrayek()));
-        holder.km_rit.setText(String.valueOf(trayek.getKmRit() + " km"));
+//        holder.km_rit.setText(String.valueOf(trayek.getKmRit() + " km"));
         if(trayek.getJalur().size() != 0){
             jalurAdapter = new JalurAdapter(trayek.getJalur(), context);
             holder.rvJalur.setAdapter(jalurAdapter);
@@ -69,7 +69,7 @@ public class TrayekAdapter extends RecyclerView.Adapter<TrayekAdapter.TrayekHold
     // Inner CLASS
     private RecyclerView rvJalur;
     public class TrayekHolder extends RecyclerView.ViewHolder{
-        TextView trayek, km_rit, jalurText;
+        TextView trayek, jalurText;
         RecyclerView rvJalur;
         private JalurAdapter jalurAdpater;
 
@@ -77,7 +77,7 @@ public class TrayekAdapter extends RecyclerView.Adapter<TrayekAdapter.TrayekHold
         public TrayekHolder(@NonNull View itemView){
             super(itemView);
             trayek = itemView.findViewById(R.id.nama_trayek);
-            km_rit = itemView.findViewById(R.id.km_rit);
+//            km_rit = itemView.findViewById(R.id.km_rit);
             rvJalur = itemView.findViewById(R.id.rvJalur);
             jalurText = itemView.findViewById(R.id.jalurText);
 

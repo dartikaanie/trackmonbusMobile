@@ -45,6 +45,7 @@ import com.anie.dara.trackmonbus_supir.model.Halte;
 import com.anie.dara.trackmonbus_supir.model.LogPotition;
 import com.anie.dara.trackmonbus_supir.model.Posisi;
 import com.anie.dara.trackmonbus_supir.model.PosisiTime;
+import com.anie.dara.trackmonbus_supir.model.ResponseSMS;
 import com.anie.dara.trackmonbus_supir.model.Rit;
 import com.anie.dara.trackmonbus_supir.model.jadwal.JadwalDetail;
 import com.anie.dara.trackmonbus_supir.model.noBus;
@@ -238,13 +239,13 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                 //cek is it the same number
                 if((datachild.getKey().equals(jadwal.getNoBus()))){
                     //cek nomor RIT saat ini
-                    for (DataSnapshot dataRit : datachild.child("RIT").getChildren()) {
+                    for (DataSnapshot dataRit : datachild.child("rit").getChildren()) {
                      currNoRit = Integer.parseInt(dataRit.getKey());
                     }
                     //cek Jalur saat ini
                     if(currNoRit!=DEFAULT_NUM_RIT){
                         iteratorRitJalur = listJalur.size();
-                        for (DataSnapshot dataChildRit : datachild.child("RIT").child(String.valueOf(currNoRit)).getChildren()) {
+                        for (DataSnapshot dataChildRit : datachild.child("rit").child(String.valueOf(currNoRit)).getChildren()) {
                             currentJalur = dataChildRit.getKey();
                             if(dataChildRit.child("waktuDatang").getValue() == null){
                                 stateOfRit = STATE_DEPARTURE;
@@ -543,7 +544,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                 Log.e("iteratorRitJalur", String.valueOf(iteratorRitJalur));
                 Log.e("cek iteratorRitJalur", String.valueOf(iteratorRitJalur<listJalur.size()));
 
-                Query query =  mDatabase.child(no_bus).child("RIT").child(String.valueOf(currNoRit));
+                Query query =  mDatabase.child(no_bus).child("rit").child(String.valueOf(currNoRit));
                 query.addListenerForSingleValueEvent (new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -561,7 +562,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                         Log.e("iteratorRitJalur", String.valueOf(iteratorRitJalur));
 
                         //get specified database part and save
-                        mDatabase.child(no_bus).child("RIT").child(String.valueOf(currNoRit)).child(currentJalur).setValue(addRit);
+                        mDatabase.child(no_bus).child("rit").child(String.valueOf(currNoRit)).child(currentJalur).setValue(addRit);
                         stateOfRit = STATE_DEPARTURE;
                     }
 
@@ -579,7 +580,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
 
             }else if(stateOfRit == STATE_DEPARTURE){
                 //get specified database part and save
-                mDatabase.child(no_bus).child("RIT").child(String.valueOf(currNoRit)).child(currentJalur).child("waktuDatang").setValue(timeNow);
+                mDatabase.child(no_bus).child("rit").child(String.valueOf(currNoRit)).child(currentJalur).child("waktuDatang").setValue(timeNow);
                 stateOfRit = STATE_ARRIVE;
             }
 
@@ -644,7 +645,6 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                         posisiAwal = new PosisiTime(currentPosisi.getLat(), currentPosisi.getLng(), time);
                         startStopTime =  new PosisiTime(currentPosisi.getLat(), currentPosisi.getLng(), time);
                         endStopTime =  new PosisiTime(currentPosisi.getLat(), currentPosisi.getLng(), time);
-
                     }else{
                         //cek if current bus stop
                         if(posisiAwal.cek(currentPosisi.getLat(), currentPosisi.getLng())) {
@@ -658,7 +658,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                     addPosisi(currentPosisi, currentLocation, time);
                 }
 //                Log.e("interval", String.valueOf(mInterval));
-                mDatabase.child(no_bus).child("status").setValue(1);
+//                mDatabase.child(no_bus).child("status").setValue(1);
                 handler.postDelayed(this, mInterval);
             }
         }
@@ -684,7 +684,26 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
         Log.e("bus berhenti start", String.valueOf(startStopTime.getTime()));
         Log.e("bus berhenti 50 s", String.valueOf(timeEndInt - timeStartInt));
         if (timeEndInt - timeStartInt > 5000){
+            String menit = new SimpleDateFormat("mm").format(new Date(timeEndInt - timeStartInt * 1000L));
+            String detik = new SimpleDateFormat("ss").format(new Date(timeEndInt - timeStartInt * 1000L));
+            String lama = menit+" menit "+detik+" detik";
            showDialogGeneral("Bus berhenti terlalu lama ");
+            client = ApiClient.getClient().create(dbClient.class);
+            Call<ResponseSMS> call = client.sendSMS(no_bus, jadwal.getUserIdSupir(), lama, "Bus Berhenti");
+            call.enqueue(new Callback<ResponseSMS>() {
+                @Override
+                public void onResponse(Call<ResponseSMS> call, Response<ResponseSMS> response) {
+                    ResponseSMS res = response.body();
+                    if(res.getStatus() == 200){
+                        startStopTime = null;
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseSMS> call, Throwable t) {
+
+                }
+            });
         }
 
 
@@ -692,6 +711,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
 
     public void getListBusInLine(final Location lokasiBus, final String no_bus){
         //get bus sejalur
+        Log.e("buslistin line", "bus");
         listBusSearah = new ArrayList<>();
         final ArrayList<String> posisiDestination = new ArrayList<>();
         final ArrayList<Posisi> posisiBus = new ArrayList<>();

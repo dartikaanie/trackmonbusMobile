@@ -17,5 +17,12 @@ public interface DistanceApiServices {
             @Query("key") String key
     );
 
+    @GET("json")
+    Call<DistanceMatrix> getDistanceInfoWalking(
+            @Query("origins") String origins,
+            @Query("destinations") String destinations,
+            @Query("mode") String mode,
+            @Query("key") String key
+    );
 //    Call<DistanceMatrix> getDistanceInfo(String posisiUser, String s, String s1);
 }

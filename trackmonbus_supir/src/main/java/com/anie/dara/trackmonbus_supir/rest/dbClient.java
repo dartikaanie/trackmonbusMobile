@@ -1,6 +1,7 @@
 package com.anie.dara.trackmonbus_supir.rest;
 
 import com.anie.dara.trackmonbus_supir.model.Halte;
+import com.anie.dara.trackmonbus_supir.model.ResponseSMS;
 import com.anie.dara.trackmonbus_supir.model.Rit;
 import com.anie.dara.trackmonbus_supir.model.User;
 import com.anie.dara.trackmonbus_supir.model.jadwal.DetailTrayeks;
@@ -107,15 +108,12 @@ public interface dbClient {
             @Query("lat") String lat,
             @Query("lng") String lng );
 
-    @GET("api/stopTime")
-    Call<String> stopTime(
-            @Query("tgl") String tgl,
+    @GET("api/sendSMS")
+    Call<ResponseSMS> sendSMS(
             @Query("no_bus") String no_bus,
-            @Query("shift_id") String shift_id,
-            @Query("waktu_mulai") String waktu_mulai,
-            @Query("waktu_akhir") String waktu_akhir,
-            @Query("lat") String lat,
-            @Query("lng") String lng );
+            @Query("user_id") String user_id,
+            @Query("lama") String lama,
+            @Query("message") String message);
 
     @GET("api/checkpointHalte")
     Call<Halte> checkpointHalte(

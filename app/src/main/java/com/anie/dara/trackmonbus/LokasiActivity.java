@@ -38,6 +38,9 @@ import android.widget.Toast;
 
 import com.anie.dara.trackmonbus.adapter.HalteAdapter;
 import com.anie.dara.trackmonbus.model.Bus;
+import com.anie.dara.trackmonbus.model.DataBus;
+import com.anie.dara.trackmonbus.model.Halte;
+import com.anie.dara.trackmonbus.model.LogPotition;
 import com.anie.dara.trackmonbus.model.Posisi;
 import com.anie.dara.trackmonbus.model.Trayeks.HalteItem;
 import com.anie.dara.trackmonbus.model.Trayeks.JalurItem;
@@ -71,6 +74,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -434,67 +438,121 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
         return halte;
     }
 
+    public void getPraDataBus(DataSnapshot datachild, final OnGetDataListener onGetDataListener){
+        onGetDataListener.onStart();
+            //cek is it the same line and status active (1)
+            if ((datachild.child("jalur").getValue() != null) && (datachild.child("status").getValue() != null)) {
+                if ((datachild.child("jalur").getValue().toString().equals(jalur.getJalurId()))
+                        && (datachild.child("status").getValue().toString().equals("1"))) {
+                    datachild.child("log").getRef().limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            onGetDataListener.onSuccess(dataSnapshot);
+                            Log.e("cek getPraDataBus", dataSnapshot.getValue().toString());
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+
+        }
+    }
+
+    public void getAllDataBus(DataSnapshot dataSnapshot, final OnGetAllDataListetener listerner){
+        listerner.onStart();
+        for (final DataSnapshot datachild : dataSnapshot.getChildren()) {
+            final String nomorBus = datachild.getKey();
+            getPraDataBus(datachild, new OnGetDataListener() {
+                @Override
+                public void onSuccess(DataSnapshot datachild) {
+                    listerner.onSuccess(datachild, nomorBus);
+                    Log.e("sukses getAllDataBus", datachild.getValue().toString());
+
+                }
+
+                @Override
+                public void onStart() {
+
+                }
+
+                @Override
+                public void onFailure() {
+                    Log.e("gagal getAllDataBus", "gagal");
+                }
+
+            });
+        }
+    }
+
     public void getListBusInLine(final HalteItem halteItem, final JalurItem jalur, final int jarakHalteUtama, final String posisiHalteUtama){
         dialog.setMessage("Memuat Data . . .");
         dialog.show();
-//        listBusSearah = new ArrayList<>();
-        final ArrayList<String> posisiDestination = new ArrayList<>();
-        final ArrayList<Posisi> posisiBus = new ArrayList<>();
+        final String posisiHalte = halteItem.getLat() + "," + halteItem.getLng();
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+                final ArrayList<String> posisiDestination = new ArrayList<>();
+                final ArrayList<Posisi> posisiBusList = new ArrayList<>();
+                getAllDataBus(dataSnapshot, new OnGetAllDataListetener() {
+                    @Override
+                    public void onSuccess(DataSnapshot datachild, String noBus) {
+                        for (DataSnapshot child : datachild.getChildren()) {
+                            if (child.child("inArea").getValue().equals("1")) {
+                                double location_lat = Double.parseDouble(child.child("lat").getValue().toString());
+                                double location_lng = Double.parseDouble(child.child("lng").getValue().toString());
 
-
-                String posisiHalte = halteItem.getLat() + "," + halteItem.getLng();
-                int n=0;
-
-                for (DataSnapshot datachild : dataSnapshot.getChildren()) {
-                    //cek is it the same line and status active (1)
-                    if ((datachild.child("jalur").getValue().toString().equals(jalur.getJalurId()))
-                            && (datachild.child("status").getValue().toString().equals("1"))) {
-//                        listBusSearah.add(new noBus(datachild.getKey()));
-                        double location_lat = 0, location_lng = 0;
-
-                        //get potition of other bus
-                        for (DataSnapshot child : datachild.child("log").getChildren()) {
-                            location_lat = Double.parseDouble(child.child("lat").getValue().toString());
-                            location_lng = Double.parseDouble(child.child("lng").getValue().toString());
+                                String noBuscek = noBus;
+                                Posisi posisiBus = new Posisi(location_lat, location_lng, noBuscek);
+                                String posisiBusCek = location_lat + "," + location_lng;
+                                posisiDestination.add(posisiBusCek);
+                                posisiBusList.add(posisiBus);
+                                Log.d("ONSUCCES 1", posisiBusCek);
+//                                    posisiBus.add(n++, dataBus);
+//                                    posisiDestination.add(posisiBusCek);
+                            }
                         }
 
-                        //if potition exist
-                        if ((location_lat != 0) && (location_lng != 0)) {
-                            String noBuscek = datachild.getKey();
-                            Posisi dataBus = new Posisi(location_lat,location_lng,noBuscek);
-                            String posisiBusCek = location_lat + "," + location_lng;
-                            posisiBus.add(n++,dataBus);
-                            posisiDestination.add(posisiBusCek);
+                        Log.e("posisiDestination cek", String.valueOf(posisiDestination.size()));
+                        if(posisiDestination.size()>0){
+                            if(alertDialog != null){
+                                alertDialog.dismiss();
+                            }
+                            cekBusHalteUtama(posisiHalte, convertToString(posisiDestination),posisiBusList , jarakHalteUtama, posisiHalteUtama);
 
-                            String no_bus2 = datachild.getKey();
-                            Posisi dataOtherBus = new Posisi(location_lat, location_lng, no_bus2);
-                            posisiBus.add(n, dataOtherBus);
+                        }else{
+                            showAlert("Tidak ada bus yang berkendara pada jalur ini saat ini");
                         }
+                        dialog.dismiss();
                     }
-                }
 
-                if(posisiDestination.size()>0){
-                    if(alertDialog != null){
-                        alertDialog.dismiss();
+                    @Override
+                    public void onStart() {
+                        Log.e("getListBusInLine", "start");
                     }
-                    cekBusHalteUtama(posisiHalte, convertToString(posisiDestination),posisiBus , jarakHalteUtama, posisiHalteUtama);
 
-                }else{
-                    showAlert("Tidak ada bus yang berkendara pada jalur ini saat ini");
-                }
-                dialog.dismiss();
+                    @Override
+                    public void onFailure() {
+                        Log.e("getListBusInLine", "gagal");
 
+                    }
+                });
 
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            public void onCancelled(DatabaseError databaseError) {
 
             }
         });
+    }
+
+
+
+    public void getDataBusAktif(){
+
     }
 
     public void getListBusInLine2(final HalteItem halteItem, JalurItem jalur, final int jarakHalteUtama, final String posisiHalteUtama){
@@ -567,7 +625,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
     public void cekBusHalteUtama(final String posisiHalte , String posisiBusCek, final ArrayList<Posisi> busPosisi, final int jarakHalteUtama, final String posisiHalteUtama){
-        final Posisi[] noBusMinPosisi = {null};
+        Log.e("cek data bus", busPosisi.toString());
         final ArrayList<String> posisiBusFinal = new ArrayList<>();
         final ArrayList<Posisi> DataBus = new ArrayList<>();
         Call<DistanceMatrix> call = distanceApi.getDistanceInfo(posisiHalteUtama,posisiBusCek,"driving","now","true","AIzaSyDZ-N9it_JFpboG3R3LfxakMiAkUdF12bU");
@@ -591,6 +649,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
                 }
                 if(posisiBusFinal.size()>0){
                     actionRoute(posisiHalte, convertToString(posisiBusFinal),DataBus);
+                    Log.e("data Bus", DataBus.toString());
                 }else{
                     showAlert("Belum ada bus yang berkendara ke halte ini");
                 }
@@ -637,13 +696,13 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
 
     private void actionRoute(final String posisiHalte , String posisiBusCek, final ArrayList<Posisi> busPosisi) {
 
-        final Posisi[] noBusMinPosisi = {null};
         dialog.setMessage("Memuat Data . . .");
         dialog.show();
         Call<DistanceMatrix> call = distanceApi.getDistanceInfo(posisiBusCek, posisiHalte,"driving","now","true","AIzaSyDZ-N9it_JFpboG3R3LfxakMiAkUdF12bU");
         call.enqueue(new Callback<DistanceMatrix>() {
             @Override
             public void onResponse(Call<DistanceMatrix> call, Response<DistanceMatrix> response) {
+                Posisi noBusMinPosisi = null;
                 DistanceMatrix data = response.body();
                 if(data.getRows().get(0).getElements().size() > 0){
                     List<RowsItem> row = data.getRows();
@@ -654,7 +713,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
                         if (n == 0) {
                             durasiInt = item.getElements().get(0).getDuration().getValue();
                             durasi = item.getElements().get(0).getDurationInTraffic().getText();
-                            noBusMinPosisi[0] = new Posisi(busPosisi.get(n).getLat(), busPosisi.get(n).getLng(), busPosisi.get(n).getNo_bus());
+                            noBusMinPosisi = new Posisi(busPosisi.get(n).getLat(), busPosisi.get(n).getLng(), busPosisi.get(n).getNo_bus());
                             durasiMin = durasiInt;
                         } else {
                             durasiInt = item.getElements().get(0).getDuration().getValue();
@@ -663,23 +722,23 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
                                 durasiMin = durasiInt;
                                 durasi = item.getElements().get(0).getDurationInTraffic().getText();
 
-                                noBusMinPosisi[0] = new Posisi(busPosisi.get(n).getLat(), busPosisi.get(n).getLng(), busPosisi.get(n).getNo_bus());
+                                noBusMinPosisi = new Posisi(busPosisi.get(n).getLat(), busPosisi.get(n).getLng(), busPosisi.get(n).getNo_bus());
                             }
                         }
                         n++;
                     }
-                    if(noBusMinPosisi[0] != null){
+                    if(noBusMinPosisi != null){
                         if(alertDialog != null){
                             alertDialog.dismiss();
                         }
                         dialog.dismiss();
-                        marker = (Marker) hashMapMarker.get(noBusMinPosisi[0].getNo_bus());
+                        marker = (Marker) hashMapMarker.get(noBusMinPosisi.getNo_bus());
                         if(marker != null){
                             marker.showInfoWindow();
                         }
-                        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(noBusMinPosisi[0].getLat(), noBusMinPosisi[0].getLng()), 16.0f));
-
-                        ShowDurasi(durasi, noBusMinPosisi[0].getNo_bus());
+                        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(noBusMinPosisi.getLat(), noBusMinPosisi.getLng()), 16.0f));
+                        Log.e("noBusMinPosisi", String.valueOf(noBusMinPosisi));
+                        ShowDurasi(durasi, noBusMinPosisi.getNo_bus());
                     }else{
                         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(LokasiActivity.this);
                         alertDialogBuilder
@@ -733,7 +792,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(LokasiActivity.this);
         alertDialogBuilder
-                .setMessage("Waktu tunggu kedatangan bus : +- " + durasi)
+                .setMessage("Waktu tunggu kedatangan bus "+ noBus +": +- " + durasi)
                 .setIcon(R.mipmap.ic_launcher)
                 .setCancelable(false)
                 .setNeutralButton("Ok", new DialogInterface.OnClickListener() {
@@ -750,15 +809,15 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
 
         Tvdurasi.setText(durasi);
         if(konekkah()){
-        Call<Bus> call = client.getDataBus(noBus);
-        call.enqueue(new Callback<Bus>() {
+        Call<DataBus> call = client.getDataBus(noBus);
+        call.enqueue(new Callback<DataBus>() {
             @Override
-            public void onResponse(Call<Bus> call, Response<Bus> response) {
+            public void onResponse(Call<DataBus> call, Response<DataBus> response) {
 
-                    Bus dataBus = response.body();
+                DataBus dataBus = response.body();
                     if(dataBus != null) {
-                        no_bus.setText(dataBus.getNo_bus());
-                        no_tnkb.setText(dataBus.getNo_tnkb());
+                        no_bus.setText(dataBus.getNoBus());
+                        no_tnkb.setText(dataBus.getNoTnkb());
                         kapasitas.setText(Integer.toString(dataBus.getKapasitas()) + " orang");
                         cardBus.setVisibility(View.VISIBLE);
                     }else{
@@ -767,7 +826,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
                 }
 
             @Override
-            public void onFailure(Call<Bus> call, Throwable t) {
+            public void onFailure(Call<DataBus> call, Throwable t) {
                Log.e("error get data bus", t.toString());
             }
         });
@@ -780,52 +839,51 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
 
 
     public void getDataAksi(final DataSnapshot dataSnapshot){
+        String nomorBus = dataSnapshot.getKey().toString();
+            //cek is it the same line and status active (1)
+        if((dataSnapshot.child("jalur").getValue() != null) && (dataSnapshot.child("status").getValue() != null))
+        {
+            if ((dataSnapshot.child("jalur").getValue().toString().equals(jalur.getJalurId()))
+                    && (dataSnapshot.child("status").getValue().toString().equals("1"))) {
+                //get potition of other bus
+//            for (DataSnapshot child : dataSnapshot.child("log").getChildren()) {
+                dataSnapshot.child("log").getRef().limitToLast(1).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshotChild) {
+                        for (DataSnapshot dataPosisi : dataSnapshotChild.getChildren()) {
+                            String nomorBus = dataSnapshot.getKey().toString();
+                            if (dataPosisi.child("inArea").getValue().equals("1")) {
+                                LatLng point = null;
+                                BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.trans);
+                                String lat = dataPosisi.child("lat").getValue().toString();
+                                String lng = dataPosisi.child("lng").getValue().toString();
+                                double location_lat = Double.parseDouble(lat);
+                                double location_lng = Double.parseDouble(lng);
+                                point = new LatLng(location_lat, location_lng);
+                                marker = (Marker) hashMapMarker.get(nomorBus);
+                                if (marker != null) {
+                                    marker.remove();
+                                    hashMapMarker.remove(nomorBus);
+                                }
 
-        final ArrayList<noBus> listBusJalur = new ArrayList<>();
-        Call<List<noBus>> call = client.getBusSearah(jalur.getJalurId());
-        call.enqueue(new Callback<List<noBus>>() {
-            @Override
-            public void onResponse(Call<List<noBus>> call, Response<List<noBus>> response) {
-                List<noBus> result = response.body();
-                listBusJalur.addAll(result);
-
-                String nomorBus = dataSnapshot.getKey().toString();
-
-                for (noBus item : listBusJalur){
-                    if(item.getNo_bus().equals(nomorBus)){
-                        LatLng point = null;
-                        BitmapDrawable bitmapdraw= (BitmapDrawable) getResources().getDrawable(R.drawable.trans);
-
-                        String lat = dataSnapshot.child("lat").getValue().toString();
-                        String lng = dataSnapshot.child("lng").getValue().toString();
-                        double location_lat = Double.parseDouble(lat);
-                        double location_lng = Double.parseDouble(lng);
-                        point = new LatLng(location_lat, location_lng);
-                        marker = (Marker) hashMapMarker.get(nomorBus);
-                        if(marker != null){
-                            marker.remove();
-                            hashMapMarker.remove(nomorBus);
+                                marker = map.addMarker(new MarkerOptions()
+                                        .position(point)
+                                        .title(nomorBus)
+                                        .icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 60, 120))));
+                                hashMapMarker.put(nomorBus, marker);
+                            }
                         }
-
-                        marker = map.addMarker(new MarkerOptions()
-                                .position(point)
-                                .title(nomorBus)
-                                .icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 60,120))));
-                        hashMapMarker.put(nomorBus,marker);
                     }
-                }
 
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
 
+                    }
+                });
             }
-
-            @Override
-            public void onFailure(Call<List<noBus>> call, Throwable t) {
-
-            }
-        });
-
-
+        }
     }
+
     public Boolean konekkah(){
         ConnectivityManager cm =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -846,6 +904,7 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
                 String posisiHalte = itemHalte.getLat() + "," + itemHalte.getLng();
                 daftarPosisiHalte.add(posisiHalte);
             }
+            Log.e("Haltemin2", String.valueOf(ListHalte.size()));
             String posisiUser = currLat +","+ currLng;
             Call<DistanceMatrix> call = distanceApi.getDistanceInfo(posisiUser,convertToString(daftarPosisiHalte), "walking","now", "true","AIzaSyDZ-N9it_JFpboG3R3LfxakMiAkUdF12bU");
             call.enqueue(new Callback<DistanceMatrix>() {
@@ -860,20 +919,20 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
                         int n=0;
                         for(ElementsItem item : row){
                             if(item.getDistance() != null){
+
                                 if(n==0){
                                     jarak= item.getDistance().getValue();
                                     jarakMin=jarak;
                                     halteMin = ListHalte.get(n);
-                                    n++;
                                 }else{
                                     jarak= item.getDistance().getValue();
                                     if(jarak  < jarakMin){
                                         jarakMin = jarak;
                                         halteMin = ListHalte.get(n);
                                     }
-                                    n++;
-                                }   
+                                }
                             }
+                            n++;
                         }
                         map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(halteMin.getLat(), halteMin.getLng()), 16.0f));
                         namaHalteTerdekat.setText(halteMin.getNama());
@@ -918,3 +977,19 @@ public class LokasiActivity extends AppCompatActivity implements OnMapReadyCallb
         }
     }
 }
+
+interface OnGetDataListener {
+    //this is for callbacks
+    void onSuccess(DataSnapshot dataSnapshot);
+    void onStart();
+    void onFailure();
+}
+
+interface OnGetAllDataListetener {
+    //this is for callbacks
+//    void onSuccess(ArrayList<String> posisiDestination, ArrayList<Posisi> posisiBusCekList);
+    void onSuccess(DataSnapshot dataChild, String noBus);
+    void onStart();
+    void onFailure();
+}
+

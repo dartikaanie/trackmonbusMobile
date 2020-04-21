@@ -1,6 +1,7 @@
 package com.anie.dara.trackmonbus.rest;
 
 import com.anie.dara.trackmonbus.model.Bus;
+import com.anie.dara.trackmonbus.model.DataBus;
 import com.anie.dara.trackmonbus.model.Halte;
 import com.anie.dara.trackmonbus.model.Komentar;
 import com.anie.dara.trackmonbus.model.Perihal;
@@ -101,7 +102,7 @@ public interface dbClient {
     Call<List<Bus>> getAllBus();
 
     @GET("api/getDataBus/{no_bus}")
-    Call<Bus> getDataBus(@Path("no_bus") String no_bus);
+    Call<DataBus> getDataBus(@Path("no_bus") String no_bus);
 
     @GET("api/viewHaltes/{trayek_id}")
     Call<List<Halte>> getAllHalte(@Path("trayek_id") String trayek_id);
