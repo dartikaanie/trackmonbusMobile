@@ -189,15 +189,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
             iteratorRitJalur = listJalur.size();
         }
         //cek bus line
-        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-        currentJalur = sharedPreferences.getString("jalur_id", DEFAULT);
-        if(currentJalur.equals(DEFAULT)){
             currentJalur = jadwal.getJadwal().getJalurAwalId();
-//            // save bus line
-//            SharedPreferences.Editor editor = sharedPreferences.edit();
-//            editor.putString("jalur_id", jadwal.getJadwal().getJalurAwalId());
-//            editor.commit();
-        }
 
 
         mMapView = (MapView) findViewById(R.id.map_monitor);
@@ -382,7 +374,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
     public void getDataAksi(DataSnapshot dataSnapshot) {
         LatLng point = null;
         BitmapDrawable bitmapdraw;
-        if(dataSnapshot.getKey() == no_bus){
+        if(dataSnapshot.getKey().equals(no_bus)){
              bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.transsupir);
         }else{
              bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.trans);
@@ -418,7 +410,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 Toast.makeText(MonitoringPosisi.this , "ada bus yang baru berkendara", Toast.LENGTH_SHORT).show();
-                Log.e("bus baru", dataSnapshot.getValue().toString());
+
                 getDataAksi(dataSnapshot);
             }
 
@@ -585,11 +577,6 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
             }
 
             // save number and state of rit
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putInt("numberOfRit", currNoRit).commit();
-            editor.putInt("stateOfRit", stateOfRit).commit();
-            editor.putString("jalur_id", currentJalur).commit();
-            editor.commit();
         }
     }
 //    public void checkpoint(String no_bus, String tgl){
@@ -711,15 +698,15 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
 
     public void getListBusInLine(final Location lokasiBus, final String no_bus){
         //get bus sejalur
-        Log.e("buslistin line", "bus");
         listBusSearah = new ArrayList<>();
         final ArrayList<String> posisiDestination = new ArrayList<>();
         final ArrayList<Posisi> posisiBus = new ArrayList<>();
         final String posisi1 = lokasiBus.getLatitude() + "," + lokasiBus.getLongitude(); //potiton of current bus
-        final int n=0;
+
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                int n=0;
                 for (DataSnapshot datachild : dataSnapshot.getChildren()) {
                     //cek is it the same line and status active (1)
                     if((datachild.child("jalur").getValue().toString().equals(currentJalur))
@@ -739,7 +726,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                         if((location_lat!=0) && (location_lng!=0) ) {
                             String no_bus2 = datachild.getKey();
                             Posisi dataOtherBus = new Posisi(location_lat, location_lng, no_bus2);
-                            posisiBus.add(n, dataOtherBus);
+                            posisiBus.add(n++, dataOtherBus);
 
                             //made matrix from potition of buses
                             Location lokasi2 = new Location("posisi 2");
@@ -760,9 +747,6 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                 }
 
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lokasiBus.getLatitude(), lokasiBus.getLongitude()), 16.0f));
-
-                Log.e("listbus",listBusSearah.toString());
-
             }
 
             @Override
