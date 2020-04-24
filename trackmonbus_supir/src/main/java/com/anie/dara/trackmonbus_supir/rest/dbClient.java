@@ -111,6 +111,7 @@ public interface dbClient {
     @GET("api/sendSMS")
     Call<ResponseSMS> sendSMS(
             @Query("no_bus") String no_bus,
+            @Query("shift_id") String shift_id,
             @Query("user_id") String user_id,
             @Query("lama") String lama,
             @Query("message") String message);

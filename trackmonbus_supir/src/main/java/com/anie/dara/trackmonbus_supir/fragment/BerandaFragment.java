@@ -273,30 +273,39 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
         }
     }
 
-    public void getDataAksi(DataSnapshot dataSnapshot){
-        LatLng point = null;
-        BitmapDrawable bitmapdraw= (BitmapDrawable) ((MainActivity)activity).getResources().getDrawable(R.drawable.trans);
-        for(DataSnapshot data : dataSnapshot.child("log").getChildren()){
-                String lat = data.child("lat").getValue().toString();
-                String lng = data.child("lng").getValue().toString();
-                String nomorBus = dataSnapshot.getKey().toString();
+    public void getDataAksi(final DataSnapshot dataSnapshot){
+        final BitmapDrawable bitmapdraw= (BitmapDrawable) ((MainActivity)activity).getResources().getDrawable(R.drawable.trans);
+        dataSnapshot.child("log").getRef().limitToLast(1).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshotChild) {
+                for (DataSnapshot dataPosisi : dataSnapshotChild.getChildren()) {
+                    String lat = dataPosisi.child("lat").getValue().toString();
+                    String lng = dataPosisi.child("lng").getValue().toString();
+                    String nomorBus = dataSnapshot.getKey().toString();
 
-                double location_lat = Double.parseDouble(lat);
-                double location_lng = Double.parseDouble(lng);
-                point = new LatLng(location_lat, location_lng);
-                marker = (Marker) hashMapMarker.get(nomorBus);
-                if (marker != null) {
-                    marker.remove();
-                    hashMapMarker.remove(nomorBus);
+                    double location_lat = Double.parseDouble(lat);
+                    double location_lng = Double.parseDouble(lng);
+                    LatLng point = new LatLng(location_lat, location_lng);
+                    marker = (Marker) hashMapMarker.get(nomorBus);
+                    if (marker != null) {
+                        marker.remove();
+                        hashMapMarker.remove(nomorBus);
+                    }
+                    if (map != null) {
+                        marker = map.addMarker(new MarkerOptions()
+                                .position(point)
+                                .title(nomorBus)
+                                .icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 60, 120))));
+                        hashMapMarker.put(nomorBus, marker);
+                    }
                 }
-                if (map != null) {
-                    marker = map.addMarker(new MarkerOptions()
-                            .position(point)
-                            .title(nomorBus)
-                            .icon(BitmapDescriptorFactory.fromBitmap(getIcon(bitmapdraw, 60, 120))));
-                    hashMapMarker.put(nomorBus, marker);
-                }
-        }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
     }
 
@@ -309,7 +318,7 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
             googleMap.setMapStyle(new MapStyleOptions(getResources()
                     .getString(R.string.style_json)));
             map = googleMap;
-            getAllHalte();
+//            getAllHalte();
             mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -337,7 +346,9 @@ public class BerandaFragment extends Fragment  implements OnMapReadyCallback, Vi
             }
 
             dataMarker();
-            load.setText("Memuat Data");
+            waiting.setVisibility(View.INVISIBLE);
+            load.setVisibility(View.INVISIBLE);
+
         }catch (Exception ex){
             load.setText("Ada Kesalahan, Silakan Refresh Halaman ini");
         }
