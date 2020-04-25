@@ -672,7 +672,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                     }else{
                         //cek if current bus stop
                         if(posisiAwal.cek(currentPosisi.getLat(), currentPosisi.getLng())) {
-                            cekBerhenti(posisiAwal, currentPosisi, time);
+//                            cekBerhenti(posisiAwal, currentPosisi, time);
                         }else{
                             startStopTime = null;
                             posisiAwal = null;
@@ -778,24 +778,27 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
 
     public void getListBusInLine(final String posisi1, final String no_bus){
         //get bus sejalur
+        final boolean[] cekDialog = {true};
         listBusSearah = new ArrayList<>();
         final ArrayList<String> posisiDestination = new ArrayList<>();
         final ArrayList<Posisi> posisiBus = new ArrayList<>();
 
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+
                 final int[] n = {0};
                 getAllDataBus(dataSnapshot, new OnGetAllDataListetener() {
+
                     @Override
                     public void onSuccess(DataSnapshot dataChild, String noBus) {
                         listBusSearah.add(new noBus(noBus));
-                        double location_lat = 0, location_lng = 0;
+                        double location_lat = Double.parseDouble(String.valueOf(dataChild.child("lat").getValue()));
+                        double location_lng = Double.parseDouble(String.valueOf(dataChild.child("lng").getValue()));
 
                         //if potition exist
                         if((location_lat!=0) && (location_lng!=0) ) {
-                            String no_bus2 = dataChild.getKey();
-                            Posisi dataOtherBus = new Posisi(location_lat, location_lng, no_bus2);
+                            Posisi dataOtherBus = new Posisi(location_lat, location_lng, noBus);
                             posisiBus.add(n[0]++, dataOtherBus);
 
                             //made matrix from potition of buses
@@ -805,27 +808,20 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                             String posisi2 = lokasi2.getLatitude() + "," + lokasi2.getLongitude();
                             posisiDestination.add(posisi2);
                        }
+                    }
 
-                        //if data exist
-                        if(posisiDestination.size()>0){
-                            if(alertDialog != null){
-                                alertDialog.dismiss();
+                    @Override
+                    public void onFinish() {
+                            Log.e("getBUs jarak size", String.valueOf(posisiDestination.size()));
+                            //if data exist
+                            if(posisiDestination.size()>0){
+                                if(alertDialog != null){
+                                    alertDialog.dismiss();
+                                }
+                                calculateDistance(posisi1, convertToString(posisiDestination),posisiBus );
                             }
-                            calculateDistance(posisi1, convertToString(posisiDestination),posisiBus );
                         }
-                    }
-
-                    @Override
-                    public void onStart() {
-
-                    }
-
-                    @Override
-                    public void onFailure() {
-
-                    }
                 });
-
 
 //                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lokasiBus.getLatitude(), lokasiBus.getLongitude()), 16.0f));
 
@@ -839,58 +835,56 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
             }
         });
 
+
     }
 
-    public void getAllDataBus(DataSnapshot dataSnapshot, final OnGetAllDataListetener listerner){
-        listerner.onStart();
-        for (DataSnapshot datachild : dataSnapshot.getChildren()) {
-            getPraDataBus(datachild, new OnGetDataListener() {
-                @Override
-                public void onSuccess(DataSnapshot datachild) {
-                    String nomorBus = datachild.getKey();
-                    listerner.onSuccess(datachild, nomorBus);
-                    Log.e("sukses getAllDataBus", datachild.getValue().toString());
 
+    public void getAllDataBus(final DataSnapshot dataSnapshot, final OnGetAllDataListetener listerner){
+        int index=0;
+        for (final DataSnapshot datachild : dataSnapshot.getChildren()) {
+            if ((datachild.child("jalur").getValue() != null) && (datachild.child("status").getValue() != null)) {
+                if ((datachild.child("jalur").getValue().toString().equals(currentJalur))
+                        && (datachild.child("status").getValue().toString().equals("1"))
+                        && (!datachild.getKey().equals(jadwal.getNoBus()))
+                ) {
+                    index++;
+                    getPraDataBus(datachild, new OnGetDataListener() {
+                        @Override
+                        public void onSuccess(DataSnapshot dataLog) {
+                            String nomorBus = datachild.getKey();
+                            for (DataSnapshot data : dataLog.getChildren()) {
+                                listerner.onSuccess(data, nomorBus);
+                            }
+                        }
+                    });
                 }
-
-                @Override
-                public void onStart() {
-
-                }
-
-                @Override
-                public void onFailure() {
-                    Log.e("gagal getAllDataBus", "gagal");
-                }
-
-            });
+            }
         }
+        new Handler().postDelayed(
+            new Runnable() {
+                public void run() {
+                   listerner.onFinish();
+                }
+            },
+            300);
+
     }
 
     public void getPraDataBus(DataSnapshot datachild, final OnGetDataListener onGetDataListener){
-        onGetDataListener.onStart();
         //cek is it the same line and status active (1)
-        if ((datachild.child("jalur").getValue() != null) && (datachild.child("status").getValue() != null)) {
-            if((datachild.child("jalur").getValue().toString().equals(currentJalur))
-                    &&  (datachild.child("status").getValue().toString().equals("1"))
-                    &&  (!datachild.getKey().equals(jadwal.getNoBus()))
-            ){
-                datachild.child("log").getRef().limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        onGetDataListener.onSuccess(dataSnapshot);
-                        Log.e("cek getPraDataBus", dataSnapshot.getValue().toString());
-                    }
+        datachild.child("log").getRef().limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                onGetDataListener.onSuccess(dataSnapshot);
+                Log.e("cek getPraDataBus", dataSnapshot.getValue().toString());
+            }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        }
+        });
+
     }
 
 //    public void getListBusInLine2(final Location lokasiBus, final String no_bus){
@@ -1079,7 +1073,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                                 endOutTime =  new PosisiTime(currentPosisi.getLat(), currentPosisi.getLng(), time);
                             }else{
                                 //cek if current bus out
-                                cekKeluar(posisiAwalOut, currentPosisi, time);
+//                                cekKeluar(posisiAwalOut, currentPosisi, time);
                             }
                          }
                     }
@@ -1309,14 +1303,12 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
 interface OnGetDataListener {
     //this is for callbacks
     void onSuccess(DataSnapshot dataSnapshot);
-    void onStart();
-    void onFailure();
 }
 
 interface OnGetAllDataListetener {
     //this is for callbacks
 //    void onSuccess(ArrayList<String> posisiDestination, ArrayList<Posisi> posisiBusCekList);
     void onSuccess(DataSnapshot dataChild, String noBus);
-    void onStart();
-    void onFailure();
+    void onFinish();
 }
+
