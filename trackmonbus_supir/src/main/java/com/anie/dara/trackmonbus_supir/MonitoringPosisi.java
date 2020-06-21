@@ -220,9 +220,11 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
         int detikSekarang = Integer.valueOf(time);
         if( detikSekarang%10 != 0){
             mInterval = (10 - detikSekarang%10)*1000;
+
         }else{
             mInterval =0;
         }
+
         handler.postDelayed(runTrack, mInterval);
         getLocation();
 
@@ -408,12 +410,12 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                     double location_lat = Double.parseDouble(lat);
                     double location_lng = Double.parseDouble(lng);
                     LatLng point = new LatLng(location_lat, location_lng);
-                    if (dataSnapshot.getKey().equals(no_bus)) {
-                        bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.transsupir);
-                        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location_lat, location_lng), 16.0f));
-                        final String posisi1 = location_lat + "," + location_lng; //potiton of current bus
-                        getListBusInLine(posisi1, no_bus);
-                    }
+//                    if (dataSnapshot.getKey().equals(no_bus)) {
+//                        bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.transsupir);
+//                        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location_lat, location_lng), 16.0f));
+//                        final String posisi1 = location_lat + "," + location_lng; //potiton of current bus
+//                        getListBusInLine(posisi1, no_bus);
+//                    }
                     marker = (Marker) hashMapMarker.get(nomorBus);
                     if (marker != null) {
                         marker.remove();
@@ -659,11 +661,13 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                     int detikSekarang = Integer.valueOf(detik.format(tgl));
                     if( detikSekarang%10 != 0){
                         mInterval = (10 - detikSekarang%10)*1000;
-                        time = time.substring(0,7) +"0";
+                            time = time.substring(0,7) +"0";
+                        Log.e("detik sekarang 664", String.valueOf(detikSekarang));
 
                     }else{
                         mInterval =9000;
                     }
+
                     getCurrentPosisi();
                     if(posisiAwal == null){
                         posisiAwal = new PosisiTime(currentPosisi.getLat(), currentPosisi.getLng(), time);
@@ -671,8 +675,9 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                         endStopTime =  new PosisiTime(currentPosisi.getLat(), currentPosisi.getLng(), time);
                     }else{
                         //cek if current bus stop
+                        Log.e("cek Bus berhenti 674", String.valueOf(posisiAwal.cek(currentPosisi.getLat(), currentPosisi.getLng())));
                         if(posisiAwal.cek(currentPosisi.getLat(), currentPosisi.getLng())) {
-//                            cekBerhenti(posisiAwal, currentPosisi, time);
+                            cekBerhenti(posisiAwal, currentPosisi, time);
                         }else{
                             startStopTime = null;
                             posisiAwal = null;
@@ -704,13 +709,15 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
         int timeStartInt = Integer.parseInt(timeStart[2]) + (60 * Integer.parseInt(timeStart[1])) + (3600 * Integer.parseInt(timeStart[0]));
 
         //give range (60*15 detik)
-        if (timeEndInt - timeStartInt > 900){
+        if (timeEndInt - timeStartInt >= 900){
             String menit = String.valueOf((timeEndInt - timeStartInt) / 60);
             String detik = String.valueOf((timeEndInt - timeStartInt) % 60);
             String lama = menit+" menit "+detik+" detik";
-           showDialogGeneral("Bus berhenti terlalu lama ");
+            showDialogGeneral("Bus berhenti terlalu lama ");
+            Log.e("Bus berhenti send", lama);
+
             client = ApiClient.getClient().create(dbClient.class);
-            Call<ResponseSMS> call = client.sendSMS(no_bus,jadwal.getShiftId(), jadwal.getUserIdSupir(), lama, "Bus Berhenti");
+            Call<ResponseSMS> call = client.sendSMS(no_bus,jadwal.getShiftId(), jadwal.getUserIdSupir(), lama, "Berhenti");
             call.enqueue(new Callback<ResponseSMS>() {
                 @Override
                 public void onResponse(Call<ResponseSMS> call, Response<ResponseSMS> response) {
@@ -755,7 +762,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
             showDialogGeneral("Bus Keluar terlalu lama ");
             Log.e("bus keluar", lama);
             client = ApiClient.getClient().create(dbClient.class);
-            Call<ResponseSMS> call = client.sendSMS(no_bus,jadwal.getShiftId(), jadwal.getUserIdSupir(), lama, "Bus Keluar");
+            Call<ResponseSMS> call = client.sendSMS(no_bus,jadwal.getShiftId(), jadwal.getUserIdSupir(), lama, "Keluar Trayek");
             call.enqueue(new Callback<ResponseSMS>() {
                 @Override
                 public void onResponse(Call<ResponseSMS> call, Response<ResponseSMS> response) {
@@ -1049,8 +1056,10 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
             Toast.makeText(MonitoringPosisi.this,"Ada KESALAHAN. LOKASINYA TIDAK TAMPIL", Toast.LENGTH_SHORT).show();
         }
         else{
+            final String posisi1 = location.getLatitude() + "," + location.getLongitude();
             //get bus serah utk menhitung jarak
-//            getListBusInLine(location, no_bus);
+            Log.e("addPOsisi", "posisi");
+            getListBusInLine(posisi1, no_bus);
             final String posisiCek = posisi.getLng() +","+ posisi.getLat();
            //CEK if the point contain of  area
             Call<String> callContain = client.getContain(tgl.substring(0,10),no_bus,jadwal.getShiftId(),time, posisiCek,String.valueOf(currentPosisi.getLat()),String.valueOf(currentPosisi.getLng()), jadwal.getJadwal().getTrayekId());
@@ -1062,43 +1071,45 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
                     if(contain != null){
                         Log.e("bus keluar", String.valueOf(contain.equals("1")));
                         if(contain.equals("1")){
-                            Log.e("bus keluar", "keluar");
-                            Toast.makeText(MonitoringPosisi.this, "Keluar dari Trayek", Toast.LENGTH_LONG).show();
-                            startOutTime = null;
+                            Log.e("bus keluar", "contain");
+                             startOutTime = null;
                             posisiAwalOut = null;
                         }else{
+                            Toast.makeText(MonitoringPosisi.this, "Keluar dari Trayek", Toast.LENGTH_LONG).show();
+
                             if(posisiAwalOut == null){
                                 posisiAwalOut = new PosisiTime(currentPosisi.getLat(), currentPosisi.getLng(), time);
                                 startOutTime =  new PosisiTime(currentPosisi.getLat(), currentPosisi.getLng(), time);
                                 endOutTime =  new PosisiTime(currentPosisi.getLat(), currentPosisi.getLng(), time);
                             }else{
                                 //cek if current bus out
-//                                cekKeluar(posisiAwalOut, currentPosisi, time);
+                                cekKeluar(posisiAwalOut, currentPosisi, time);
                             }
                          }
                     }
                         LogPotition logPosisi = new LogPotition(posisi.getLat(), posisi.getLng(), contain, jadwal.getUserIdSupir() );
 
-
-//                    mDatabase.child(no_bus).child("log").child(useTime).setValue(logPosisi);
-//                    mDatabase.child(no_bus).child("status").setValue(1);
-//                    mDatabase.child(no_bus).child("jalur").setValue(currentJalur);
-//                    Toast.makeText(MonitoringPosisi.this, "Update Posisi", Toast.LENGTH_LONG).show();
-
+                    mDatabase.child(no_bus).child("log").child(useTime).setValue(logPosisi);
+                    mDatabase.child(no_bus).child("status").setValue(1);
+                    mDatabase.child(no_bus).child("jalur").setValue(currentJalur);
+                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(posisi.getLat(), posisi.getLng()), 16.0f));
+                    Toast.makeText(MonitoringPosisi.this, "Update Posisi", Toast.LENGTH_LONG).show();
 
                 }
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
                     Log.e("error contain",t.toString());
-//                    mDatabase.child(no_bus).child("log").child(useTime).child("inArea").setValue(0);
-
+                    mDatabase.child(no_bus).child("log").child(useTime).child("inArea").setValue(0);
                 }
             });
         }
     }
 
     private void calculateDistance(String posisi1 , String posisi2, final ArrayList<Posisi> busPosisi) {
+        Log.e("getBUs jarak p1", String.valueOf(posisi1));
+        Log.e("getBUs jarak p2", String.valueOf(posisi2));
+        Log.e("getBUs jarak bus posisi", String.valueOf(busPosisi.toString()));
             Call<DistanceMatrix> call = distanceApi.getDistanceInfo(posisi1,posisi2,"AIzaSyDZ-N9it_JFpboG3R3LfxakMiAkUdF12bU");
             call.enqueue(new Callback<DistanceMatrix>() {
             @Override
