@@ -180,8 +180,8 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
             namaTrayek.setText(jadwal.getJadwal().getDetailTrayeks().getTrayeks().getTrayek());
             no_bus =jadwal.getJadwal().getBuses().getNoBus();
             tgl = jadwal.getTgl();
-//            hari_tgl.setText(substring(jadwal.getTgl(),0,10));
-            hari_tgl.setText("2020-03-07");
+            hari_tgl.setText(substring(jadwal.getTgl(),0,10));
+            
             String s = jadwal.getJalur();
             praListJalur = s.split("-");
             listJalur = new ArrayList<>();
@@ -225,7 +225,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
             mInterval =0;
         }
 
-        handler.postDelayed(runTrack, mInterval);
+//        handler.postDelayed(runTrack, mInterval);
         getLocation();
 
         getCurrentRit();
@@ -714,8 +714,8 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
             String detik = String.valueOf((timeEndInt - timeStartInt) % 60);
             String lama = menit+" menit "+detik+" detik";
             showDialogGeneral("Bus berhenti terlalu lama ");
-            Log.e("Bus berhenti send", lama);
-
+//            Log.e("Bus berhenti send", lama);
+//            posisiAwal = null;
             client = ApiClient.getClient().create(dbClient.class);
             Call<ResponseSMS> call = client.sendSMS(no_bus,jadwal.getShiftId(), jadwal.getUserIdSupir(), lama, "Berhenti");
             call.enqueue(new Callback<ResponseSMS>() {
@@ -755,7 +755,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
         Log.e("bus keluar end", String.valueOf(endStopTime.getTime()));
         Log.e("bus keluar start", String.valueOf(startStopTime.getTime()));
         Log.e("bus keluar 50 s", String.valueOf(timeEndInt - timeStartInt));
-        if (timeEndInt - timeStartInt > 900){
+        if (timeEndInt - timeStartInt >= 900){
             String menit = String.valueOf((timeEndInt - timeStartInt) / 60);
             String detik = String.valueOf((timeEndInt - timeStartInt) % 60);
             String lama = menit+" menit "+detik+" detik";

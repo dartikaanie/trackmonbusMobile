@@ -48,7 +48,7 @@ public class RitAdapter extends  RecyclerView.Adapter<RitAdapter.RitHolder> {
         }else{
             holder.waktu_datang.setText(String.valueOf(rit.getWaktuDatang()));
         }
-        holder.namaJalur.setText(String.valueOf(rit.getDetailTrayeks().getJalurs().getNamaJalur()));
+//        holder.namaJalur.setText(String.valueOf(rit.getDetailTrayeks().getJalurs().getNamaJalur()));
     }
 
 
@@ -64,13 +64,13 @@ public class RitAdapter extends  RecyclerView.Adapter<RitAdapter.RitHolder> {
 
     // Inner CLASS
     public class RitHolder extends RecyclerView.ViewHolder{
-        TextView waktu_berangkat, waktu_datang, namaJalur;
+        TextView waktu_berangkat, waktu_datang;
 
         public RitHolder(@NonNull View itemView){
             super(itemView);
             waktu_berangkat = itemView.findViewById(R.id.waktu_berangkat);
             waktu_datang = itemView.findViewById(R.id.waktu_datang);
-            namaJalur = itemView.findViewById(R.id.namaJalur);
+//            namaJalur = itemView.findViewById(R.id.namaJalur);
         }
     }
 

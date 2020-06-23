@@ -8,6 +8,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -26,8 +27,16 @@ import com.anie.dara.trackmonbus_supir.model.Rit;
 import com.anie.dara.trackmonbus_supir.model.jadwal.JadwalDetail;
 import com.anie.dara.trackmonbus_supir.rest.ApiClient;
 import com.anie.dara.trackmonbus_supir.rest.dbClient;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import okhttp3.ResponseBody;
@@ -50,6 +59,7 @@ public class DetailTransActivity extends AppCompatActivity implements View.OnCli
     ImageView toolbarTitle;
     private dbClient client = ApiClient.getClient().create(dbClient.class);
     SwipeRefreshLayout swLayout;
+    DatabaseReference mDatabase;
     private LinearLayout llayout;
 
     @Override
@@ -148,6 +158,12 @@ public class DetailTransActivity extends AppCompatActivity implements View.OnCli
         });
 
        getDataRit();
+
+       //get Data rit
+        Date date = new Date();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String tgl_skrg = dateFormat.format(date);
+        mDatabase = FirebaseDatabase.getInstance().getReference().child(tgl_skrg);
     }
 
 
@@ -190,29 +206,45 @@ public class DetailTransActivity extends AppCompatActivity implements View.OnCli
     }
 
     public void getDataRit(){
+        //get Data rit
+        Date date = new Date();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String tgl_skrg = dateFormat.format(date);
+        mDatabase = FirebaseDatabase.getInstance().getReference().child(tgl_skrg).child(jadwal.getNoBus()).child("rit");
+
         final ProgressDialog dialog = new ProgressDialog(DetailTransActivity.this);
         dialog.setMessage("Memuat Data . . .");
         dialog.show();
 
         if(konekkah()){
-            client = ApiClient.getClient().create(dbClient.class);
-            Call<List<Rit>> call = client.getRit(no_bus, tgl);
-            call.enqueue(new Callback<List<Rit>>() {
-
+            mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
-                public void onResponse(Call<List<Rit>> call, Response<List<Rit>> response) {
-                    rvDaftarRit.setVisibility(View.VISIBLE);
-                    List<Rit> listItem = response.body();
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    ArrayList<Rit> listItem = new ArrayList<Rit>();
+                    //data per rit
+                    for (DataSnapshot datachild : dataSnapshot.getChildren()) {
+                                //data per jalur
+                                for (DataSnapshot dataRit : datachild.getChildren()) {
+                                    Rit rit = new Rit();
+                                    rit.setJalurId(dataRit.getKey());
+                                    rit.setWaktuBerangkat(dataRit.child("waktuBerangkat").getValue().toString());
+                                    rit.setWaktuDatang(dataRit.child("waktuDatang").getValue().toString());
+                                    Log.e("rit", String.valueOf(rit));
+                            listItem.add(rit);
+                        }
 
-                        Toast.makeText(DetailTransActivity.this , "Pesan berhasil diload", Toast.LENGTH_SHORT).show();
-                        ritAdapter.setDataRit(new ArrayList<Rit>(listItem));
+                    }
+
+                    rvDaftarRit.setVisibility(View.VISIBLE);
+//                    List<Rit> listItem = response.body();
+//
+                    Toast.makeText(DetailTransActivity.this , "Pesan berhasil diload", Toast.LENGTH_SHORT).show();
+                    ritAdapter.setDataRit(new ArrayList<Rit>(listItem));
                     dialog.dismiss();
                 }
 
                 @Override
-                public void onFailure(Call<List<Rit>> call, Throwable t) {
-                    Log.e("error detailActivity",  t.toString());
-                    dialog.dismiss();
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
                 }
             });
@@ -220,6 +252,8 @@ public class DetailTransActivity extends AppCompatActivity implements View.OnCli
             Toast.makeText(DetailTransActivity.this , "Hidupkan koneksi internet anda", Toast.LENGTH_SHORT).show();
         }
     }
+
+
 
     public Boolean konekkah(){
         ConnectivityManager cm =
