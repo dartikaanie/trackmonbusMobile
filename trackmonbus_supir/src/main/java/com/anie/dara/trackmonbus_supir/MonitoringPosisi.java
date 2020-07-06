@@ -181,7 +181,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
             no_bus =jadwal.getJadwal().getBuses().getNoBus();
             tgl = jadwal.getTgl();
             hari_tgl.setText(substring(jadwal.getTgl(),0,10));
-            
+
             String s = jadwal.getJalur();
             praListJalur = s.split("-");
             listJalur = new ArrayList<>();
@@ -225,7 +225,7 @@ public class MonitoringPosisi extends AppCompatActivity implements  View.OnClick
             mInterval =0;
         }
 
-//        handler.postDelayed(runTrack, mInterval);
+        handler.postDelayed(runTrack, mInterval);
         getLocation();
 
         getCurrentRit();

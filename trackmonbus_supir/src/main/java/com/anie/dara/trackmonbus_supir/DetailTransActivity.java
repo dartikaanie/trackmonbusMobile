@@ -301,8 +301,11 @@ public class DetailTransActivity extends AppCompatActivity implements View.OnCli
                 break;
 
             case R.id.btnCheckpoint:
-               checkpoint(no_bus, tgl);
-               getDataRit();
+                Intent intent1 =  new Intent(DetailTransActivity.this, MonitoringPosisi.class);
+                intent1.putExtra("jadwal", jadwal);
+                startActivity(intent1);
+//               checkpoint(no_bus, tgl);
+//               getDataRit();
                 break;
 
             case R.id.btn_ubah:
